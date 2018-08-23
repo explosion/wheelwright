@@ -1,4 +1,5 @@
-function pre_build {}
+function pre_build {
+}
 
 # This runs in an environment with just the installed package, not the source
 # tree
