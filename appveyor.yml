@@ -89,4 +89,4 @@ artifacts:
 on_success:
   - pip install -U pygithub click
   - dir
-  - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release %REPO_DIR%/dist/*.whl
+  - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release %REPO_DIR%/dist

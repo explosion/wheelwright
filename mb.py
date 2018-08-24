@@ -1,4 +1,5 @@
 import os
+import os.path
 import glob
 from github import Github
 import click
@@ -42,23 +43,31 @@ def cli():
 @click.option("--repo-id", required=True)
 @click.option("--release-id", required=True)
 @click.argument(
-    "paths", nargs=-1, type=click.Path(exists=True, dir_okay=False)
+    "paths", nargs=-1, type=click.Path(exists=True)
 )
 def upload(repo_id, release_id, paths):
     release = get_release(repo_id, release_id)
-    # https://pygithub.readthedocs.io/en/latest/github_objects/GitReleaseAsset.html
-    if os.name == "nt":
-        print("Glob expanding", paths)
-        paths = [glob.glob(p) for p in paths]
-        print("New paths", paths)
-    for path in paths:
-        print("Uploading:", path)
-        release.upload_asset(path)
+    # This is a gross hack, to work around the lack of globbing on Windows
+    # (see https://github.com/pallets/click/issues/1096)
+    # We accept either individual files, or directories, and for directories,
+    # we upload all the .whl files directly inside that directory (no
+    # recursion).
+    for given_path in paths:
+        if os.path.isdir(given_path):
+            subpaths = glob.glob(os.path.join(given_path, "*.whl"))
+        else:
+            subpaths = [given_path]
+        for actual_path in subpaths:
+            print("Uploading:", actual_path)
+            asset = release.upload_asset(actual_path)
+            print(asset)
+            print(asset.name, asset.id, asset.state, asset.created_at)
 
 @cli.command()
 @click.option("--repo-id", required=True)
 @click.option("--release-id", required=True)
 def download_all(repo_id, release_id):
+    # https://pygithub.readthedocs.io/en/latest/github_objects/GitReleaseAsset.html
     for asset in get_release(repo_id, release_id).get_assets():
         print(asset.name, asset.browser_download_url)
 
