@@ -13,12 +13,9 @@ env:
         - UNICODE_WIDTH=32
         - WHEELHOUSE_UPLOADER_USERNAME=travis-worker
         # Following generated with
-        # travis encrypt -r your-org/your-project-wheels WHEELHOUSE_UPLOADER_SECRET=<the api key>
-        # This is for Rackspace uploads.  Contact Matthew Brett, or the
-        # scikit-learn team, for # permission (and the API key) to upload to
-        # the Rackspace account used here, or use your own account.
-        - secure:
-            "MNKyBWOzu7JAUmC0Y+JhPKfytXxY/ADRmUIMEWZV977FLZPgYctqd+lqel2QIFgdHDO1CIdTSymOOFZckM9ICUXg9Ta+8oBjSvAVWO1ahDcToRM2DLq66fKg+NKimd2OfK7x597h/QmUSl4k8XyvyyXgl5jOiLg/EJxNE2r83IA="
+        # travis encrypt -r your-org/your-project-wheels GITHUB_TOKEN=<token>
+        # token generated at https://github.com/settings/tokens
+        - secure: "ErsmaiPYRAgZR7XIcM9pfSilAiGX+eGskQuse7ae97QAynBlBvP7bWanT6xsIPlsX6TNf61qFwUGgyP7VSMTh9U0kZs3A9T4Jv2Xtr3QiZBo01Jpb4ovjapO/fF78jvDtlSNz99YamPdHQk4IthhDpXqolr63aj0UdeqnfUV/YGWYT3goCDKvV6TqPfuxbMQaSlP188Q9J2WG+O0LvecvLt1lHR1IzUYN4/X/exoZLEXYLz704N9H+fCT2Qv9NdC0wQqdusped8fXBhtbcfOUekrHZMLh2z/Gfx2/5AbtOTLy53nQosOrsSToo+zCuMDJK/M/LqYg1BvbWFImrSMhFHQODk1Y6sY2x04thaKVzqTMgsxqscs1ee7vhZ0v9D7dH54b4o1EYCVylj53BfD8X9jW7KP2ntAa9LcSz1ZESDiydOUHnFW7ouKTcCBGVOJlYnUHcbTG1V/uTK6PPyXfPr0VargFgBDtNxpN5cGsjfrbMM3CDLkR8eAnNm+WFYRV/L82c4r2We6z5oSldx2GnoSDot3cyT6SSOss8uqle+Lw8Ul3fSk1zsKMIbD0gAdI2bEajFLRzzxkdJS7l11QxgLUUAw9xXZZy1iZgugp2SQF/wj2zHNcS2YvlsnRgMeZ92SWS+NIPTSCIdCiGuccVmqGbw02WKOmgMjpG+O+NI="
 
 language: python
 sudo: required
@@ -98,13 +95,7 @@ install:
 script:
     - install_run $PLAT
 
-# after_success:
-#     # Upload wheels to Rackspace container
-#     - pip install wheelhouse-uploader
-#     # This uploads the wheels to a Rackspace container owned by the
-#     # scikit-learn team, available at http://wheels.scipy.org.  See above
-#     # for information on using this account or choosing another.
-#     - python -m wheelhouse_uploader upload --local-folder
-#         ${TRAVIS_BUILD_DIR}/wheelhouse/
-#         --no-update-index
-#         wheels
+after_success:
+    - pip install -U pygithub click
+    - ls ${TRAVIS_BUILD_DIR}/wheelhouse/
+    - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release ${TRAVIS_BUILD_DIR}/wheelhouse/*.whl

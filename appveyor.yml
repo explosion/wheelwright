@@ -5,10 +5,9 @@ environment:
     BUILD_COMMIT: 1.31.2
     BUILD_DEPENDS: "Cython"
     TEST_DEPENDS: "pytest"
-    WHEELHOUSE_UPLOADER_USERNAME: travis-worker
-    WHEELHOUSE_UPLOADER_SECRET:
+    GITHUB_TOKEN:
         secure:
-            9s0gdDGnNnTt7hvyNpn0/ZzOMGPdwPp2SewFTfGzYk7uI+rdAN9rFq2D1gAP4NQh
+            gzxKbebPRLHyiNddeeczm+7idVeQosvvFg08mOJIuD9C9mTYOcQTGVWScN5/FPgv
 
   matrix:
     - PYTHON: C:\Python37
@@ -87,9 +86,6 @@ artifacts:
     - path: "%REPO_DIR%\\dist\\*"
 
 on_success:
-  # Upload the generated wheel package to Rackspace
-  # On Windows, Apache Libcloud cannot find a standard CA cert bundle so we
-  # disable the ssl checks.
   - cd %REPO_DIR%
-  - pip install wheelhouse-uploader
-  - python -m wheelhouse_uploader upload --no-ssl-check --local-folder=dist --no-update-index wheels
+  - pip install -U pygithub click
+  - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release dist/*.whl
