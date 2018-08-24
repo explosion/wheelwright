@@ -58,7 +58,8 @@ install:
     - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
 
     # Check that we have the expected version and architecture for Python
-    - "echo We want: %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+    - "echo We want: Python %PYTHON_VERSION%, %PYTHON_ARCH% bit"
+    - "echo We're using: %PYTHON%"
     - "echo We got:"
     - python --version
     - python -c "import struct; print(struct.calcsize('P') * 8, 'bit')"
@@ -86,6 +87,5 @@ artifacts:
     - path: "%REPO_DIR%\\dist\\*"
 
 on_success:
-  - cd %REPO_DIR%
   - pip install -U pygithub click
-  - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release dist/*.whl
+  - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release %REPO_DIR%/dist/*.whl
