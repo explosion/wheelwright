@@ -72,11 +72,11 @@ build_script:
     - cd %REPO_DIR%
     - git checkout %BUILD_COMMIT%
     - python setup.py bdist_wheel
+    - cd ..
 
 test_script:
     # install from wheel
-    - pip install --no-index --find-links dist/ %PACKAGE_NAME%
-    - cd ..
+    - pip install --no-index --find-links %REPO_DIR%/dist/ %PACKAGE_NAME%
     - mkdir tmp_for_test
     - cd tmp_for_test
     - pip install -U %TEST_DEPENDS%
@@ -88,4 +88,5 @@ artifacts:
 
 on_success:
   - pip install -U pygithub click
+  - dir
   - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release %REPO_DIR%/dist/*.whl
