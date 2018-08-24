@@ -57,9 +57,10 @@ install:
     - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
 
     # Check that we have the expected version and architecture for Python
+    - echo "We want: %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+    - echo "We got:"
     - python --version
-    - python -c "import sys, platform; print(sys.platform, platform.machine())"
-    - python -c "import struct; print(struct.calcsize('P') * 8)"
+    - python -c "import struct; print(struct.calcsize('P') * 8, 'bit')"
 
     # Get a modern working environment
     - python -m pip install -U pip setuptools wheel virtualenv
