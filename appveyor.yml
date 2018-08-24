@@ -11,72 +11,74 @@ environment:
             9s0gdDGnNnTt7hvyNpn0/ZzOMGPdwPp2SewFTfGzYk7uI+rdAN9rFq2D1gAP4NQh
 
   matrix:
-    # for 3.7 builds, we use 3.6 as the base environment for now,
-    # since there is no miniconda37 yet. (But miniconda36 can install python=3.7.)
-    - PYTHON: "C:\\Miniconda36"
-      PYTHON_VERSION: "3.7"
-      PYTHON_ARCH: "32"
-    - PYTHON: "C:\\Miniconda36-x64"
-      PYTHON_VERSION: "3.7"
-      PYTHON_ARCH: "64"
-    - PYTHON: "C:\\Miniconda"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "32"
-    - PYTHON: "C:\\Miniconda-x64"
-      PYTHON_VERSION: "2.7"
-      PYTHON_ARCH: "64"
-    - PYTHON: "C:\\Miniconda35"
-      PYTHON_VERSION: "3.5"
-      PYTHON_ARCH: "32"
-    - PYTHON: "C:\\Miniconda35-x64"
-      PYTHON_VERSION: "3.5"
-      PYTHON_ARCH: "64"
-    - PYTHON: "C:\\Miniconda36"
-      PYTHON_VERSION: "3.6"
-      PYTHON_ARCH: "32"
-    - PYTHON: "C:\\Miniconda36-x64"
-      PYTHON_VERSION: "3.6"
-      PYTHON_ARCH: "64"
+    - PYTHON: C:\Python37
+      PYTHON_VERSION: 3.7
+      PYTHON_ARCH: 32
 
-# We always use a 64-bit machine, but can build x86 distributions
-# with the TARGET_ARCH variable.
-platform:
-    - x64
+    - PYTHON: C:\Python37-x64
+      PYTHON_VERSION: 3.7
+      PYTHON_ARCH: 64
 
-matrix:
-    fast_finish: true
+    - PYTHON: C:\Python36
+      PYTHON_VERSION: 3.6
+      PYTHON_ARCH: 32
+
+    - PYTHON: C:\Python36-x64
+      PYTHON_VERSION: 3.6
+      PYTHON_ARCH: 64
+
+    - PYTHON: C:\Python35
+      PYTHON_VERSION: 3.5
+      PYTHON_ARCH: 32
+
+    - PYTHON: C:\Python35-x64
+      PYTHON_VERSION: 3.5
+      PYTHON_ARCH: 64
+
+    - PYTHON: C:\Python27
+      PYTHON_VERSION: 2.7
+      PYTHON_ARCH: 32
+
+    - PYTHON: C:\Python27-x64
+      PYTHON_VERSION: 2.7
+      PYTHON_ARCH: 64
 
 install:
+    - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
+    - echo "Filesystem root:"
+    - dir C:\
+    - echo "Installed SDKs:"
+    - dir "C:/Program Files/Microsoft SDKs/Windows"
     # Fetch submodules
     - git submodule update --init --recursive
-
-    - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PYTHON%\Library\bin;%PATH%
-    - conda info
+    # Install new Python if necessary
+    - ps: .\multibuild\install_python.ps1
+    # Set up path
+    - SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
 
     # Check that we have the expected version and architecture for Python
     - python --version
+    - python -c "import sys, platform; print(sys.platform, platform.machine())"
     - python -c "import struct; print(struct.calcsize('P') * 8)"
 
-build_script:
-    # Install build requirements
-    - conda create --yes -n build_env python=%PYTHON_VERSION% %BUILD_DEPENDS%
-    - activate build_env
+    # Get a modern working environment
+    - python -m pip install -U pip setuptools wheel virtualenv
 
-    # build wheel:
+build_script:
+    - pip install -U %BUILD_DEPENDS%
     - cd %REPO_DIR%
     - git checkout %BUILD_COMMIT%
     - python setup.py bdist_wheel
 
 test_script:
-    # create test env
-    - conda create --yes -n test_env python=%PYTHON_VERSION% %TEST_DEPENDS%
-    - activate test_env
-
     # install from wheel
     - pip install --no-index --find-links dist/ %PACKAGE_NAME%
-
     - cd ..
+    - mkdir tmp_for_test
+    - cd tmp_for_test
+    - pip install -U %TEST_DEPENDS%
     - pytest --pyargs %PACKAGE_NAME%
+    - cd ..
 
 artifacts:
     - path: "%REPO_DIR%\\dist\\*"
