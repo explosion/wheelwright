@@ -8,6 +8,14 @@ import click
 # - parse stuff for linux build
 # - setup build, wait for finish, download files
 
+# Hack to make SSL work with older macOS Python builds
+# (In particular, as of 2018-08-24, this is necessary to allow multibuild's
+# py35 to connect to github without "[SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1
+# alert protocol version (_ssl.c:719)" errors.)
+if os.name == "darwin":
+    import urllib3.contrib.securetransport
+    urllib3.contrib.securetransport.inject_into_urllib3()
+
 def get_gh():
     if "GITHUB_TOKEN" in os.environ:
         token = os.environ["GITHUB_TOKEN"]
