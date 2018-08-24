@@ -1,5 +1,6 @@
 import os
 import os.path
+import sys
 import glob
 from github import Github
 import click
@@ -13,7 +14,8 @@ import click
 # (In particular, as of 2018-08-24, this is necessary to allow multibuild's
 # py35 to connect to github without "[SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1
 # alert protocol version (_ssl.c:719)" errors.)
-if os.name == "darwin":
+if sys.platform == "darwin":
+    print("injecting!")
     import urllib3.contrib.securetransport
     urllib3.contrib.securetransport.inject_into_urllib3()
 
