@@ -1,4 +1,3 @@
-import sys
 import os
 import glob
 from github import Github
@@ -40,7 +39,7 @@ def cli():
 def upload(repo_id, release_id, paths):
     release = get_release(repo_id, release_id)
     # https://pygithub.readthedocs.io/en/latest/github_objects/GitReleaseAsset.html
-    if sys.platform.startswith("win"):
+    if os.name == "nt":
         print("Glob expanding", paths)
         paths = [glob.glob(p) for p in paths]
         print("New paths", paths)
