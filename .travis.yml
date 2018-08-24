@@ -24,6 +24,11 @@ language: python
 sudo: required
 dist: xenial
 services: docker
+# Don't generate builds for tags
+# https://github.com/travis-ci/travis-ci/issues/8051#issuecomment-335517982
+# https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
+# https://docs.travis-ci.com/user/conditions-v1
+if: tag IS blank
 
 matrix:
   include:

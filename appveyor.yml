@@ -43,6 +43,9 @@ environment:
       PYTHON_VERSION: 2.7
       PYTHON_ARCH: 64
 
+# Don't generate builds for tags
+skip_tags: true
+
 install:
     - "ECHO %PYTHON% %PYTHON_VERSION% %PYTHON_ARCH%"
     - echo "Filesystem root:"
