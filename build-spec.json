@@ -1,10 +1,10 @@
 {
-    "clone-url": "https://github.com/explosion/preshed.git",
+    "clone-url": "https://github.com/explosion/murmurhash.git",
     "commit": "master",
-    "package-name": "preshed",
+    "package-name": "murmurhash",
     "upload-to": {
         "type": "github-release",
         "repo-id": "njsmith/cymem-wheels",
-        "release-id": "preshed-test"
+        "release-id": "murmurhash-test"
     }
 }
