@@ -4,7 +4,7 @@ env:
         # The explosion.ai packages all have a requirements.txt with
         # all their build + test requirements.
         - BUILD_DEPENDS="-r checkout/requirements.txt"
-        - TEST_DEPENDS="pytest -r checkout/requirements.txt"
+        - TEST_DEPENDS="-r checkout/requirements.txt"
         - PLAT=x86_64
         - UNICODE_WIDTH=32
         - WHEELHOUSE_UPLOADER_USERNAME=travis-worker

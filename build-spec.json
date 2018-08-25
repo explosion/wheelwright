@@ -1,6 +1,6 @@
 {
     "clone-url": "https://github.com/explosion/cymem.git",
-    "commit": "1.31.2",
+    "commit": "master",
     "package-name": "cymem",
     "upload-to": {
         "type": "github-release",
