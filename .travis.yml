@@ -96,5 +96,5 @@ script:
     - install_run $PLAT
 
 after_success:
-    - ls ${TRAVIS_BUILD_DIR}/wheelhouse/
+    - pip install -U pygithub click
     - python mb.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
