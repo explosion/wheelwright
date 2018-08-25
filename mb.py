@@ -42,8 +42,8 @@ def get_release(repo_id, release_id):
 
 
 def get_build_spec(build_spec_path):
-    with open(json_path) as json_file:
-        return json.load(json_file)
+    with open(build_spec_path) as f:
+        return json.load(f)
 
 
 ################################################################
@@ -62,12 +62,12 @@ def cli():
 )
 def build_spec_to_shell(build_spec):
     bs = get_build_spec(build_spec)
-    sys.stdout.write(dedent("""
-        BUILD_SPEC_CLONE_URL="{clone-url}"
-        BUILD_SPEC_COMMIT="{commit}"
-        BUILD_SPEC_PACKAGE_NAME="{package-name}"
-        """.format(**bs)
-    ))
+    sys.stdout.write(
+        "BUILD_SPEC_CLONE_URL='{clone-url}'\n"
+        "BUILD_SPEC_COMMIT='{commit}'\n"
+        "BUILD_SPEC_PACKAGE_NAME='{package-name}'\n"
+        .format(**bs)
+    )
 
 
 @cli.command()
