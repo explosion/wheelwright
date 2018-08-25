@@ -79,7 +79,6 @@ matrix:
         - MB_PYTHON_VERSION=3.7
 
 before_install:
-    - set -x
     - pip install -U pygithub click
     - eval $(python ./mb.py build_spec_to_shell build-spec.json)
     - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
