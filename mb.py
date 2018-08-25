@@ -75,9 +75,9 @@ def build_spec_to_shell(json_path):
     with open(json_path) as json_file:
         config = json.load(json_file)
     sys.stdout.write(dedent("""
-        BUILD_SPEC_CLONE_URL={clone-url}
-        BUILD_SPEC_COMMIT={commit}
-        BUILD_SPEC_PACKAGE_NAME={package-name}
+        BUILD_SPEC_CLONE_URL="{clone-url}"
+        BUILD_SPEC_COMMIT="{commit}"
+        BUILD_SPEC_PACKAGE_NAME="{package-name}"
         """.format(**config)
     ))
 
