@@ -5,6 +5,6 @@
     "upload-to": {
         "type": "github-release",
         "repo-id": "njsmith/cymem-wheels",
-        "release-id": "test-release-2"
+        "release-id": "cymem-test"
     }
 }
