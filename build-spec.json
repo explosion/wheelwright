@@ -1,10 +1,10 @@
 {
-    "clone-url": "https://github.com/explosion/thinc.git",
+    "clone-url": "https://github.com/explosion/spaCy.git",
     "commit": "master",
-    "package-name": "thinc",
+    "package-name": "spacy",
     "upload-to": {
         "type": "github-release",
         "repo-id": "njsmith/cymem-wheels",
-        "release-id": "thinc-test"
+        "release-id": "spacy-test"
     }
 }
