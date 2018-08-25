@@ -5,7 +5,7 @@ import glob
 import json
 from textwrap import dedent
 import subprocess
-from contextmanager import contextlib
+from contextlib import contextmanager
 
 from github import Github
 import click
@@ -72,7 +72,7 @@ def build_spec_to_shell(build_spec):
     )
 
 
-def _do_upload(bs):
+def _do_upload(bs, paths):
     upload_config = bs["upload-to"]
     assert upload_config["type"] == "github-release"
     release = get_release(upload_config["repo-id"], upload_config["release-id"])
@@ -104,7 +104,7 @@ def _do_upload(bs):
 )
 def upload(build_spec, paths):
     bs = get_build_spec(build_spec)
-    _do_upload(bs)
+    _do_upload(bs, paths)
 
 
 @contextmanager
@@ -135,11 +135,12 @@ def appveyor_build(build_spec):
     with cd("checkout"):
         run(["git", "checkout", bs["commit"]])
         run(["python", "setup.py", "bdist_wheel"])
-    run(["pip", "install", glob.glob("checkout\\dist\\*.whl")])
+    wheels = glob.glob("checkout\\dist\\*.whl")
+    run(["pip", "install"] + wheels)
     os.mkdir("tmp_for_test")
     with cd("tmp_for_test"):
         run(["pytest", "--pyargs", bs["package-name"]])
-    _do_upload(bs)
+    _do_upload(bs, wheels)
 
 
 @cli.command()
