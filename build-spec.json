@@ -1,10 +1,10 @@
 {
-    "clone-url": "https://github.com/explosion/cymem.git",
+    "clone-url": "https://github.com/explosion/preshed.git",
     "commit": "master",
-    "package-name": "cymem",
+    "package-name": "preshed",
     "upload-to": {
         "type": "github-release",
         "repo-id": "njsmith/cymem-wheels",
-        "release-id": "cymem-test"
+        "release-id": "preshed-test"
     }
 }
