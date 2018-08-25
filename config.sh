@@ -9,6 +9,7 @@ function run_tests {
     # This runs in /io/tmp_for_test, so the actual
     if [ -z "${BUILD_SPEC_PACKAGE_NAME}" ]; then
         pushd ..
+        pip install -U pygithub click
         eval $(python ./mb.py build_spec_to_shell build-spec.json)
         popd
     fi
