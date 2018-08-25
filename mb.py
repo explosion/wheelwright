@@ -30,6 +30,7 @@ def get_gh():
             token = f.read().strip()
     return Github(token)
 
+
 def get_release(repo_id, release_id):
     gh = get_gh()
     repo = gh.get_repo(repo_id)
@@ -39,18 +40,50 @@ def get_release(repo_id, release_id):
         raise RuntimeError("release not found:", release_id)
     return release
 
+
+def get_build_spec(build_spec_path):
+    with open(json_path) as json_file:
+        return json.load(json_file)
+
+
+################################################################
+
+
 @click.group()
 def cli():
     pass
 
+
 @cli.command()
-@click.option("--repo-id", required=True)
-@click.option("--release-id", required=True)
+@click.argument(
+    "build_spec",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True
+)
+def build_spec_to_shell(build_spec):
+    bs = get_build_spec(build_spec)
+    sys.stdout.write(dedent("""
+        BUILD_SPEC_CLONE_URL="{clone-url}"
+        BUILD_SPEC_COMMIT="{commit}"
+        BUILD_SPEC_PACKAGE_NAME="{package-name}"
+        """.format(**bs)
+    ))
+
+
+@cli.command()
+@click.option(
+    "--build-spec",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True
+)
 @click.argument(
     "paths", nargs=-1, type=click.Path(exists=True)
 )
-def upload(repo_id, release_id, paths):
-    release = get_release(repo_id, release_id)
+def upload(build_spec, paths):
+    bs = get_build_spec(build_spec)
+    upload_config = bs["upload-to"]
+    assert upload_config["type"] == "github-release"
+    release = get_release(upload_config["repo_id"], upload_config["release_id"])
     # This is a gross hack, to work around the lack of globbing on Windows
     # (see https://github.com/pallets/click/issues/1096)
     # We accept either individual files, or directories, and for directories,
@@ -66,21 +99,6 @@ def upload(repo_id, release_id, paths):
             asset = release.upload_asset(actual_path)
             print(asset)
             print(asset.name, asset.id, asset.state, asset.created_at)
-
-@cli.command()
-@click.argument(
-    "json_path", type=click.Path(exists=True, dir_okay=False), required=True
-)
-def build_spec_to_shell(json_path):
-    with open(json_path) as json_file:
-        config = json.load(json_file)
-    sys.stdout.write(dedent("""
-        BUILD_SPEC_CLONE_URL="{clone-url}"
-        BUILD_SPEC_COMMIT="{commit}"
-        BUILD_SPEC_PACKAGE_NAME="{package-name}"
-        """.format(**config)
-    ))
-
 
 @cli.command()
 @click.option("--repo-id", required=True)

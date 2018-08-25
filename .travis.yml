@@ -97,4 +97,4 @@ script:
 
 after_success:
     - ls ${TRAVIS_BUILD_DIR}/wheelhouse/
-    - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release ${TRAVIS_BUILD_DIR}/wheelhouse
+    - python mb.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
