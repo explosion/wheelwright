@@ -109,7 +109,7 @@ def upload(build_spec, paths):
 
 @contextmanager
 def cd(d):
-    orig_dir = os.getpwd()
+    orig_dir = os.getcwd()
     try:
         os.chdir(d)
         yield
