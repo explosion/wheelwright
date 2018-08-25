@@ -1,14 +1,10 @@
 env:
     global:
-        - REPO_DIR=cymem
-        # Commit from your-project that you want to build
-        - BUILD_COMMIT=1.31.2
-        # pip dependencies to _build_ your project
-        - BUILD_DEPENDS="Cython"
-        # pip dependencies to _test_ your project.  Include any dependencies
-        # that you need, that are also specified in BUILD_DEPENDS, this will be
-        # a separate install.
-        - TEST_DEPENDS="pytest"
+        - REPO_DIR=checkout
+        # The explosion.ai packages all have a requirements.txt with
+        # all their build + test requirements.
+        - BUILD_DEPENDS="-r checkout/requirements.txt"
+        - TEST_DEPENDS="-r checkout/requirements.txt"
         - PLAT=x86_64
         - UNICODE_WIDTH=32
         - WHEELHOUSE_UPLOADER_USERNAME=travis-worker
@@ -83,6 +79,9 @@ matrix:
         - MB_PYTHON_VERSION=3.7
 
 before_install:
+    - eval $(python ./mb.py build_spec_to_shell build-spec.json)
+    - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
+    - export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - before_install

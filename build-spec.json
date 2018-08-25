@@ -1,0 +1,10 @@
+{
+    "clone-url": "https://github.com/explosion/cymem.git",
+    "commit": "1.31.2",
+    "package-name": "cymem",
+    "upload-to": {
+        "type": "github-release",
+        "repo-id": "explosion/cymem-wheels",
+        "release-id": "test-release-2"
+    }
+}

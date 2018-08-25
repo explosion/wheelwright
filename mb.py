@@ -2,6 +2,9 @@ import os
 import os.path
 import sys
 import glob
+import json
+from textwrap import dedent
+
 from github import Github
 import click
 
@@ -15,7 +18,6 @@ import click
 # py35 to connect to github without "[SSL: TLSV1_ALERT_PROTOCOL_VERSION] tlsv1
 # alert protocol version (_ssl.c:719)" errors.)
 if sys.platform == "darwin":
-    print("injecting!")
     import urllib3.contrib.securetransport
     urllib3.contrib.securetransport.inject_into_urllib3()
 
@@ -64,6 +66,21 @@ def upload(repo_id, release_id, paths):
             asset = release.upload_asset(actual_path)
             print(asset)
             print(asset.name, asset.id, asset.state, asset.created_at)
+
+@cli.command()
+@click.argument(
+    "json_path", type=click.Path(exists=True, dir_okay=False), required=True
+)
+def build_spec_to_shell(json_path):
+    with open(json_path) as json_file:
+        config = json.load(json_file)
+    sys.stdout.write(dedent("""
+        BUILD_SPEC_CLONE_URL={clone-url}
+        BUILD_SPEC_COMMIT={commit}
+        BUILD_SPEC_PACKAGE_NAME={package-name}
+        """.format(**config)
+    ))
+
 
 @cli.command()
 @click.option("--repo-id", required=True)
