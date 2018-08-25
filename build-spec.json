@@ -1,10 +1,10 @@
 {
-    "clone-url": "https://github.com/explosion/murmurhash.git",
+    "clone-url": "https://github.com/explosion/thinc.git",
     "commit": "master",
-    "package-name": "murmurhash",
+    "package-name": "thinc",
     "upload-to": {
         "type": "github-release",
         "repo-id": "njsmith/cymem-wheels",
-        "release-id": "murmurhash-test"
+        "release-id": "thinc-test"
     }
 }
