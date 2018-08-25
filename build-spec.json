@@ -4,7 +4,7 @@
     "package-name": "cymem",
     "upload-to": {
         "type": "github-release",
-        "repo-id": "explosion/cymem-wheels",
+        "repo-id": "njsmith/cymem-wheels",
         "release-id": "test-release-2"
     }
 }

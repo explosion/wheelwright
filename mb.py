@@ -83,7 +83,7 @@ def upload(build_spec, paths):
     bs = get_build_spec(build_spec)
     upload_config = bs["upload-to"]
     assert upload_config["type"] == "github-release"
-    release = get_release(upload_config["repo_id"], upload_config["release_id"])
+    release = get_release(upload_config["repo-id"], upload_config["release-id"])
     # This is a gross hack, to work around the lack of globbing on Windows
     # (see https://github.com/pallets/click/issues/1096)
     # We accept either individual files, or directories, and for directories,
