@@ -83,7 +83,7 @@ before_install:
     - eval $(python ./mb.py build_spec_to_shell build-spec.json)
     - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
     - export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
-    - echo "function run_tests { pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME} }" > config.sh
+    - printf "function run_tests {\n  pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME} \n}" > config.sh
     - source multibuild/common_utils.sh
     - source multibuild/travis_steps.sh
     - before_install
