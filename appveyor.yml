@@ -68,25 +68,5 @@ install:
     - python -m pip install -U pip setuptools wheel virtualenv
 
 build_script:
-    - pip install -U %BUILD_DEPENDS%
-    - cd %REPO_DIR%
-    - git checkout %BUILD_COMMIT%
-    - python setup.py bdist_wheel
-    - cd ..
-
-test_script:
-    # install from wheel
-    - pip install --no-index --find-links %REPO_DIR%/dist/ %PACKAGE_NAME%
-    - mkdir tmp_for_test
-    - cd tmp_for_test
-    - pip install -U %TEST_DEPENDS%
-    - pytest --pyargs %PACKAGE_NAME%
-    - cd ..
-
-artifacts:
-    - path: "%REPO_DIR%\\dist\\*"
-
-on_success:
-  - pip install -U pygithub click
-  - dir
-  - python mb.py upload --repo-id njsmith/cymem-wheels --release-id test-release %REPO_DIR%/dist
+    - pip install -U pygithub click
+    - python mb.py appveyor_build --build-spec build-spec.json

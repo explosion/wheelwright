@@ -4,6 +4,8 @@ import sys
 import glob
 import json
 from textwrap import dedent
+import subprocess
+from contextmanager import contextlib
 
 from github import Github
 import click
@@ -70,17 +72,7 @@ def build_spec_to_shell(build_spec):
     )
 
 
-@cli.command()
-@click.option(
-    "--build-spec",
-    type=click.Path(exists=True, dir_okay=False),
-    required=True
-)
-@click.argument(
-    "paths", nargs=-1, type=click.Path(exists=True)
-)
-def upload(build_spec, paths):
-    bs = get_build_spec(build_spec)
+def _do_upload(bs):
     upload_config = bs["upload-to"]
     assert upload_config["type"] == "github-release"
     release = get_release(upload_config["repo-id"], upload_config["release-id"])
@@ -99,6 +91,56 @@ def upload(build_spec, paths):
             asset = release.upload_asset(actual_path)
             print(asset)
             print(asset.name, asset.id, asset.state, asset.created_at)
+
+
+@cli.command()
+@click.option(
+    "--build-spec",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True
+)
+@click.argument(
+    "paths", nargs=-1, type=click.Path(exists=True)
+)
+def upload(build_spec, paths):
+    bs = get_build_spec(build_spec)
+    _do_upload(bs)
+
+
+@contextmanager
+def cd(d):
+    orig_dir = os.getpwd()
+    try:
+        os.chdir(d)
+        yield
+    finally:
+        os.chdir(orig_dir)
+
+
+def run(cmd):
+    print("Running:", cmd)
+    subprocess.check_call(cmd)
+
+
+@cli.command()
+@click.option(
+    "--build-spec",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True
+)
+def appveyor_build(build_spec):
+    bs = get_build_spec(build_spec)
+    run(["git", "clone", bs["clone-url"], "checkout"])
+    run(["pip", "install", "-Ur", "checkout\\requirements.txt"])
+    with cd("checkout"):
+        run(["git", "checkout", bs["commit"]])
+        run(["python", "setup.py", "bdist_wheel"])
+    run(["pip", "install", glob.glob("checkout\\dist\\*.whl")])
+    os.mkdir("tmp_for_test")
+    with cd("tmp_for_test"):
+        run(["pytest", "--pyargs", bs["package-name"]])
+    _do_upload(bs)
+
 
 @cli.command()
 @click.option("--repo-id", required=True)
