@@ -10,7 +10,7 @@ AI projects.
 
 Make a local clone of this repo:
 
-```sh
+```console
 $ git clone https://github.com/explosion/magic-build-repo.git
 ```
 
@@ -40,7 +40,7 @@ Security notes:
 Next go into your `magic-build-repo` checkout, and create a file
 called `github-secret-token.txt`. Write the gibberish into this file:
 
-```sh
+```console
 $ cd magic-build-repo
 $ my-editor github-secret-token.txt
 $ cat github-secret-token.txt
@@ -60,7 +60,7 @@ Now you're ready to build wheels.
 If you want to build wheels for the `v1.31.2` tag inside the
 `explosion/cymem` repository, then run:
 
-```sh
+```console
 $ cd magic-build-repo
 $ python mb.py magic-build cymem v1.31.2
 ```
@@ -68,7 +68,7 @@ $ python mb.py magic-build cymem v1.31.2
 Eventually, if everything goes well, you'll end up with wheels in a
 directory named `cymem-v1.31.2-wheels`:
 
-```sh
+```console
 $ ls cymem-v1.31.2-wheels
 cymem-1.32.1-cp27-cp27mu-manylinux1_i686.whl
 cymem-1.32.1-cp27-cp27mu-manylinux1_x86_64.whl
@@ -77,7 +77,7 @@ cymem-1.32.1-cp27-cp27mu-manylinux1_x86_64.whl
 
 Now you can upload them to PyPI:
 
-```sh
+```console
 $ twine upload cymem-v1.31.2-wheels/*.whl
 ```
 
@@ -118,7 +118,7 @@ about what went wrong.
 If for some reason you want to download the wheels from an existing
 release, you can do that with:
 
-```sh
+```console
 $ python mb.py download-release-assets cymem-v1.31.2-wheels
 ```
 
@@ -138,7 +138,7 @@ up between the two builds.
 
 Essentially we run:
 
-```sh
+```console
 # Setup
 $ git clone https://github.com/explosion/PROJECT-NAME.git checkout
 $ cd checkout
@@ -197,7 +197,7 @@ multibuild is included as a git submodule, in the `multibuild/`
 directory. You might want to update that submodule occasionally to
 pull in new multibuild fixes:
 
-```sh
+```console
 $ cd multibuild
 $ git pull
 $ cd ..
@@ -248,7 +248,7 @@ And for Travis, we need to get a copy of the `travis` program, and run
 have to include the `GITHUB_SECRET_TOKEN=` in the encrypted text). On
 Ubuntu, I was able to get it working by doing:
   
-```sh
+```console
 $ sudo apt install ruby-dev
 $ gem install --user-install travis
 $ ~/.gem/ruby/*/bin/travis encrypt GITHUB_SECRET_TOKEN=f7d4d475c85ba2ae9557391279d1fc2368f95c38
