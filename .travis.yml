@@ -92,5 +92,5 @@ script:
     - install_run $PLAT
 
 after_success:
-    - pip install -U ./mb-requirements.txt
+    - pip install -Ur ./mb-requirements.txt
     - python ./mb.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
