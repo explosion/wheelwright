@@ -257,7 +257,9 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
                 display_name = STATUSES[status.context]
                 display_name_to_state[display_name] = status.state
                 if display_name not in showed_urls:
-                    print("  {}: {}".format(display_name, status.target_url))
+                    print("  {} logs: {}".format(
+                        display_name, status.target_url
+                    ))
                     showed_urls.add(display_name)
         displays = [
             "[{} - {}]".format(display_name, state)
