@@ -7,6 +7,8 @@ STATUSES = {
     "continuous-integration/appveyor/branch": "appveyor",
     "continuous-integration/travis-ci/push": "travis",
 }
+FINAL_STATES = {"error", "failure", "success"}
+BAD_STATES = {"error", "failure"}
 
 import os
 import os.path
@@ -263,21 +265,21 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
         ]
         print(" ".join(displays))
         pending = False
-        succeeded = True
+        failed = False
         # The Github states are: "error", "failure", "success", "pending"
         for state in display_name_to_state.values():
-            if state not in {"error", "failure", "success"}:
+            if state not in FINAL_STATES:
                 pending = True
-            if state != "success":
-                succeeded = False
-        if not pending:
+            if state in BAD_STATES:
+                failed = True
+        if failed or not pending:
             break
 
-    if succeeded:
-        _download_release_assets(magic_build_repo_id, release_name)
-    else:
+    if failed:
         print("*** Failed! ***")
         sys.exit(1)
+    else:
+        _download_release_assets(magic_build_repo_id, release_name)
 
 
 @cli.command(name="download-release-assets")
