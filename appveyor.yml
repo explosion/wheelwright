@@ -62,4 +62,4 @@ install:
 
 build_script:
     - pip install -Ur mb-requirements.txt
-    - python mb.py appveyor_build --build-spec build-spec.json
+    - python -u mb.py appveyor_build --build-spec build-spec.json
