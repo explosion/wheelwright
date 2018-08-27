@@ -1,14 +1,4 @@
 environment:
-  global:
-    REPO_DIR: cymem
-    PACKAGE_NAME: cymem
-    BUILD_COMMIT: 1.31.2
-    BUILD_DEPENDS: "Cython"
-    TEST_DEPENDS: "pytest"
-    GITHUB_TOKEN:
-        secure:
-            gzxKbebPRLHyiNddeeczm+7idVeQosvvFg08mOJIuD9C9mTYOcQTGVWScN5/FPgv
-
   matrix:
     - PYTHON: C:\Python37
       PYTHON_VERSION: 3.7
@@ -42,8 +32,11 @@ environment:
       PYTHON_VERSION: 2.7
       PYTHON_ARCH: 64
 
-# Don't generate builds for tags
+# Don't generate builds for tags, PRs, or the master branch
 skip_tags: true
+branches:
+  only:
+    - /^branch-for-/
 
 install:
     - echo "Filesystem root:"
@@ -68,5 +61,5 @@ install:
     - python -m pip install -U pip setuptools wheel virtualenv
 
 build_script:
-    - pip install -U pygithub click
+    - pip install -Ur mb-requirements.txt
     - python mb.py appveyor_build --build-spec build-spec.json
