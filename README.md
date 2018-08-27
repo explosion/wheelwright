@@ -1,7 +1,7 @@
 # What is this?
 
-This is a magic repo that builds release wheels for explosion.ai
-projects.
+This is a magic Github repo that builds release wheels for Explosion
+AI projects.
 
 
 # How do I use it to build wheels?
@@ -239,3 +239,15 @@ provider web interfaces:
 
 Specifically, you need a token with `repo` access to this repo, and it
 should be stored in an envvar named `GITHUB_SECRET_TOKEN`.
+
+
+# I'm not Explosion AI, but I want to use this too!
+
+It's all under the MIT license, so feel free! It would be great to
+somehow convert this into a generic reusable piece of infrastructure,
+though it's not entirely clear how given how Rube-Goldergian the whole
+thing is – you can't just slap it up on PyPI. (Maybe a cookiecutter
+template that generates a repo like this?) In the mean time, you can
+probably get something working by forking the repo, setting up
+Travis/Appveyor, and then editing the magic variables at the top of
+`mb.py` to point to your fork.
