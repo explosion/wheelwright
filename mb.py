@@ -1,5 +1,6 @@
 MAGIC_BUILD_REPO = "njsmith/cymem-wheels"
-DEFAULT_GITHUB_CLONE_TEMPLATE = "https://github.com/explosion/{}.git"
+# We substitute the project name into this string to get the URL to clone:
+DEFAULT_CLONE_TEMPLATE = "https://github.com/explosion/{}.git"
 
 # All the statuses we want to wait for
 # maps github name -> our display name
@@ -186,7 +187,7 @@ def _download_release_assets(repo_id, release_id):
 @click.argument("commit", required=True)
 def magic_build(magic_build_repo_id, clone_url, package_name, commit):
     if clone_url is None:
-        clone_url = DEFAULT_GITHUB_CLONE_TEMPLATE.format(package_name)
+        clone_url = DEFAULT_CLONE_TEMPLATE.format(package_name)
 
     repo = get_gh().get_repo(magic_build_repo_id)
 
@@ -245,7 +246,7 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
     print("Waiting for build to complete...")
     # get_combined_status needs a Commit, not a GitCommit
     our_commit = repo.get_commit(our_gitcommit.sha)
-    showed_urls = set()
+    showed_urls = {}
     while True:
         time.sleep(10)
         combined_status = our_commit.get_combined_status()
@@ -260,7 +261,7 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
                     print("  {} logs: {}".format(
                         display_name, status.target_url
                     ))
-                    showed_urls.add(display_name)
+                    showed_urls[display_name] = status.target_url
         displays = [
             "[{} - {}]".format(display_name, state)
             for (display_name, state) in display_name_to_state.items()
@@ -279,6 +280,8 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
 
     if failed:
         print("*** Failed! ***")
+        for display_name, url in showed_urls.items():
+            print("  {} logs: {}".format(display_name, url))
         sys.exit(1)
     else:
         _download_release_assets(magic_build_repo_id, release_name)
