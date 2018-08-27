@@ -211,34 +211,71 @@ configuration out of the `build-spec.json` file and using it to
 configure various settings.
 
 Most of the actual configuration is in the `.travis.yml` and
-`appveyor.yml` files. They also rely on the `mb.py` script to perform
-various actions, ranging from parsing the `build-spec.json` file to
-uploading wheels to (on Windows) running the whole build process.
+`appveyor.yml` files. These use the `mb.py` script to perform various
+actions, ranging from parsing the `build-spec.json` file, to uploading
+wheels, to (on Windows) coordinating the whole build/test process.
 
-Travis and Appveyor are both configured to not build tags (because we
-don't want our Github releases to trigger builds), and to only build
-branches matching the pattern `branch-for-*` (because we don't want
-commits to `master` to trigger builds). XX Travis also has 
+Unfortunately, there are currently no automated tests. Sorry :-(. They
+would need Github permissions and all kinds of things.
 
-Unfortunately, there are no automated tests. Sorry :-(. They would
-need Github permissions and all kinds of things.
 
 ## Secrets
 
 To upload the wheels, the CI builds need access to a Github token that
-has write permissions on this repository.
+has write permissions on this repository. Specifically, you need a
+token with `repo` access to this repo, and it should be stored in an
+envvar named `GITHUB_SECRET_TOKEN`. To do this, we use
+[Appveyor's](https://www.appveyor.com/docs/build-configuration/#secure-variables)
+and
+[Travis's](https://docs.travis-ci.com/user/environment-variables/#defining-encrypted-variables-in-travisyml)
+support for encrypted environment variables.
 
-It would be possible to configure this directly in the `.yml` files
-using encrypted envvars, but it's simpler to set it up through the CI
-provider web interfaces:
+First, create your Github token (as in the "setup" section above).
+Then, for Appveyor:
 
-* Travis: https://travis-ci.org/explosion/magic-build-repo/settings
-  (make sure **not** to enable the "Display value in build log" option)
+* Log in as whichever Appveyor user initially enabled Appveyor for the
+  magic build repo
 
-* Appveyor: https://ci.appveyor.com/project/explosion/magic-build-repo/settings/environment
+* Go to https://ci.appveyor.com/tools/encrypt
 
-Specifically, you need a token with `repo` access to this repo, and it
-should be stored in an envvar named `GITHUB_SECRET_TOKEN`.
+* Paste in the token (just the token, do **not** include the
+  `GITHUB_SECRET_TOKEN=` part)
+
+* Copy the "Encrypted value" it gives you back into `appveyor.yml`
+
+And for Travis, we need to get a copy of the `travis` program, and run
+`travis encrypt GITHUB_SECRET_TOKEN=<...>` (notice that here you *do*
+have to include the `GITHUB_SECRET_TOKEN=` in the encrypted text). On
+Ubuntu, I was able to get it working by doing:
+  
+```sh
+$ sudo apt install ruby-dev
+$ gem install --user-install travis
+$ ~/.gem/ruby/*/bin/travis encrypt GITHUB_SECRET_TOKEN=f7d4d475c85ba2ae9557391279d1fc2368f95c38
+```
+
+Then copy the gibberish it gives you into `.travis.yml`.
+
+
+## Other CI configuration
+
+Travis and Appveyor are both configured to not build tags (because we
+don't want our Github releases to trigger builds), and to only build
+branches matching the pattern `branch-for-*` (because we don't want
+commits to `master` to trigger builds). This is all done through the
+`.yml` files.
+
+On Travis, we can also use the `.yml` to disable building of PRs, and
+so we do. On Appveyor, though this, isn't possible! In fact, Appveyor
+simply doesn't provide any way to disable PR builds in general. But,
+there is a hack: if we stop Github from telling Appveyor about PRs,
+then it can't build them.
+
+Therefore, after setting up Appveyor, we go the Github settings for
+our repository, in [the Webhooks
+section](https://github.com/explosion/magic-build-repo/settings/hooks),
+click "Edit" on the Appveyor webhook, **un**check the box labeled
+"Pull requests", and then click "Update webhook" to save our settings.
 
 
 # I'm not Explosion AI, but I want to use this too!
@@ -248,6 +285,16 @@ somehow convert this into a generic reusable piece of infrastructure,
 though it's not entirely clear how given how Rube-Goldergian the whole
 thing is – you can't just slap it up on PyPI. (Maybe a cookiecutter
 template that generates a repo like this?) In the mean time, you can
-probably get something working by forking the repo, setting up
-Travis/Appveyor, and then editing the magic variables at the top of
-`mb.py` to point to your fork.
+probably get something working by:
+
+* forking the repo
+
+* enabling Travis/Appveyor on your new repo
+
+* manually disabling PR builds for Appveyor (see above)
+
+* adding your encrypted Github token to `.travis.yml` and
+  `appveyor.yml` (see above)
+
+* editing the magic variables at the top of `mb.py` to point to your
+  repo

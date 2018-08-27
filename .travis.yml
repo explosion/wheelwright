@@ -8,6 +8,8 @@ env:
         - PLAT=x86_64
         - UNICODE_WIDTH=32
         - WHEELHOUSE_UPLOADER_USERNAME=travis-worker
+        # The encrypted GITHUB_SECRET_TOKEN
+        - secure: "q1rncBN4KMzrTa3LLh767vo+Zb/uWs1EGdORk4EnOQBmV27j2TACWwywSQtt1RAs9jUGFsc9lC6Wm2NhaeO56PwcVqqzqp+w2l6xDKJ8pdOHiHotf7AwIFWDtZM+ibr32pA5Y2yMpPc4yjkvyqz6FkFw1qQXi1R7MBfsOTnkYFUwGsxYgRiSzdfWEouxjsWqEKHnE5t17PySIGMpKMtJzeEO6JehayQ0OiR4dBdJBeycZzwIv4uQ/GqS69vrW9Y8CW6K8eTeNIgv5opvR5cSaWEzmNpAIvWDM3gWlDY0TfMiQ734APQ/RuUguCFchpVyLnlU3TMxkIa066hzofTv0iJBTqwVrEQnXonyeHx6iLk3zdvrm3y2RWsHkcD2B02gMR4H4aLLrxnWeYTrVQUtZAKw7Z7uYZdl8Iy+PoP1C0weCsoFIdt1vadwu+D0d0wYYsuQOWyVdvUpjVxX2Y+MZ9QUPxfclaEVz74KXjynfAMieYtCgwDaHYZa03QnfNq3fevXukSJZrNALtRdXvRp5gjB01cNeC1t3zkv3Os1CGV1S20MF5VjamtZe2ft/IJICzQoRaWjU5hETCh6ejN7W4rYKc9g90hfSyU5qDDLEUPQ3y1jjUrQ4hM7RCL7rBNIa5gJPrjJeml3jOgWhfnlsbHJvLYL3kbOgFMnI2YmhEw="
 
 language: python
 sudo: required
