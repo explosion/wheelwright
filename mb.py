@@ -1,4 +1,4 @@
-MAGIC_BUILD_REPO = "njsmith/cymem-wheels"
+MAGIC_BUILD_REPO = "explosion/magic-build-repo"
 # We substitute the project name into this string to get the URL to clone:
 DEFAULT_CLONE_TEMPLATE = "https://github.com/explosion/{}.git"
 
