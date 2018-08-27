@@ -16,7 +16,7 @@ services: docker
 # Don't generate builds for tags, PRs, or the master branch
 # https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
 # https://docs.travis-ci.com/user/conditions-v1
-if: type IS push AND tag IS blank AND branch =~ /^branch-for-/
+if: type IS push AND tag IS blank AND branch =~ /^branch-for-.*$/
 
 matrix:
   include:
