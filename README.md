@@ -98,14 +98,14 @@ commit you want to build.
 
 When Travis and Appveyor see this branch, they spring into action, and
 start build jobs running on a variety of architectures and Python
-versions. They're configured to the `build-spec.json` file, and then
+versions. These build jobs read the `build-spec.json` file, and then
 check out the specified project/revision, build it, test it, and
 finally attach the resulting wheel to the Github release we created
 earlier.
 
 The `magic-build` command waits until Travis and Appveyor have
-finished. If they succeeded, then it downloads all the wheels from the
-Github release into a local directory, ready for uploading to PyPI.
+finished. If they succeed, it downloads all the wheels from the Github
+release into a local directory, ready for uploading to PyPI.
 
 
 # What if something goes wrong?
@@ -158,7 +158,8 @@ $ pytest --pyargs PROJECT-NAME
 
 Some things to note:
 
-The build/test phases currently have varying levels of isolation:
+The build/test phases currently have varying levels of isolation from
+each other:
 
 * On Windows, they use the same Python environment.
 * On macOS, they use different virtualenvs.
@@ -208,7 +209,9 @@ Multibuild was originally designed to do Linux and macOS builds, and
 with the idea that you'd create a separate repo for each project with
 custom configuration. We kluge it into working for us by reading
 configuration out of the `build-spec.json` file and using it to
-configure various settings.
+configure various settings. On Windows we use Multibuild's
+`install_python` script, both otherwise the Windows code is all
+custom.
 
 Most of the actual configuration is in the `.travis.yml` and
 `appveyor.yml` files. These use the `mb.py` script to perform various
@@ -222,8 +225,8 @@ would need Github permissions and all kinds of things.
 ## Secrets
 
 To upload the wheels, the CI builds need access to a Github token that
-has write permissions on this repository. Specifically, you need a
-token with `repo` access to this repo, and it should be stored in an
+has write permissions on this repository. Specifically, they need a
+token with `repo` access to this repo, and expect to find it in an
 envvar named `GITHUB_SECRET_TOKEN`. To do this, we use
 [Appveyor's](https://www.appveyor.com/docs/build-configuration/#secure-variables)
 and
