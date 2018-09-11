@@ -1,22 +1,8 @@
-MAGIC_BUILD_REPO = "explosion/magic-build-repo"
-# We substitute the project name into this string to get the URL to clone:
-DEFAULT_CLONE_TEMPLATE = "https://github.com/explosion/{}.git"
-
-# All the statuses we want to wait for
-# maps github name -> our display name
-STATUSES = {
-    "continuous-integration/appveyor/branch": "appveyor",
-    "continuous-integration/travis-ci/push": "travis",
-}
-FINAL_STATES = {"error", "failure", "success"}
-BAD_STATES = {"error", "failure"}
-
 import os
 import os.path
 import sys
 import glob
 import json
-from textwrap import dedent
 import subprocess
 from contextlib import contextmanager
 import time
@@ -24,6 +10,37 @@ import time
 import github
 import click
 import requests
+from pathlib import Path
+
+
+LOGO = """
+¸.*‘.¸¸ . ✶*¨*. ¸ .✫*¨*.¸¸.✶*¨‘*✶
+        ★  MAGIC BUILD  ★
+¸.*‘.¸¸ . ✶*¨*. ¸ .✫*¨*.¸¸.✶*¨‘*✶
+"""
+
+ROOT = Path(os.environ.get('MAGIC_BUILD_ROOT', Path(__file__).parent))
+WHEELS_DIR = Path(os.environ.get('MAGIC_WHEELS_DIR', Path(__file__).parent / 'wheels'))
+SECRET_FILE = 'github-secret-token.txt'
+
+# We substitute the project name into this string to get the URL to clone:
+DEFAULT_CLONE_TEMPLATE = "https://github.com/{}.git"
+
+# All the statuses we want to wait for, maps github name -> our display name
+STATUSES = {
+    "continuous-integration/appveyor/branch": "Appveyor",
+    "continuous-integration/travis-ci/push": "Travis",
+}
+NA_STATE = "n/a"
+FINAL_STATES = {"error", "failure", "success"}
+BAD_STATES = {"error", "failure"}
+STATUS_COLORS = {
+    'pending': 'blue',
+    'success': 'green',
+    'failure': 'red',
+    'error': 'red'
+}
+
 
 #github.enable_console_debug_logging()
 
@@ -37,19 +54,15 @@ if sys.platform == "darwin":
 
 
 def get_gh():
-    token_path = os.path.join(
-        os.path.dirname(__file__), "github-secret-token.txt"
-    )
+    token_path = ROOT / SECRET_FILE
     if "GITHUB_SECRET_TOKEN" in os.environ:
         token = os.environ["GITHUB_SECRET_TOKEN"]
-    elif os.path.exists(token_path):
-        with open("github-secret-token.txt") as f:
+    elif token_path.exists():
+        with token_path.open('r', encoding='utf-8') as f:
             token = f.read().strip()
     else:
-        raise RuntimeError(
-            "can't find github token (checked in GITHUB_SECRET_TOKEN envvar, "
-            "and {}".format(token_path)
-        )
+        msg = f"Can't find Github token (checked GITHUB_SECRET_TOKEN envvar and {token_path})"
+        raise RuntimeError(msg)
     return github.Github(token)
 
 
@@ -66,6 +79,21 @@ def get_release(repo_id, release_id):
 def get_build_spec(build_spec_path):
     with open(build_spec_path) as f:
         return json.load(f)
+
+
+def _get_repo_id():
+    # detect current GitHub repo from working directory
+    # TODO: make less hacky? We could read from the .git/config, but that'd be
+    # even more messy
+    try:
+        result = subprocess.check_output(['git', 'config', '--get', 'remote.origin.url'])
+        git_url = result.decode('utf-8').strip()
+        return '/'.join(git_url.split('.git')[0].rsplit('/', 2)[1:3])
+    except subprocess.CalledProcessError:
+        click.secho(f'Error: Not a valid repository: {Path.cwd()}.', fg='red')
+        click.secho("Make sure you're in the build repo directory or use the "
+                    "--repo-id argument to specify the <user>/<repo>.")
+        sys.exit(1)
 
 
 ################################################################
@@ -164,34 +192,38 @@ def appveyor_build(build_spec):
 
 
 def _download_release_assets(repo_id, release_id):
-    print("Downloading to {}/...".format(release_id))
-    try:
-        os.mkdir(release_id)
-    except OSError:
-        pass
+    download_path = WHEELS_DIR / release_id
+    click.secho(f"Downloading to {download_path}/...", fg='yellow')
+    if not download_path.exists():
+        download_path.mkdir(parents=True)
     with requests.Session() as s:
         release = get_release(repo_id, release_id)
         for asset in release.get_assets():
-            print("    " + asset.name)
-            save_name = os.path.join(release_id, asset.name)
+            click.secho("  - " + asset.name)
+            save_path = download_path / asset.name
             r = s.get(asset.browser_download_url)
-            with open(save_name, "wb") as f:
+            with save_path.open('wb') as f:
                 f.write(r.content)
-    print("...all done! See {}/ for your wheels.".format(release_id))
+    click.secho('')
+    click.secho("\u2714 All done!", fg='green')
+    click.secho(f"See {download_path}/ for your wheels.", fg='green')
 
 
 @cli.command(name="magic-build")
-@click.option("--magic-build-repo-id", default=MAGIC_BUILD_REPO)
-@click.option("--clone-url")
+@click.argument("user", required=True)
 @click.argument("package-name", required=True)
 @click.argument("commit", required=True)
-def magic_build(magic_build_repo_id, clone_url, package_name, commit):
-    if clone_url is None:
-        clone_url = DEFAULT_CLONE_TEMPLATE.format(package_name)
+@click.option("--repo-id")
+def magic_build(user, package_name, commit, repo_id):
+    click.secho(LOGO, fg='cyan')
+    if not repo_id:
+        repo_id = _get_repo_id()
+    click.secho(f"Building in repo {repo_id}")
+    click.secho(f"Building wheels for {user}/{package_name}\n")
+    clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package_name}")
+    repo = get_gh().get_repo(repo_id)
 
-    repo = get_gh().get_repo(magic_build_repo_id)
-
-    print("Finding a unique name for this release...")
+    click.secho("Finding a unique name for this release...", fg='yellow')
     # Pick the release_name by finding an unused one
     i = 1
     while True:
@@ -211,21 +243,20 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
         "commit": commit,
         "upload-to": {
             "type": "github-release",
-            "repo-id": MAGIC_BUILD_REPO,
+            "repo-id": repo_id,
             "release-id": release_name,
         },
     }
     bs_json = json.dumps(bs)
 
-    print("Creating release {!r} to collect assets...".format(release_name))
+    click.secho(f"Creating release {release_name} to collect assets...", fg='yellow')
     release = repo.create_git_release(
         release_name,
         release_name,
-        "Build spec:\n\n```json\n{}\n```".format(bs_json),
+        "Build spec:\n\n```json\n{}\n```".format(json.dumps(bs, indent=4)),
     )
-    print("  {}".format(release.html_url))
-
-    print("Creating build branch...".format(MAGIC_BUILD_REPO))
+    print(release.html_url)
+    click.secho("Creating build branch...", fg='yellow')
     # 'master' is a 'Commit'. 'master.commit' is a 'GitCommit'. These are
     # different types that are mostly *not* interchangeable:
     #   https://pygithub.readthedocs.io/en/latest/github_objects/Commit.html
@@ -240,10 +271,9 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
         "Building: {}".format(release_name), tree, [master_gitcommit]
     )
     repo.create_git_ref("refs/heads/" + branch_name, our_gitcommit.sha)
-    print("  Commit is {} in branch {!r}."
-          .format(our_gitcommit.sha[:8], branch_name))
+    print(f"Commit is {our_gitcommit.sha[:8]} in branch {branch_name}.")
 
-    print("Waiting for build to complete...")
+    click.secho("Waiting for build to complete...", fg='yellow')
     # get_combined_status needs a Commit, not a GitCommit
     our_commit = repo.get_commit(our_gitcommit.sha)
     showed_urls = {}
@@ -252,25 +282,28 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
         combined_status = our_commit.get_combined_status()
         display_name_to_state = {}
         for display_name in STATUSES.values():
-            display_name_to_state[display_name] = "not available"
+            display_name_to_state[display_name] = NA_STATE
         for status in combined_status.statuses:
             if status.context in STATUSES:
                 display_name = STATUSES[status.context]
                 display_name_to_state[display_name] = status.state
                 if display_name not in showed_urls:
-                    print("  {} logs: {}".format(
+                    print("{} logs: {}".format(
                         display_name, status.target_url
                     ))
                     showed_urls[display_name] = status.target_url
+
         displays = [
-            "[{} - {}]".format(display_name, state)
-            for (display_name, state) in display_name_to_state.items()
+            click.style(f"[{name} - {state}]", fg=STATUS_COLORS.get(state, 'white'))
+            for name, state in display_name_to_state.items()
         ]
-        print(" ".join(displays))
+        click.echo(" ".join(displays))
         pending = False
         failed = False
         # The Github states are: "error", "failure", "success", "pending"
         for state in display_name_to_state.values():
+            if state == NA_STATE:
+                continue
             if state not in FINAL_STATES:
                 pending = True
             if state in BAD_STATES:
@@ -279,18 +312,22 @@ def magic_build(magic_build_repo_id, clone_url, package_name, commit):
             break
 
     if failed:
-        print("*** Failed! ***")
+        click.secho("*** Failed! ***", bg='red', fg='black')
         for display_name, url in showed_urls.items():
-            print("  {} logs: {}".format(display_name, url))
+            print(f"{display_name} logs: {url}")
         sys.exit(1)
     else:
-        _download_release_assets(magic_build_repo_id, release_name)
+        _download_release_assets(repo_id, release_name)
 
 
 @cli.command(name="download-release-assets")
-@click.option("--repo-id", default=MAGIC_BUILD_REPO)
+@click.option("--repo-id")
 @click.argument("release-id", required=True)
 def download_release_assets(repo_id, release_id):
+    click.secho(LOGO, fg='cyan')
+    if not repo_id:
+        repo_id = _get_repo_id()
+    click.secho(f"Downloading from repo {repo_id}")
     _download_release_assets(repo_id, release_id)
 
 
