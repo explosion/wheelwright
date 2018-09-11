@@ -1,98 +1,86 @@
 env:
-    global:
-        - REPO_DIR=checkout
-        # The explosion.ai packages all have a requirements.txt with
-        # all their build + test requirements.
-        - BUILD_DEPENDS="-Ur checkout/requirements.txt"
-        - TEST_DEPENDS="-Ur checkout/requirements.txt"
-        - PLAT=x86_64
-        - UNICODE_WIDTH=32
-        - WHEELHOUSE_UPLOADER_USERNAME=travis-worker
-        # The encrypted GITHUB_SECRET_TOKEN
-        - secure: "q1rncBN4KMzrTa3LLh767vo+Zb/uWs1EGdORk4EnOQBmV27j2TACWwywSQtt1RAs9jUGFsc9lC6Wm2NhaeO56PwcVqqzqp+w2l6xDKJ8pdOHiHotf7AwIFWDtZM+ibr32pA5Y2yMpPc4yjkvyqz6FkFw1qQXi1R7MBfsOTnkYFUwGsxYgRiSzdfWEouxjsWqEKHnE5t17PySIGMpKMtJzeEO6JehayQ0OiR4dBdJBeycZzwIv4uQ/GqS69vrW9Y8CW6K8eTeNIgv5opvR5cSaWEzmNpAIvWDM3gWlDY0TfMiQ734APQ/RuUguCFchpVyLnlU3TMxkIa066hzofTv0iJBTqwVrEQnXonyeHx6iLk3zdvrm3y2RWsHkcD2B02gMR4H4aLLrxnWeYTrVQUtZAKw7Z7uYZdl8Iy+PoP1C0weCsoFIdt1vadwu+D0d0wYYsuQOWyVdvUpjVxX2Y+MZ9QUPxfclaEVz74KXjynfAMieYtCgwDaHYZa03QnfNq3fevXukSJZrNALtRdXvRp5gjB01cNeC1t3zkv3Os1CGV1S20MF5VjamtZe2ft/IJICzQoRaWjU5hETCh6ejN7W4rYKc9g90hfSyU5qDDLEUPQ3y1jjUrQ4hM7RCL7rBNIa5gJPrjJeml3jOgWhfnlsbHJvLYL3kbOgFMnI2YmhEw="
-
+  global:
+  - REPO_DIR=checkout
+  - BUILD_DEPENDS="-Ur checkout/requirements.txt"
+  - TEST_DEPENDS="-Ur checkout/requirements.txt"
+  - PLAT=x86_64
+  - UNICODE_WIDTH=32
+  - WHEELHOUSE_UPLOADER_USERNAME=travis-worker
+  - secure: f4k0yFZL9q7sX1aWSml3nsC1FKLLEzK5bDj4afDNQR0XuzbHmvrw9OXDqxRcH8A6fzvCUlxLsT4zfsMh3Ps7BBxahj4Gil2kDRck8PTgWpaZ1LLaFzX85YsmXromv4eeXRxIrNMNXKEpBXbS8t+R0DPKaWkUxcAxegZrfI3D59VUumW8xz3deH1Zs7HhEW4zjdA8R+ZQvSIOCG6NKbcxGTZu1ctOJUm1PhTfJKgtZmhIuP0mal/1xWCTcB/fXv7swuvGUkefXyidxLBrIdkEpUxDqKsOmBMoxooW9pGhvzELdip8ik9+tU+TikQIs2OoTZoTY6kjQOwOrurj9resCV1e28TjNznBubCUVJ4e4UcpOq5hO9pWLolAsMU6Ha6xJy1GtOPIegsgUwY46/2zWoFuzpOEUC4DbWl/V4DtOstDryUHBcW7jg0jYoUWkoBWjduc+8ujzh8pgqX/D1uNeS1MurrE9M5d9wgLxlelP2/w6omgXIdBYWPYv87g8BHNY1f6t4CZRtLOLIYXdbLQO/nWLPvZeR09SQrfay9edsOLdgJApOxd0TRCsvn34++RU+Kg+pMRGbIPQBjxQyhlk2g8pAmMycmzPPjlUFTfC/GEEfzlFgjCtBNCsOSSDl2g5swO4xeFrE7vOtkJFhSKNe/hc1rBlGB6ZuQVE+kyC/Y=
 language: python
 sudo: required
 dist: xenial
 services: docker
-# Don't generate builds for tags, PRs, or the master branch
-# https://docs.travis-ci.com/user/conditional-builds-stages-jobs/
-# https://docs.travis-ci.com/user/conditions-v1
 if: type = push AND tag IS blank AND branch =~ /^branch-for-/
-
 matrix:
   include:
-    - os: linux
-      env: MB_PYTHON_VERSION=2.7
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=2.7
-        - UNICODE_WIDTH=16
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=2.7
-        - PLAT=i686
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=2.7
-        - PLAT=i686
-        - UNICODE_WIDTH=16
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.5
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.5
-        - PLAT=i686
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.6
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.6
-        - PLAT=i686
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.7
-    - os: linux
-      env:
-        - MB_PYTHON_VERSION=3.7
-        - PLAT=i686
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=2.7
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=3.5
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=3.6
-    - os: osx
-      language: generic
-      env:
-        - MB_PYTHON_VERSION=3.7
-
+  - os: linux
+    env: MB_PYTHON_VERSION=2.7
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=2.7
+    - UNICODE_WIDTH=16
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=2.7
+    - PLAT=i686
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=2.7
+    - PLAT=i686
+    - UNICODE_WIDTH=16
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=3.5
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=3.5
+    - PLAT=i686
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=3.6
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=3.6
+    - PLAT=i686
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=3.7
+  - os: linux
+    env:
+    - MB_PYTHON_VERSION=3.7
+    - PLAT=i686
+  - os: osx
+    language: generic
+    env:
+    - MB_PYTHON_VERSION=2.7
+  - os: osx
+    language: generic
+    env:
+    - MB_PYTHON_VERSION=3.5
+  - os: osx
+    language: generic
+    env:
+    - MB_PYTHON_VERSION=3.6
+  - os: osx
+    language: generic
+    env:
+    - MB_PYTHON_VERSION=3.7
 before_install:
-    - pip install -Ur ./mb-requirements.txt
-    - eval $(python ./mb.py build_spec_to_shell build-spec.json)
-    - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
-    - export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
-    - printf "function run_tests {\n  pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME} \n}" > config.sh
-    - source multibuild/common_utils.sh
-    - source multibuild/travis_steps.sh
-    - before_install
-
+- pip install -Ur ./mb-requirements.txt
+- eval $(python ./mb.py build_spec_to_shell build-spec.json)
+- git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
+- export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
+- printf "function run_tests {\n  pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME} \n}"
+  > config.sh
+- source multibuild/common_utils.sh
+- source multibuild/travis_steps.sh
+- before_install
 install:
-    # Maybe get and clean and patch source
-    - clean_code $REPO_DIR $BUILD_COMMIT
-    - build_wheel $REPO_DIR $PLAT
-
+- clean_code $REPO_DIR $BUILD_COMMIT
+- build_wheel $REPO_DIR $PLAT
 script:
-    - install_run $PLAT
-
+- install_run $PLAT
 after_success:
-    - pip install -Ur ./mb-requirements.txt
-    - python ./mb.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
+- pip install -Ur ./mb-requirements.txt
+- python ./mb.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
