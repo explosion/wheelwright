@@ -21,8 +21,8 @@ LOGO = """
 # Environment variables
 ENV_BUILD_ROOT = 'WHEELWRIGHT_ROOT'
 ENV_WHEELS_DIR = 'WHEELWRIGHT_WHEELS_DIR'
-ENV_GH_SECRET  = 'WHEELWRIGHT_GITHUB_SECRET'
 ENV_REPO_NAME  = 'WHEELWRIGHT_REPO'
+ENV_GH_SECRET  = 'GITHUB_SECRET_TOKEN'
 
 ROOT = Path(os.environ.get(ENV_BUILD_ROOT, Path(__file__).parent))
 WHEELS_DIR = Path(os.environ.get(ENV_WHEELS_DIR, Path(__file__).parent / 'wheels'))
