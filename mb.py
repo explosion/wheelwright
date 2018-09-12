@@ -12,15 +12,20 @@ import click
 import requests
 from pathlib import Path
 
-
 LOGO = """
-¸.*‘.¸¸ . ✶*¨*. ¸ .✫*¨*.¸¸.✶*¨‘*✶
-        ★  MAGIC BUILD  ★
-¸.*‘.¸¸ . ✶*¨*. ¸ .✫*¨*.¸¸.✶*¨‘*✶
+┬ ┬┬ ┬┌─┐┌─┐┬  ┬ ┬┬─┐┬┌─┐┬ ┬┌┬┐
+│││├─┤├┤ ├┤ │  │││├┬┘││ ┬├─┤ │
+└┴┘┴ ┴└─┘└─┘┴─┘└┴┘┴└─┴└─┘┴ ┴ ┴
 """
 
-ROOT = Path(os.environ.get('MAGIC_BUILD_ROOT', Path(__file__).parent))
-WHEELS_DIR = Path(os.environ.get('MAGIC_WHEELS_DIR', Path(__file__).parent / 'wheels'))
+# Environment variables
+ENV_BUILD_ROOT = 'WHEELWRIGHT_ROOT'
+ENV_WHEELS_DIR = 'WHEELWRIGHT_WHEELS_DIR'
+ENV_GH_SECRET  = 'WHEELWRIGHT_GITHUB_SECRET'
+ENV_REPO_NAME  = 'WHEELWRIGHT_REPO'
+
+ROOT = Path(os.environ.get(ENV_BUILD_ROOT, Path(__file__).parent))
+WHEELS_DIR = Path(os.environ.get(ENV_WHEELS_DIR, Path(__file__).parent / 'wheels'))
 SECRET_FILE = 'github-secret-token.txt'
 
 # We substitute the project name into this string to get the URL to clone:
@@ -55,14 +60,14 @@ if sys.platform == "darwin":
 
 def get_gh():
     token_path = ROOT / SECRET_FILE
-    if "GITHUB_SECRET_TOKEN" in os.environ:
-        token = os.environ["GITHUB_SECRET_TOKEN"]
+    if ENV_GH_SECRET in os.environ:
+        token = os.environ[ENV_GH_SECRET]
     elif token_path.exists():
         with token_path.open('r', encoding='utf-8') as f:
             token = f.read().strip()
     else:
-        msg = f"Can't find Github token (checked GITHUB_SECRET_TOKEN envvar and {token_path})"
-        raise RuntimeError(msg)
+        raise RuntimeError(f"Can't find Github token (checked {ENV_GH_SECRET} "
+                           f"envvar and {token_path})")
     return github.Github(token)
 
 
@@ -72,7 +77,7 @@ def get_release(repo_id, release_id):
     # https://pygithub.readthedocs.io/en/latest/github_objects/GitRelease.html
     release = repo.get_release(release_id)
     if release is None:
-        raise RuntimeError("release not found:", release_id)
+        raise RuntimeError("Release not found:", release_id)
     return release
 
 
@@ -81,7 +86,24 @@ def get_build_spec(build_spec_path):
         return json.load(f)
 
 
+@contextmanager
+def cd(d):
+    orig_dir = os.getcwd()
+    try:
+        os.chdir(d)
+        yield
+    finally:
+        os.chdir(orig_dir)
+
+
+def run(cmd):
+    print("Running:", cmd)
+    subprocess.check_call(cmd)
+
+
 def _get_repo_id():
+    if ENV_REPO_NAME in os.environ:
+        return os.environ[ENV_REPO_NAME]
     # detect current GitHub repo from working directory
     # TODO: make less hacky? We could read from the .git/config, but that'd be
     # even more messy
@@ -91,33 +113,10 @@ def _get_repo_id():
         return '/'.join(git_url.split('.git')[0].rsplit('/', 2)[1:3])
     except subprocess.CalledProcessError:
         click.secho(f'Error: Not a valid repository: {Path.cwd()}.', fg='red')
-        click.secho("Make sure you're in the build repo directory or use the "
-                    "--repo-id argument to specify the <user>/<repo>.")
+        click.secho(f"Make sure you're in the build repo directory or use the "
+                    f"{ENV_REPO_NAME} environment variable to specify the "
+                    f"<user>/<repo> build repository.")
         sys.exit(1)
-
-
-################################################################
-
-
-@click.group()
-def cli():
-    pass
-
-
-@cli.command()
-@click.argument(
-    "build_spec",
-    type=click.Path(exists=True, dir_okay=False),
-    required=True
-)
-def build_spec_to_shell(build_spec):
-    bs = get_build_spec(build_spec)
-    sys.stdout.write(
-        "BUILD_SPEC_CLONE_URL='{clone-url}'\n"
-        "BUILD_SPEC_COMMIT='{commit}'\n"
-        "BUILD_SPEC_PACKAGE_NAME='{package-name}'\n"
-        .format(**bs)
-    )
 
 
 def _do_upload(bs, paths):
@@ -141,7 +140,50 @@ def _do_upload(bs, paths):
             print(asset.name, asset.id, asset.state, asset.created_at)
 
 
-@cli.command()
+def _download_release_assets(repo_id, release_id):
+    download_path = WHEELS_DIR / release_id
+    click.secho(f"Downloading to {download_path}/...", fg='yellow')
+    if not download_path.exists():
+        download_path.mkdir(parents=True)
+    with requests.Session() as s:
+        release = get_release(repo_id, release_id)
+        for asset in release.get_assets():
+            click.secho("  - " + asset.name)
+            save_path = download_path / asset.name
+            r = s.get(asset.browser_download_url)
+            with save_path.open('wb') as f:
+                f.write(r.content)
+    click.secho('')
+    click.secho("\u2714 All done!", fg='green')
+    click.secho(f"See {download_path}/ for your wheels.", fg='green')
+
+
+################################################################
+
+
+@click.group()
+def cli():
+    """Build release wheels for Python projects"""
+    pass
+
+
+@cli.command(name='build-spec')
+@click.argument(
+    "build_spec",
+    type=click.Path(exists=True, dir_okay=False),
+    required=True
+)
+def build_spec_to_shell(build_spec):
+    bs = get_build_spec(build_spec)
+    sys.stdout.write(
+        "BUILD_SPEC_CLONE_URL='{clone-url}'\n"
+        "BUILD_SPEC_COMMIT='{commit}'\n"
+        "BUILD_SPEC_PACKAGE_NAME='{package-name}'\n"
+        .format(**bs)
+    )
+
+
+@cli.command(name='upload')
 @click.option(
     "--build-spec",
     type=click.Path(exists=True, dir_okay=False),
@@ -155,22 +197,7 @@ def upload(build_spec, paths):
     _do_upload(bs, paths)
 
 
-@contextmanager
-def cd(d):
-    orig_dir = os.getcwd()
-    try:
-        os.chdir(d)
-        yield
-    finally:
-        os.chdir(orig_dir)
-
-
-def run(cmd):
-    print("Running:", cmd)
-    subprocess.check_call(cmd)
-
-
-@cli.command()
+@cli.command(name='appveyor-build')
 @click.option(
     "--build-spec",
     type=click.Path(exists=True, dir_okay=False),
@@ -191,33 +218,14 @@ def appveyor_build(build_spec):
     _do_upload(bs, wheels)
 
 
-def _download_release_assets(repo_id, release_id):
-    download_path = WHEELS_DIR / release_id
-    click.secho(f"Downloading to {download_path}/...", fg='yellow')
-    if not download_path.exists():
-        download_path.mkdir(parents=True)
-    with requests.Session() as s:
-        release = get_release(repo_id, release_id)
-        for asset in release.get_assets():
-            click.secho("  - " + asset.name)
-            save_path = download_path / asset.name
-            r = s.get(asset.browser_download_url)
-            with save_path.open('wb') as f:
-                f.write(r.content)
-    click.secho('')
-    click.secho("\u2714 All done!", fg='green')
-    click.secho(f"See {download_path}/ for your wheels.", fg='green')
-
-
-@cli.command(name="magic-build")
-@click.argument("user", required=True)
-@click.argument("package-name", required=True)
+@cli.command(name="build")
+@click.argument("repo", required=True)
 @click.argument("commit", required=True)
-@click.option("--repo-id")
-def magic_build(user, package_name, commit, repo_id):
+def build(repo, commit):
+    """Build wheels for a given repo and commit / tag."""
     click.secho(LOGO, fg='cyan')
-    if not repo_id:
-        repo_id = _get_repo_id()
+    repo_id = _get_repo_id()
+    user, package_name = repo.split('/', 1)
     click.secho(f"Building in repo {repo_id}")
     click.secho(f"Building wheels for {user}/{package_name}\n")
     clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package_name}")
@@ -320,13 +328,12 @@ def magic_build(user, package_name, commit, repo_id):
         _download_release_assets(repo_id, release_name)
 
 
-@cli.command(name="download-release-assets")
-@click.option("--repo-id")
+@cli.command(name="download")
 @click.argument("release-id", required=True)
-def download_release_assets(repo_id, release_id):
+def download_release_assets(release_id):
+    """Download existing wheels for a release ID (name of build repo tag)."""
     click.secho(LOGO, fg='cyan')
-    if not repo_id:
-        repo_id = _get_repo_id()
+    repo_id = _get_repo_id()
     click.secho(f"Downloading from repo {repo_id}")
     _download_release_assets(repo_id, release_id)
 
