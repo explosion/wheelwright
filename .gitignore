@@ -1,6 +1,6 @@
 # Project specific
 github-secret-token.txt
-*-wheels/
+wheels/*
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
