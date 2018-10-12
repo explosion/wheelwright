@@ -220,8 +220,7 @@ def build(repo, commit, package_name=None):
         package_name = package
     click.secho(f"Building in repo {repo_id}")
     click.secho(f"Building wheels for {user}/{package}\n")
-    if clone_url is None:
-        clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package}")
+    clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package}")
     repo = get_gh().get_repo(repo_id)
 
     click.secho("Finding a unique name for this release...", fg='yellow')
