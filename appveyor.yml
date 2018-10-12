@@ -1,7 +1,7 @@
 environment:
   global:
     GITHUB_SECRET_TOKEN:
-      secure: "kVuGz3T5jfZ5QMjwpGl1odtcxBGBRutB0Qfl1eeDZ7Rxq7QHb0m/tiyayYN0L/FL"
+      secure: "fTYvzlagrFar7SALUfTVV0ltoe+pRSsgbXjgC/rpQ95l3gGunofuSe8DHJITFaO7"
 
   matrix:
     - PYTHON: C:\Python37
