@@ -69,8 +69,8 @@ def get_gh():
         with token_path.open('r', encoding='utf-8') as f:
             token = f.read().strip()
     else:
-        raise RuntimeError(f"Can't find Github token (checked {ENV_GH_SECRET} "
-                           f"envvar and {token_path})")
+        raise RuntimeError("Can't find Github token (checked {} envvar and {}"
+                           .format(ENV_GH_SECRET, token_path))
     return github.Github(token)
 
 
@@ -115,10 +115,10 @@ def _get_repo_id():
         git_url = result.decode('utf-8').strip()
         return '/'.join(git_url.split('.git')[0].rsplit('/', 2)[1:3])
     except subprocess.CalledProcessError:
-        click.secho(f'Error: Not a valid repository: {Path.cwd()}.', fg='red')
-        click.secho(f"Make sure you're in the build repo directory or use the "
-                    f"{ENV_REPO_NAME} environment variable to specify the "
-                    f"<user>/<repo> build repository.")
+        click.secho("Error: Not a valid repository: {}.".format(Path.cwd()), fg='red')
+        click.secho("Make sure you're in the build repo directory or use the "
+                    "{} environment variable to specify the <user>/<repo> "
+                    "build repository.".format(ENV_REPO_NAME))
         sys.exit(1)
 
 
@@ -145,7 +145,7 @@ def _do_upload(bs, paths):
 
 def _download_release_assets(repo_id, release_id):
     download_path = WHEELS_DIR / release_id
-    click.secho(f"Downloading to {download_path}/...", fg='yellow')
+    click.secho("Downloading to {}/...".format(download_path), fg='yellow')
     if not download_path.exists():
         download_path.mkdir(parents=True)
     with requests.Session() as s:
@@ -158,7 +158,7 @@ def _download_release_assets(repo_id, release_id):
                 f.write(r.content)
     click.secho('')
     click.secho("\u2714 All done!", fg='green')
-    click.secho(f"See {download_path}/ for your wheels.", fg='green')
+    click.secho("See {}/ for your wheels.".format(download_path), fg='green')
 
 
 ################################################################
@@ -218,9 +218,9 @@ def build(repo, commit, package_name=None):
     user, package = repo.split('/', 1)
     if package_name is None:
         package_name = package
-    click.secho(f"Building in repo {repo_id}")
-    click.secho(f"Building wheels for {user}/{package}\n")
-    clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package}")
+    click.secho("Building in repo {}".format(repo_id))
+    click.secho("Building wheels for {}/{}\n".format(user, package))
+    clone_url = DEFAULT_CLONE_TEMPLATE.format("{}/{}".format(user, package))
     repo = get_gh().get_repo(repo_id)
 
     click.secho("Finding a unique name for this release...", fg='yellow')
@@ -249,7 +249,7 @@ def build(repo, commit, package_name=None):
     }
     bs_json = json.dumps(bs)
 
-    click.secho(f"Creating release {release_name} to collect assets...", fg='yellow')
+    click.secho("Creating release {} to collect assets...".format(release_name), fg='yellow')
     release = repo.create_git_release(
         release_name,
         release_name,
@@ -271,7 +271,7 @@ def build(repo, commit, package_name=None):
         "Building: {}".format(release_name), tree, [master_gitcommit]
     )
     repo.create_git_ref('refs/heads/' + branch_name, our_gitcommit.sha)
-    print(f"Commit is {our_gitcommit.sha[:8]} in branch {branch_name}.")
+    print("Commit is {} in branch {}.".format(our_gitcommit.sha[:8], branch_name))
 
     click.secho("Waiting for build to complete...", fg='yellow')
     # get_combined_status needs a Commit, not a GitCommit
@@ -294,7 +294,7 @@ def build(repo, commit, package_name=None):
                     showed_urls[display_name] = status.target_url
 
         displays = [
-            click.style(f"[{name} - {state}]", fg=STATUS_COLORS.get(state, 'white'))
+            click.style("[{} - {}]".format(name, state), fg=STATUS_COLORS.get(state, 'white'))
             for name, state in display_name_to_state.items()
         ]
         click.echo(" ".join(displays))
@@ -314,7 +314,7 @@ def build(repo, commit, package_name=None):
     if failed:
         click.secho("*** Failed! ***", bg='red', fg='black')
         for display_name, url in showed_urls.items():
-            print(f"{display_name} logs: {url}")
+            print("{} logs: {}".format(display_name, url))
         sys.exit(1)
     else:
         _download_release_assets(repo_id, release_name)
@@ -326,15 +326,15 @@ def download_release_assets(release_id):
     """Download existing wheels for a release ID (name of build repo tag)."""
     click.secho(LOGO, fg='cyan')
     repo_id = _get_repo_id()
-    click.secho(f"Downloading from repo {repo_id}")
+    click.secho("Downloading from repo {}".format(repo_id))
     _download_release_assets(repo_id, release_id)
 
 
 @cli.command(name='check')
 def check():
     """Verify that everything is set up correctly."""
-    print_ok = lambda text: click.secho(f'\u2713 {text}', fg='green')
-    print_no = lambda text: click.secho(f'\u2718 {text}', fg='red')
+    print_ok = lambda text: click.secho("\u2713 {}".format(text), fg='green')
+    print_no = lambda text: click.secho("\u2718 {}".format(text), fg='red')
 
     click.secho(LOGO, fg='cyan')
     click.secho("Checking if things are set up correctly...\n")
@@ -342,29 +342,31 @@ def check():
     # Check build repo
     try:
         repo_id = _get_repo_id()
-        print_ok(f"Using build repo {repo_id}")
+        print_ok("Using build repo {}".format(repo_id))
     except:
-        print_no(f"Couldn't get build repo name via git or {ENV_REPO_NAME} "
-                 f"env variable.")
+        print_no("Couldn't get build repo name via git or {} env variable."
+                 .format(ENV_REPO_NAME))
 
     # Check GitHub secret
     secret_env = os.environ.get(ENV_GH_SECRET)
     secret_path = ROOT / SECRET_FILE
     if secret_env:
-        print_ok(f"Found GitHub secret in {ENV_GH_SECRET} environment variable.")
+        print_ok("Found GitHub secret in {} environment variable."
+                 .format(ENV_GH_SECRET))
     if secret_path.exists():
-        print_ok(f"Found GitHub secret in {SECRET_FILE} file.")
+        print_ok("Found GitHub secret in {} file.".format(SECRET_FILE))
     if not secret_env and not secret_path.exists():
-        print_no(f"No Github secret found in environment variable or {SECRET_FILE}.")
+        print_no("No Github secret found in environment variable or {}."
+                 .format(SECRET_FILE))
 
     # Check CI files
     token_var = 'GITHUB_SECRET_TOKEN'
     for ci_file in ('.travis.yml', 'appveyor.yml'):
         ci_path = ROOT / ci_file
         if not ci_path.exists():
-            print_no(f"No {ci_file} found in root directory.")
+            print_no("No {} found in root directory.".format(ci_file))
         else:
-            print_ok(f"{ci_file} exists in root directory.")
+            print_ok("{} exists in root directory.".format(ci_file))
 
 if __name__ == "__main__":
     cli()
