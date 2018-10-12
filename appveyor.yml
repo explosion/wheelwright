@@ -65,5 +65,5 @@ install:
     - python -m pip install -U pip setuptools wheel virtualenv
 
 build_script:
-    - pip install -Ur mb-requirements.txt
-    - python -u mb.py appveyor_build --build-spec build-spec.json
+    - pip install -Ur requirements.txt
+    - python -u run.py appveyor_build --build-spec build-spec.json

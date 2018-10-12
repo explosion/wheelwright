@@ -67,8 +67,8 @@ matrix:
     env:
     - MB_PYTHON_VERSION=3.7
 before_install:
-- pip install -Ur ./mb-requirements.txt
-- eval $(python ./mb.py build_spec_to_shell build-spec.json)
+- pip install -Ur ./requirements.txt
+- eval $(python ./run.py build_spec_to_shell build-spec.json)
 - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
 - export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
 - printf "function run_tests {\n  pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME} \n}"
@@ -82,5 +82,5 @@ install:
 script:
 - install_run $PLAT
 after_success:
-- pip install -Ur ./mb-requirements.txt
-- python ./mb.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
+- pip install -Ur ./requirements.txt
+- python ./run.py upload --build-spec build-spec.json ${TRAVIS_BUILD_DIR}/wheelhouse
