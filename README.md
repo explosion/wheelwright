@@ -35,7 +35,7 @@ in the root of the repo.
 3. Update the `.travis.yml` with the encrypted GitHub token using
 [the Travis CI command-line tool](https://docs.travis-ci.com/user/environment-variables/#defining-encrypted-variables-in-travisyml).
 4. Update the `appveyor.yml` with the encrypted GitHub token using
-[Appveyor's online tool](https://www.appveyor.com/docs/build-configuration/#secure-variables).
+[Appveyor's online tool](https://ci.appveyor.com/tools/encrypt).
 
 5. Commit the changes. Don't worry, the secrets file is excluded in the
 `.gitignore`.
