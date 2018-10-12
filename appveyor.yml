@@ -66,4 +66,4 @@ install:
 
 build_script:
     - pip install -Ur requirements.txt
-    - python -u run.py appveyor_build --build-spec build-spec.json
+    - python -u run.py appveyor-build --build-spec build-spec.json
