@@ -170,7 +170,7 @@ def cli():
     pass
 
 
-@cli.command(name='build-spec')
+@cli.command(name='build_spec_to_shell')
 @click.argument('build_spec', type=click.Path(exists=True, dir_okay=False), required=True)
 def build_spec_to_shell(build_spec):
     bs = get_build_spec(build_spec)
