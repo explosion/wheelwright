@@ -247,10 +247,11 @@ def build(repo, commit, package_name=None):
     bs_json = json.dumps(bs)
 
     click.secho("Creating release {} to collect assets...".format(release_name), fg='yellow')
+    release_template = "https://github.com/{}/{}\n\n### Build spec\n\n```json\n{}\n```"
     release = repo.create_git_release(
         release_name,
         release_name,
-        "Build spec:\n\n```json\n{}\n```".format(json.dumps(bs, indent=4)),
+        release_template.format(user, package, json.dumps(bs, indent=4)),
     )
     print(release.html_url)
     click.secho("Creating build branch...", fg='yellow')
