@@ -204,7 +204,9 @@ python run.py check
 Checking if things are set up correctly...
 
 ✓ Using build repo explosion/wheelwright
-✘ No Github secret found in environment variable or github-secret-token.txt.
+✓ Found GitHub secret in github-secret-token.txt file.
+✓ Connected to GitHub with token for user @explosion-bot
+✓ Checked GitHub rate limiting: 4982/5000 remaining
 ✓ .travis.yml exists in root directory.
 ✓ appveyor.yml exists in root directory.
 ```

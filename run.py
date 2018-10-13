@@ -362,6 +362,18 @@ def check():
     if not secret_env and not secret_path.exists():
         print_no("No Github secret found in environment variable or {}."
                  .format(SECRET_FILE))
+    else:
+        # Check token
+        try:
+            gh = get_gh()
+            gh_user = gh.get_user().login
+        except github.GithubException as e:
+            gh = None
+            print_no("Couldn't connect to GitHub. Maybe the token is invalid?\n{}".format(e))
+        if gh is not None:
+            print_ok("Connected to GitHub with token for user @{}".format(gh_user))
+            rate_limit = gh.rate_limiting
+            print_ok("Checked GitHub rate limiting: {}/{} remaining".format(*rate_limit))
 
     # Check CI files
     token_var = 'GITHUB_SECRET_TOKEN'
