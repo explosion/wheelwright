@@ -70,7 +70,7 @@ def get_gh():
     else:
         raise RuntimeError("Can't find Github token (checked {} envvar and {}"
                            .format(ENV_GH_SECRET, token_path))
-    return github.Github(token)
+    return github.Github(token, timeout=60)
 
 
 def get_release(repo_id, release_id):
