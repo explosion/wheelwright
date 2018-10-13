@@ -247,7 +247,7 @@ python run.py download cymem-v1.31.2
 
 ## FAQ
 
-### What did that actually do?
+### What does this actually do?
 
 The `build` command uses the Github API to create a Github
 release in this repo, called something like `cymem-v1.31.2`.
