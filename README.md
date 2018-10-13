@@ -21,6 +21,9 @@ packaging.
 > it can be adopted by other projects as well. For more details on how it works,
 > check out the [FAQ](#faq) below.
 
+[![Travis](https://img.shields.io/badge/travis-view%20builds-green.svg?longCache=true&style=flat-square&logo=travis)](https://travis-ci.org/explosion/wheelwright/branches)
+[![Appveyor](https://img.shields.io/badge/appveyor-view%20builds-green.svg?longCache=true&style=flat-square&logo=appveyor)](https://ci.appveyor.com/project/explosion/wheelwright/history)
+
 ## Usage Guide
 
 ### Quickstart
