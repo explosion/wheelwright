@@ -66,4 +66,5 @@ install:
 
 build_script:
     - pip install -Ur requirements.txt
+    - "[ -f ./bin/appveyor_setup.sh ] && source ./bin/appveyor_setup.sh"
     - python -u run.py appveyor-build --build-spec build-spec.json

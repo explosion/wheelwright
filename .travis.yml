@@ -78,6 +78,7 @@ before_install:
 - before_install
 install:
 - clean_code $REPO_DIR $BUILD_COMMIT
+- "[ -f ./bin/travis_setup.sh ] && source ./bin/travis_setup.sh"
 - build_wheel $REPO_DIR $PLAT
 script:
 - install_run $PLAT
