@@ -316,7 +316,7 @@ def build(repo, commit, package_name=None):
         click.secho("*** Failed! ***", bg='red', fg='black')
         for display_name, url in showed_urls.items():
             print("{} logs: {}".format(display_name, url))
-        release.update_release('\u274c ' + release.title, release.body, draft=True)
+        release.update_release('\u274c ' + release.title, release.body)
         sys.exit(1)
     else:
         _download_release_assets(repo_id, release_name)
