@@ -60,7 +60,7 @@ if sys.platform == 'darwin':
     urllib3.contrib.securetransport.inject_into_urllib3()
 
 
-def get_gh(timeout=60):
+def get_gh():
     token_path = ROOT / SECRET_FILE
     if ENV_GH_SECRET in os.environ:
         token = os.environ[ENV_GH_SECRET]
@@ -70,7 +70,7 @@ def get_gh(timeout=60):
     else:
         raise RuntimeError("Can't find Github token (checked {} envvar and {}"
                            .format(ENV_GH_SECRET, token_path))
-    return github.Github(token, timeout=timeout)
+    return github.Github(token)
 
 
 def get_release(repo_id, release_id):
