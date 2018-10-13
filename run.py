@@ -368,5 +368,6 @@ def check():
         else:
             print_ok("{} exists in root directory.".format(ci_file))
 
+
 if __name__ == "__main__":
     cli()
