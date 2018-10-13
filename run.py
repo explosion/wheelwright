@@ -60,7 +60,7 @@ if sys.platform == 'darwin':
     urllib3.contrib.securetransport.inject_into_urllib3()
 
 
-def get_gh():
+def get_gh(timeout=15):
     token_path = ROOT / SECRET_FILE
     if ENV_GH_SECRET in os.environ:
         token = os.environ[ENV_GH_SECRET]
@@ -70,7 +70,7 @@ def get_gh():
     else:
         raise RuntimeError("Can't find Github token (checked {} envvar and {}"
                            .format(ENV_GH_SECRET, token_path))
-    return github.Github(token, timeout=60)
+    return github.Github(token, timeout=timeout)
 
 
 def get_release(repo_id, release_id):
@@ -210,7 +210,8 @@ def appveyor_build(build_spec):
 @click.argument('repo', required=True)
 @click.argument('commit', required=True)
 @click.option('--package-name')
-def build(repo, commit, package_name=None):
+@click.option('--timeout')
+def build(repo, commit, package_name=None, timeout=60):
     """Build wheels for a given repo and commit / tag."""
     click.secho(LOGO, fg='cyan')
     repo_id = _get_repo_id()
@@ -220,7 +221,7 @@ def build(repo, commit, package_name=None):
     click.secho("Building in repo {}".format(repo_id))
     click.secho("Building wheels for {}/{}\n".format(user, package))
     clone_url = DEFAULT_CLONE_TEMPLATE.format("{}/{}".format(user, package))
-    repo = get_gh().get_repo(repo_id)
+    repo = get_gh(timeout=timeout).get_repo(repo_id)
 
     click.secho("Finding a unique name for this release...", fg='yellow')
     # Pick the release_name by finding an unused one
