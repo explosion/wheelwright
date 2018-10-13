@@ -227,7 +227,7 @@ def build(repo, commit, package_name=None):
     # Pick the release_name by finding an unused one
     i = 1
     while True:
-        release_name = "{}-{}-wheels".format(package_name, commit)
+        release_name = "{}-{}".format(package_name, commit)
         if i > 1:
             release_name += '-{}'.format(i)
         try:

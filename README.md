@@ -174,7 +174,7 @@ Eventually, if everything goes well, you'll end up with wheels in a
 directory named `wheels/cymem-v1.31.2`:
 
 ```console
-$ ls cymem-v1.31.2-wheels
+$ ls wheels/cymem-v1.31.2
 cymem-1.32.1-cp27-cp27mu-manylinux1_i686.whl
 cymem-1.32.1-cp27-cp27mu-manylinux1_x86_64.whl
 ... and so on ...
@@ -250,7 +250,7 @@ python run.py download cymem-v1.31.2
 ### What did that actually do?
 
 The `build` command uses the Github API to create a Github
-release in this repo, called something like `cymem-v1.31.2-wheels`.
+release in this repo, called something like `cymem-v1.31.2`.
 Don't be confused: this is not a real release! We're just abusing
 Github releases to have a temporary place to collect the wheel files
 as we build them.
@@ -290,8 +290,8 @@ a failed build.
 
 If you resubmit a build, then `run.py` will notice and give it a unique
 build id – so if you run `run.py build explosion/cymem v1.31.2` twice, the first
-time it'll use the id `cymem-v1.31.2-wheels`, and the second time it
-will be `cymem-v1.31.2-wheels-2`, etc. This doesn't affect the
+time it'll use the id `cymem-v1.31.2`, and the second time it
+will be `cymem-v1.31.2-2`, etc. This doesn't affect the
 generated wheels in any way; it's just to make sure we don't get mixed
 up between the two builds.
 
