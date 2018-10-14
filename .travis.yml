@@ -78,8 +78,6 @@ before_install:
 - before_install
 install:
 - clean_code $REPO_DIR $BUILD_COMMIT
-- export CURRENT_DIR=`pwd`
-- cd $REPO_DIR
 - build_wheel $REPO_DIR $PLAT
 script:
 - install_run $PLAT
