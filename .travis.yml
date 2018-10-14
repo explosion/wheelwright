@@ -71,7 +71,9 @@ before_install:
 - eval $(python ./run.py build-spec build-spec.json)
 - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
 - export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
+- export CURRENT_DIR=`pwd`
 - cat config.sh.template | envsubst > config.sh
+- cat config.sh
 - source multibuild/common_utils.sh
 - source multibuild/travis_steps.sh
 - before_install
