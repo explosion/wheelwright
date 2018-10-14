@@ -71,8 +71,7 @@ before_install:
 - eval $(python ./run.py build-spec build-spec.json)
 - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
 - export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
-- printf "function run_tests {\n  pip install -U pytest\n python -m pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME} \n}"
-  > config.sh
+- cat config.sh.template | envsubst > config.sh
 - source multibuild/common_utils.sh
 - source multibuild/travis_steps.sh
 - before_install
@@ -80,9 +79,6 @@ install:
 - clean_code $REPO_DIR $BUILD_COMMIT
 - export CURRENT_DIR=`pwd`
 - cd $REPO_DIR
-- echo "${CURRENT_DIR} ${REPO_DIR}"
-- "[ -f ./bin/travis_setup.sh ] && source ./bin/travis_setup.sh"
-- cd $CURRENT_DIR
 - build_wheel $REPO_DIR $PLAT
 script:
 - install_run $PLAT
