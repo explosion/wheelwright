@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/murmurhash.git", "package-name": "murmurhash", "commit": "v0.28.0", "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "murmurhash-v0.28.0"}}
