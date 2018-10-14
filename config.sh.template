@@ -1,0 +1,21 @@
+#!/usr/bin/env bash
+# The travis.yml file runs:
+# cat config.sh.template | envsubst > config.sh
+# envsubst fills environment variables into the template. This allows environment
+# from the travis.yml to be threaded through the build process to generate this
+# script.
+# The config.sh script allows us to overwrite these functions within the docker
+# container, thereby customizing the build for multibuild.
+
+function run_tests {
+    pip install -U pytest
+    python -m pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME}
+}
+
+function build_wheel {
+    echo "${CURRENT_DIR} ${REPO_DIR}"
+    cd $REPO_DIR
+    [ -f ./bin/travis_setup.sh ] && source ./bin/travis_setup.sh
+    cd $CURRENT_DIR
+    build_pip_wheel $@
+}
