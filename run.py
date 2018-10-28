@@ -2,6 +2,7 @@
 
 import os
 import os.path
+import re
 import sys
 import glob
 import json
@@ -112,13 +113,22 @@ def _get_repo_id():
     try:
         result = subprocess.check_output(['git', 'config', '--get', 'remote.origin.url'])
         git_url = result.decode('utf-8').strip()
-        return '/'.join(git_url.split('.git')[0].rsplit('/', 2)[1:3])
+        git_ssh = re.match(r'git@github\.com:(.*/.*)\.git$', git_url)
+        if git_ssh:
+            return git_ssh.groups()[0]
+
+        git_https = re.match(r'https://github\.com/(.*/.*)\.git$', git_url)
+        if git_https:
+            return git_https.groups()[0]
+
     except subprocess.CalledProcessError:
-        click.secho("Error: Not a valid repository: {}.".format(Path.cwd()), fg='red')
-        click.secho("Make sure you're in the build repo directory or use the "
-                    "{} environment variable to specify the <user>/<repo> "
-                    "build repository.".format(ENV_REPO_NAME))
-        sys.exit(1)
+        pass
+
+    click.secho("Error: Not a valid repository: {}.".format(Path.cwd()), fg='red')
+    click.secho("Make sure you're in the build repo directory or use the "
+                "{} environment variable to specify the <user>/<repo> "
+                "build repository.".format(ENV_REPO_NAME))
+    sys.exit(1)
 
 
 def _do_upload(bs, paths):
