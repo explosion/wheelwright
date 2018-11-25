@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/cython-blis.git", "package-name": "blis", "commit": "v0.2.2", "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "blis-v0.2.2"}}
