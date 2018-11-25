@@ -7,6 +7,14 @@
 # The config.sh script allows us to overwrite these functions within the docker
 # container, thereby customizing the build for multibuild.
 
+function before_install {
+    # Install a virtualenv to work in.
+    virtualenv --python=python venv
+    source venv/bin/activate
+    python --version # just to check
+    pip install --upgrade pip wheel==0.31.1
+}
+
 function run_tests {
     pip install -U pytest
     python -m pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME}
