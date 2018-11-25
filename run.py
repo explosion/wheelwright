@@ -230,6 +230,7 @@ def build(repo, commit, package_name=None):
     click.secho("Building in repo {}".format(repo_id))
     click.secho("Building wheels for {}/{}\n".format(user, package))
     clone_url = DEFAULT_CLONE_TEMPLATE.format("{}/{}".format(user, package))
+    print(repo_id)
     repo = get_gh().get_repo(repo_id)
 
     click.secho("Finding a unique name for this release...", fg='yellow')
