@@ -20,6 +20,6 @@ function run_tests {
     #    pip install -U pytest
     #fi
     python -m pip install -U pytest
-    python -m pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME}
+    python -m pytest --pyargs "$PACKAGE_NAME"
 }
 
