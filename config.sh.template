@@ -21,10 +21,3 @@ function run_tests {
     python -m pytest --pyargs ${BUILD_SPEC_PACKAGE_NAME}
 }
 
-function build_wheel {
-    echo "${CURRENT_DIR} ${REPO_DIR}"
-    cd $REPO_DIR
-    [ -f ./bin/travis_setup.sh ] && source ./bin/travis_setup.sh
-    cd $CURRENT_DIR
-    build_pip_wheel $@
-}
