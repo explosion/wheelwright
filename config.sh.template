@@ -11,7 +11,7 @@ function run_tests {
     # Test whether pytest is already installed.
     # Holy crap bash sucks :(. This conditional took much googling.
     # Hope it's correct.
-    local pip_modules=`env3.6/bin/pip list 2> /dev/null`
+    local pip_modules=`venv/bin/pip list 2> /dev/null`
     if echo "$pip_modules" | grep 'pytest' > /dev/null
     then
         echo 'existing pytest found'
