@@ -46,6 +46,9 @@ matrix:
     env:
     - MB_PYTHON_VERSION=3.7
 before_install:
+# This is gettext needed for envsubst on osx =/
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; brew install gettext; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; brew link --force gettext; fi
 - pip install -Ur ./requirements.txt
 - eval $(python ./run.py build-spec build-spec.json)
 - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
