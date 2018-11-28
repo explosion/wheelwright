@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spaCy.git", "package-name": "spacy-nightly", "commit": "v2.1.0a3", "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy-nightly-v2.1.0a3"}}
