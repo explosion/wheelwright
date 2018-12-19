@@ -18,7 +18,12 @@ function run_tests {
     else
         python -m pip install -U pytest
     fi
-    python -m pip install -U pytest
+    if echo "$pip_modules" | grep 'mock' > /dev/null
+    then
+        echo 'existing mock found'
+    else
+        python -m pip install -U mock
+    fi
     python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
 
