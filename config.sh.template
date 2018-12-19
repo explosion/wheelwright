@@ -19,6 +19,6 @@ function run_tests {
         python -m pip install -U pytest
     fi
     python -m pip install -U pytest
-    python -m pytest --pyargs "$PACKAGE_NAME"
+    python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
 
