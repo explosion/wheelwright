@@ -204,9 +204,9 @@ def upload(build_spec, paths):
 def appveyor_build(build_spec):
     bs = get_build_spec(build_spec)
     run(['git', 'clone', bs['clone-url'], 'checkout'])
-    run(['pip', 'install', '-Ur', 'checkout\\requirements.txt'])
     with cd('checkout'):
         run(['git', 'checkout', bs['commit']])
+        run(['pip', 'install', '-Ur', 'checkout\\requirements.txt'])
         run(['python', 'setup.py', 'bdist_wheel'])
     wheels = glob.glob('checkout\\dist\\*.whl')
     run(['pip', 'install'] + wheels)
