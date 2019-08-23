@@ -27,3 +27,6 @@ function run_tests {
     python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
 
+
+# This is necessary because the Travis OSX environment is old.
+export MACOSX_DEPLOYMENT_TARGET="10.7"
