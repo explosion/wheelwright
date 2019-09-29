@@ -30,39 +30,8 @@ function run_tests {
 function pre_build {
     # Try to defeat travis docker cache? :(
     touch cache-busting-dummy-file
-}
-
-function pip_wheel_cmd {
-    local abs_wheelhouse=$1
-    # Try to defeat travis docker cache? :(
-    echo "hello"
-    touch cache-busting-dummy-file
-    echo "$(pip_opts)"
-    echo "$abs_wheelhouse"
     python setup.py build_ext --inplace
-    pip wheel $(pip_opts) -w $abs_wheelhouse --no-deps .
 }
-
-function pip_opts {
-    [ -n "$MANYLINUX_URL" ] && echo "--find-links $MANYLINUX_URL"
-}
-
-
-function bdist_wheel_cmd {
-    # Builds wheel with bdist_wheel, puts into wheelhouse
-    #
-    # It may sometimes be useful to use bdist_wheel for the wheel building
-    # process.  For example, versioneer has problems with versions which are
-    # fixed with bdist_wheel:
-    # https://github.com/warner/python-versioneer/issues/121
-    local abs_wheelhouse=$1
-    export MACOSX_DEPLOYMENT_TARGET="10.7"
-    python setup.py build_ext --inplace
-    python setup.py bdist_wheel
-    cp dist/*.whl $abs_wheelhouse
-}
-
-
 
 # This is necessary because the Travis OSX environment is old.
 export MACOSX_DEPLOYMENT_TARGET="10.7"
