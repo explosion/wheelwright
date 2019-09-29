@@ -27,6 +27,10 @@ function run_tests {
     python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
 
+function pre_build {
+    # Try to defeat travis docker cache? :(
+    touch cache-busting-dummy-file
+}
 
 # This is necessary because the Travis OSX environment is old.
 export MACOSX_DEPLOYMENT_TARGET="10.7"
