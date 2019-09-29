@@ -32,5 +32,15 @@ function pre_build {
     touch cache-busting-dummy-file
 }
 
+function pip_wheel_cmd {
+    local abs_wheelhouse=$1
+    # Try to defeat travis docker cache? :(
+    touch cache-busting-dummy-file
+    echo "$pip_opts"
+    echo "$abs_wheelhouse"
+    pip wheel $(pip_opts) -w $abs_wheelhouse --no-deps .
+}
+
+
 # This is necessary because the Travis OSX environment is old.
 export MACOSX_DEPLOYMENT_TARGET="10.7"
