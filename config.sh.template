@@ -43,6 +43,11 @@ function pip_wheel_cmd {
     pip wheel $(pip_opts) -w $abs_wheelhouse --no-deps .
 }
 
+function pip_opts {
+    [ -n "$MANYLINUX_URL" ] && echo "--find-links $MANYLINUX_URL"
+}
+
+
 function bdist_wheel_cmd {
     # Builds wheel with bdist_wheel, puts into wheelhouse
     #
