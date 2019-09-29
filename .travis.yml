@@ -57,7 +57,6 @@ before_install:
 - cat config.sh.template | envsubst > config.sh
 - source multibuild/common_utils.sh
 - source multibuild/travis_steps.sh
-- source config.sh
 - before_install
 install:
 - clean_code $REPO_DIR $BUILD_COMMIT
