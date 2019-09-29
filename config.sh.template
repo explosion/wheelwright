@@ -37,6 +37,9 @@ function pip_wheel_cmd {
     local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
     export MACOSX_DEPLOYMENT_TARGET="10.7"
     python setup.py bdist_wheel
+    ls -lah .
+    ls dist/
+    ls wheelhouse/
     cp dist/*.whl wheelhouse/
 }
 
