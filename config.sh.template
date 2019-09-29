@@ -37,7 +37,7 @@ function pip_wheel_cmd {
     # Try to defeat travis docker cache? :(
     echo "hello"
     touch cache-busting-dummy-file
-    echo "$pip_opts"
+    echo "$(pip_opts)"
     echo "$abs_wheelhouse"
     python setup.py build_ext --inplace
     pip wheel $(pip_opts) -w $abs_wheelhouse --no-deps .
