@@ -27,12 +27,18 @@ function run_tests {
     python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
 
+function abspath {
+    python -c "import os.path; print(os.path.abspath('$1'))"
+}
+
+
 function pip_wheel_cmd {
     local abs_wheelhouse=$1
+    local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
     export MACOSX_DEPLOYMENT_TARGET="10.7"
     python setup.py build_ext --inplace
     python setup.py bdist_wheel
-    cp dist/*.whl $abs_wheelhouse
+    cp dist/*.whl $wheelhouse
 }
 
 
