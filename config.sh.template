@@ -27,26 +27,14 @@ function run_tests {
     python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
 
-
-function clean_code {
-    local repo_dir=${1:-$REPO_DIR}
-    local build_commit=${2:-$BUILD_COMMIT}
-    [ -z "$repo_dir" ] && echo "repo_dir not defined" && exit 1
-    [ -z "$build_commit" ] && echo "build_commit not defined" && exit 1
-    # The package $repo_dir may be a submodule. git submodules do not
-    # have a .git directory. If $repo_dir is copied around, tools like
-    # Versioneer which require that it be a git repository are unable
-    # to determine the version.  Give submodule proper git directory
-    fill_submodule "$repo_dir"
-    (cd $repo_dir \
-        && git fetch origin \
-        && git checkout $build_commit \
-        && git clean -fxd \
-        && git reset --hard \
-        && git submodule update --init --recursive)
+function pip_wheel_cmd {
+    local abs_wheelhouse=$1
+    local abs_wheelhouse=$1
+    export MACOSX_DEPLOYMENT_TARGET="10.7"
     python setup.py build_ext --inplace
+    python setup.py bdist_wheel
+    cp dist/*.whl $abs_wheelhouse
 }
-
 
 
 # This is necessary because the Travis OSX environment is old.
