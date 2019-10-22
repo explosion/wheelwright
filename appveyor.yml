@@ -16,10 +16,6 @@ environment:
       PYTHON_VERSION: 3.5
       PYTHON_ARCH: 64
 
-    - PYTHON: C:\Python27-x64
-      PYTHON_VERSION: 2.7
-      PYTHON_ARCH: 64
-
 # Don't generate builds for tags, PRs, or the master branch
 skip_tags: true
 branches:
