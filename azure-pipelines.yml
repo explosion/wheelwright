@@ -74,8 +74,9 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
+      # This is hard-coded in the Docker scripts for Linux
       contents: 'multibuild/**'
-      targetFolder: /io
+      targetFolder: /io/$(Build.SourcesDirectory)
     condition: eq(variables['os'], 'linux')
     displayName: 'Set up multibuild (Linux)'
 
