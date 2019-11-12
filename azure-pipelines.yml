@@ -79,10 +79,6 @@ jobs:
     condition: eq(variables['os'], 'osx')
     displayName: 'Before install (Mac)'
 
-  - script: pip install virtualenv
-    condition: eq(variables['os'], 'linux')
-    displayName: 'Before install (Linux)'
-
   - powershell: |
       # Install new Python if necessary
       .\multibuild\install_python.ps1
@@ -92,12 +88,10 @@ jobs:
     displayName: 'Before install (Windows)'
 
   - script: |
+      pip install virtualenv
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
-      # export MB_PYTHON_VERSION=$(python.version)
-      # export TRAVIS_PYTHON_VERSION=$(python.version)
-      # export TRAVIS_OS_NAME=$(os)
       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
       export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
       cat config.sh.template | envsubst > config.sh
@@ -109,8 +103,8 @@ jobs:
     inputs:
       contents: '/**'
       targetFolder: /io
-    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
-    displayName: 'Set up multibuild (Mac / Linux)'
+    condition: eq(variables['os'], 'linux')
+    displayName: 'Copy multibuild files (Linux)'
 
   - script: |
       eval $(python ./run.py build-spec build-spec.json)
@@ -118,15 +112,12 @@ jobs:
       export TRAVIS_PYTHON_VERSION=$(python.version)
       export TRAVIS_OS_NAME=$(os)
       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
-      # export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
       clean_code $REPO_DIR $BUILD_COMMIT
       export CONFIG_PATH=/io/config.sh
       export MULTIBUILD_DIR=multibuild
-      ls /io
-      /io/multibuild/docker_build_wrap.sh
       build_wheel $REPO_DIR $PLAT
       install_run $PLAT
     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
@@ -146,6 +137,11 @@ jobs:
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      pathtoPublish: $(Build.ArtifactStagingDirectory)/wheelhouse
       artifactName: wheels
     displayName: 'Publish wheels in pipeline'
+
+- job: 'Test'
+  continueOnError: true
+  steps:
+    - script: ls $(Build.ArtifactStagingDirectory)/wheelhouse
