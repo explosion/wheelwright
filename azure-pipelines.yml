@@ -72,6 +72,13 @@ jobs:
   - script: git submodule update --init --recursive
     displayName: 'Set up multibuild'
 
+  - task: CopyFiles@2
+    inputs:
+      contents: 'multibuild'
+      targetFolder: /io/multibuild
+    condition: eq(variables['os'], 'linux')
+    displayName: 'Set up multibuild (Linux)'
+
   - script: |
       # This is gettext needed for envsubst on osx =/
       brew install gettext
@@ -80,6 +87,7 @@ jobs:
     displayName: 'Before install (Mac)'
 
   - script: pip install virtualenv
+    condition: eq(variables['os'], 'linux')
     displayName: 'Before install (Linux)'
 
   - powershell: |
