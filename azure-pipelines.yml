@@ -67,19 +67,18 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
-  # This is gettext needed for envsubst on osx =/
-  - script: |
-      brew install gettext
-      brew link --force gettext
-    condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: 'Before install (OSX)'
+  # # This is gettext needed for envsubst on osx =/
+  # - script: |
+  #     brew install gettext
+  #     brew link --force gettext
+  #   condition: eq(variables['Agent.OS'], 'Darwin')
+  #   displayName: 'Before install (OSX)'
 
   - script: |
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
-      ls $(Agent.BuildDirectory)
-      ls $(Agent.TempDirectory)
+      ls $(Build.SourcesDirectory)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
