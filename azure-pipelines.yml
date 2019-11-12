@@ -75,7 +75,7 @@ jobs:
   - task: CopyFiles@2
     inputs:
       contents: 'multibuild/**'
-      targetFolder: /io/multibuild
+      targetFolder: /io
     condition: eq(variables['os'], 'linux')
     displayName: 'Set up multibuild (Linux)'
 
