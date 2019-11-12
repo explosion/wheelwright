@@ -78,14 +78,13 @@ jobs:
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
-      cd $(Build.SourcesDirectory)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
       export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
       cat config.sh.template | envsubst > config.sh
-      source multibuild/common_utils.sh
-      source multibuild/travis_steps.sh
+      source $(Build.SourcesDirectory)/multibuild/common_utils.sh
+      source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
     displayName: 'Before install'
 
