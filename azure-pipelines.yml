@@ -129,16 +129,23 @@ jobs:
     displayName: 'Build wheel (Mac / Linux)'
 
   - script: |
-      pip install -Ur ./requirements.txt
-      python -u run.py appveyor-build --build-spec build-spec.json
+      python -u run.py windows-build --build-spec build-spec.json
     condition: eq(variables['os'], 'win')
     displayName: 'Install and build wheel (Windows)'
 
   - task: CopyFiles@2
     inputs:
+      contents: 'checkout/dist/**'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+    condition: eq(variables['os'], 'win')
+    displayName: 'Copy wheel (Windows)'
+
+  - task: CopyFiles@2
+    inputs:
       contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: 'Copy wheel'
+    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
+    displayName: 'Copy wheel (Mac / Linux)'
 
   - task: PublishBuildArtifacts@1
     inputs:
