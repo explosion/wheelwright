@@ -57,6 +57,8 @@ jobs:
       Python38Mac:
         imageName: 'macos-10.13'
         python.version: '3.8'
+        TRAVIS_OS_NAME: osx
+
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -76,8 +78,6 @@ jobs:
 
   - script: |
       git submodule update --init --recursive
-      echo $(Build.SourcesDirectory)
-      ls $(Build.SourcesDirectory)/multibuild
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
