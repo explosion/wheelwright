@@ -48,18 +48,18 @@ jobs:
       # Python37Mac:
       #   imageName: 'macos-10.13'
       #   python.version: '3.7'
-      # Python38Linux:
-      #   imageName: 'ubuntu-16.04'
-      #   python.version: '3.8'
-      #   os: linux
+      Python38Linux:
+        imageName: 'ubuntu-16.04'
+        python.version: '3.8'
+        os: linux
       Python38Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.8'
         os: win
-      # Python38Mac:
-      #   imageName: 'macos-10.13'
-      #   python.version: '3.8'
-      #   os: osx
+      Python38Mac:
+        imageName: 'macos-10.13'
+        python.version: '3.8'
+        os: osx
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -155,9 +155,3 @@ jobs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: wheels
     displayName: 'Publish wheel to artifacts'
-
-- job: 'Test'
-  dependsOn: Wheels
-  continueOnError: true
-  steps:
-    - script: ls $(Build.ArtifactStagingDirectory)/wheelhouse
