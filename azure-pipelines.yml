@@ -74,8 +74,7 @@ jobs:
     condition: eq(variables['Agent.OS'], 'Darwin')
     displayName: 'Before install (OSX)'
 
-  - script: |
-      ls
+  - bash: |
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
