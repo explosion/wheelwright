@@ -112,7 +112,7 @@ jobs:
     condition: eq(variables['os'], 'linux')
     displayName: 'Set up multibuild (Linux)'
 
-  - script:
+  - script: |
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
