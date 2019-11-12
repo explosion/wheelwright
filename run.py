@@ -208,7 +208,13 @@ def appveyor_build(build_spec):
         run(['git', 'checkout', bs['commit']])
         run(['pip', 'install', '-Ur', 'requirements.txt'])
         run(['python', 'setup.py', 'bdist_wheel'])
-    wheels = glob.glob('checkout\\dist\\*.whl')
+    wheels = []
+    for wheel in glob.glob('checkout\\dist\\*.whl'):
+        # No idea what I'm doing here...
+        # https://github.com/pypa/pip/issues/6951
+        if 'cp38m-win' in wheel:
+            wheel = wheel.replace("cp38m-win", "cp38-win")
+        wheels.append(wheel)
     run(['pip', 'install'] + wheels)
     os.mkdir('tmp_for_test')
     with cd('tmp_for_test'):
