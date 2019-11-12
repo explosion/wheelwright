@@ -225,6 +225,30 @@ def appveyor_build(build_spec):
     _do_upload(bs, wheels)
 
 
+@cli.command(name='windows-build')
+@click.option('--build-spec', type=click.Path(exists=True, dir_okay=False), required=True)
+def appveyor_build(build_spec):
+    bs = get_build_spec(build_spec)
+    run(['git', 'clone', bs['clone-url'], 'checkout'])
+    with cd('checkout'):
+        run(['git', 'checkout', bs['commit']])
+        run(['pip', 'install', '-Ur', 'requirements.txt'])
+        run(['python', 'setup.py', 'bdist_wheel'])
+    wheels = []
+    for wheel in glob.glob('checkout\\dist\\*.whl'):
+        # No idea what I'm doing here... https://github.com/pypa/pip/issues/6951
+        if 'cp38m-win' in wheel:
+            fixed_wheel = wheel.replace("cp38m-win", "cp38-win")
+            shutil.move(wheel, fixed_wheel)
+            wheels.append(fixed_wheel)
+        else:
+            wheels.append(wheel)
+    run(['pip', 'install'] + wheels)
+    os.mkdir('tmp_for_test')
+    with cd('tmp_for_test'):
+        run(['pytest', '--pyargs', bs['package-name']])
+
+
 @cli.command(name='build')
 @click.argument('repo', required=True)
 @click.argument('commit', required=True)
