@@ -5,6 +5,7 @@ import os.path
 import re
 import sys
 import glob
+import shutil
 import json
 import subprocess
 from contextlib import contextmanager
@@ -210,11 +211,13 @@ def appveyor_build(build_spec):
         run(['python', 'setup.py', 'bdist_wheel'])
     wheels = []
     for wheel in glob.glob('checkout\\dist\\*.whl'):
-        # No idea what I'm doing here...
-        # https://github.com/pypa/pip/issues/6951
+        # No idea what I'm doing here... https://github.com/pypa/pip/issues/6951
         if 'cp38m-win' in wheel:
-            wheel = wheel.replace("cp38m-win", "cp38-win")
-        wheels.append(wheel)
+            fixed_wheel = wheel.replace("cp38m-win", "cp38-win")
+            shutil.move(wheel, fixed_wheel)
+            wheels.append(fixed_wheel)
+        else:
+            wheels.append(wheel)
     run(['pip', 'install'] + wheels)
     os.mkdir('tmp_for_test')
     with cd('tmp_for_test'):
