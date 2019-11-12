@@ -1,0 +1,101 @@
+trigger:
+  branches:
+    include:
+    - branch-for-*
+
+variables:
+  REPO_DIR: checkout
+  BUILD_DEPENDS: "-Ur checkout/requirements.txt"
+  TEST_DEPENDS: "-Ur checkout/requirements.txt"
+  PLAT: x86_64
+  UNICODE_WIDTH: 32
+  HOMEBREW_NO_AUTO_UPDATE: 1
+
+jobs:
+- job: 'Wheels'
+  strategy:
+    matrix:
+      # Python27Linux:
+      #   imageName: 'ubuntu-16.04'
+      #   python.version: '2.7'
+      # Python27Mac:
+      #   imageName: 'macos-10.13'
+      #   python.version: '2.7'
+      # Python35Linux:
+      #   imageName: 'ubuntu-16.04'
+      #   python.version: '3.5'
+      # Python35Windows:
+      #   imageName: 'vs2017-win2016'
+      #   python.version: '3.5'
+      # Python35Mac:
+      #   imageName: 'macos-10.13'
+      #   python.version: '3.5'
+      # Python36Linux:
+      #   imageName: 'ubuntu-16.04'
+      #   python.version: '3.6'
+      # Python36Windows:
+      #   imageName: 'vs2017-win2016'
+      #   python.version: '3.6'
+      # Python36Mac:
+      #   imageName: 'macos-10.13'
+      #   python.version: '3.6'
+      # Python37Linux:
+      #   imageName: 'ubuntu-16.04'
+      #   python.version: '3.7'
+      # Python37Windows:
+      #   imageName: 'vs2017-win2016'
+      #   python.version: '3.7'
+      # Python37Mac:
+      #   imageName: 'macos-10.13'
+      #   python.version: '3.7'
+      # Python38Linux:
+      #   imageName: 'ubuntu-16.04'
+      #   python.version: '3.8'
+      # Python38Windows:
+      #   imageName: 'vs2017-win2016'
+      #   python.version: '3.8'
+      Python38Mac:
+        imageName: 'macos-10.13'
+        python.version: '3.8'
+    maxParallel: 4
+  pool:
+    vmImage: $(imageName)
+
+  steps:
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      architecture: 'x64'
+
+  # This is gettext needed for envsubst on osx =/
+  - script: |
+      brew install gettext
+      brew link --force gettext
+    condition: eq(variables['Agent.OS'], 'Darwin')
+    displayName: 'Before install (OSX)'
+
+  - script: |
+      pip install -Ur ./requirements.txt
+      eval $(python ./run.py build-spec build-spec.json)
+      git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
+      export MB_PYTHON_VERSION=$(python.version)
+      export TRAVIS_PYTHON_VERSION=$(python.version)
+      export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
+      export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
+      cat config.sh.template | envsubst > config.sh
+      source multibuild/common_utils.sh
+      source multibuild/travis_steps.sh
+      before_install
+    displayName: 'Before install'
+
+  - script: |
+      clean_code $REPO_DIR $BUILD_COMMIT
+      build_wheel $REPO_DIR $PLAT
+      install_run $PLAT
+    displayName: 'Build wheel'
+
+  - task: CopyFiles@2
+    inputs:
+      contents: 'wheelhouse/**'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+    displayName: 'Copy artifacts'
