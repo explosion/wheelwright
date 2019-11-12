@@ -80,9 +80,13 @@ jobs:
     condition: eq(variables['os'], 'osx')
     displayName: 'Before install (Mac)'
 
-  - powershell: |
-      # Install new Python if necessary
-      .\multibuild\install_python.ps1
+  # - task: PowerShell@2
+  #   inputs:
+  #     filePath: ./multibuild/install_python.ps1
+  #   condition: eq(variables['os'], 'win')
+  #   displayName: 'Install new Python if needed (Windows)'
+
+  - script: |
       SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
       python -m pip install -U pip setuptools wheel virtualenv
     condition: eq(variables['os'], 'win')
