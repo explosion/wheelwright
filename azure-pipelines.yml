@@ -57,7 +57,7 @@ jobs:
       Python38Mac:
         imageName: 'macos-10.13'
         python.version: '3.8'
-        TRAVIS_OS_NAME: osx
+        os: osx
 
     maxParallel: 4
   pool:
@@ -69,33 +69,28 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
-  # This is gettext needed for envsubst on osx =/
-  - script: |
-      brew install gettext
-      brew link --force gettext
-    condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: 'Before install (OSX)'
-
   - script: |
       git submodule update --init --recursive
+      # This is gettext needed for envsubst on osx =/
+      brew install gettext
+      brew link --force gettext
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
+      export TRAVIS_OS_NAME=$(os)
       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
       export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
       cat config.sh.template | envsubst > config.sh
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
-    displayName: 'Before install'
-
-  - script: |
       clean_code $REPO_DIR $BUILD_COMMIT
       build_wheel $REPO_DIR $PLAT
       install_run $PLAT
-    displayName: 'Build wheel'
+    condition: eq(variables['Agent.OS'], 'Darwin')
+    displayName: 'Install and build wheel (OSX)'
 
   - task: CopyFiles@2
     inputs:
