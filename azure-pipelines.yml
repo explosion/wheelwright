@@ -57,9 +57,6 @@ jobs:
       Python38Mac:
         imageName: 'macos-10.13'
         python.version: '3.8'
-        variables:
-          MB_PYTHON_VERSION: 3.8
-          TRAVIS_PYTHON_VERSION: 3.8
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -81,6 +78,8 @@ jobs:
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
+      export MB_PYTHON_VERSION=$(python.version)
+      export TRAVIS_PYTHON_VERSION=$(python.version)
       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
       export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
       cat config.sh.template | envsubst > config.sh
