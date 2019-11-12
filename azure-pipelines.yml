@@ -104,7 +104,7 @@ jobs:
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
-      mkdir -p /io//$(Build.SourcesDirectory) && cp / "$_"
+      mkdir -p /io//$(Build.SourcesDirectory) && cp -r / "$_"
       ls /io//$(Build.SourcesDirectory)
       clean_code $REPO_DIR $BUILD_COMMIT
       build_wheel $REPO_DIR $PLAT
