@@ -79,6 +79,9 @@ jobs:
     condition: eq(variables['os'], 'osx')
     displayName: 'Before install (Mac)'
 
+  - script: pip install virtualenv
+    displayName: 'Before install (Linux)'
+
   - powershell: |
       # Install new Python if necessary
       .\multibuild\install_python.ps1
