@@ -109,8 +109,8 @@ jobs:
     inputs:
       contents: '/**'
       targetFolder: /io
-    condition: eq(variables['os'], 'linux')
-    displayName: 'Set up multibuild (Linux)'
+    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
+    displayName: 'Set up multibuild (Mac / Linux)'
 
   - script: |
       eval $(python ./run.py build-spec build-spec.json)
