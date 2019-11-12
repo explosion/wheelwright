@@ -75,6 +75,7 @@ jobs:
     displayName: 'Before install (OSX)'
 
   - script: |
+      ls
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
