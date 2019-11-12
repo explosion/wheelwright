@@ -4,6 +4,10 @@ environment:
       secure: "fN4t6xVQCcYPG9CygE2GB+XO/VP9t+MauV8LClSpLUT/MXcPRMnxvXhC+GDET5Yx"
 
   matrix:
+    - PYTHON: C:\Python38-x64
+      PYTHON_VERSION: 3.8
+      PYTHON_ARCH: 64
+
     - PYTHON: C:\Python37-x64
       PYTHON_VERSION: 3.7
       PYTHON_ARCH: 64
