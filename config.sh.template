@@ -35,7 +35,7 @@ function abspath {
 function pip_wheel_cmd {
     local abs_wheelhouse=$1
     local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
-    export MACOSX_DEPLOYMENT_TARGET="10.7"
+    export MACOSX_DEPLOYMENT_TARGET="10.9"
     python setup.py bdist_wheel
     ls -lah .
     ls dist/
@@ -46,4 +46,4 @@ function pip_wheel_cmd {
 
 
 # This is necessary because the Travis OSX environment is old.
-export MACOSX_DEPLOYMENT_TARGET="10.7"
+export MACOSX_DEPLOYMENT_TARGET="10.9"
