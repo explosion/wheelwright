@@ -75,7 +75,7 @@ jobs:
     displayName: 'Before install (OSX)'
 
   - script: |
-      ls $(Build.SourcesDirectory)
+      echo $(Build.SourcesDirectory)
       ls $(Build.SourcesDirectory)/multibuild
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
