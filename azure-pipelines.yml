@@ -138,6 +138,7 @@ jobs:
     inputs:
       contents: 'checkout/dist/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
+      flattenFolders: true
     condition: eq(variables['os'], 'win')
     displayName: 'Copy wheel (Windows)'
 
@@ -145,12 +146,13 @@ jobs:
     inputs:
       contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
+      flattenFolders: true
     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
     displayName: 'Copy wheel (Mac / Linux)'
 
   - task: PublishBuildArtifacts@1
     inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)/wheelhouse
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: wheels
     displayName: 'Publish wheel to artifacts'
 
