@@ -75,6 +75,7 @@ jobs:
     displayName: 'Before install (OSX)'
 
   - script: |
+      git submodule update --init --recursive
       echo $(Build.SourcesDirectory)
       ls $(Build.SourcesDirectory)/multibuild
       pip install -Ur ./requirements.txt
