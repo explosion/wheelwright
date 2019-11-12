@@ -67,12 +67,12 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
-  # # This is gettext needed for envsubst on osx =/
-  # - script: |
-  #     brew install gettext
-  #     brew link --force gettext
-  #   condition: eq(variables['Agent.OS'], 'Darwin')
-  #   displayName: 'Before install (OSX)'
+  # This is gettext needed for envsubst on osx =/
+  - script: |
+      brew install gettext
+      brew link --force gettext
+    condition: eq(variables['Agent.OS'], 'Darwin')
+    displayName: 'Before install (OSX)'
 
   - script: |
       pip install -Ur ./requirements.txt
