@@ -113,7 +113,6 @@ jobs:
     displayName: 'Set up multibuild (Linux)'
 
   - script: |
-      ls /io//$(Build.SourcesDirectory)
       eval $(python ./run.py build-spec build-spec.json)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
@@ -123,6 +122,8 @@ jobs:
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
+      echo /io//$(Build.SourcesDirectory)/multibuild/docker_build_wrap.sh
+      /io//$(Build.SourcesDirectory)/multibuild/docker_build_wrap.sh
       clean_code $REPO_DIR $BUILD_COMMIT
       build_wheel $REPO_DIR $PLAT
       install_run $PLAT
