@@ -122,6 +122,7 @@ jobs:
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
       before_install
+      export CONFIG_PATH=$(Build.SourcesDirectory)/config.sh
       echo /io//$(Build.SourcesDirectory)/multibuild/docker_build_wrap.sh
       /io//$(Build.SourcesDirectory)/multibuild/docker_build_wrap.sh
       clean_code $REPO_DIR $BUILD_COMMIT
