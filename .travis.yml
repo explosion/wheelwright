@@ -38,10 +38,10 @@ matrix:
     language: generic
     env:
     - MB_PYTHON_VERSION=3.7
-  # - os: osx
-  #   language: generic
-  #   env:
-  #   - MB_PYTHON_VERSION=3.8
+  - os: osx
+    language: generic
+    env:
+    - MB_PYTHON_VERSION=3.8
 before_install:
 # This is gettext needed for envsubst on osx =/
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gettext; fi
