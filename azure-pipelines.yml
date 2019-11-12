@@ -129,6 +129,7 @@ jobs:
     displayName: 'Build wheel (Mac / Linux)'
 
   - script: |
+      pip install -Ur ./requirements.txt
       python -u run.py windows-build --build-spec build-spec.json
     condition: eq(variables['os'], 'win')
     displayName: 'Install and build wheel (Windows)'
