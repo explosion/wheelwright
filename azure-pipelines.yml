@@ -124,6 +124,7 @@ jobs:
       before_install
       clean_code $REPO_DIR $BUILD_COMMIT
       export CONFIG_PATH=$(Build.SourcesDirectory)/config.sh
+      export MULTIBUILD_DIR=multibuild
       ls /io/multibuild
       /io/multibuild/docker_build_wrap.sh
       build_wheel $REPO_DIR $PLAT
