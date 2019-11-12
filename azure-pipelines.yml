@@ -48,9 +48,10 @@ jobs:
       # Python37Mac:
       #   imageName: 'macos-10.13'
       #   python.version: '3.7'
-      # Python38Linux:
-      #   imageName: 'ubuntu-16.04'
-      #   python.version: '3.8'
+      Python38Linux:
+        imageName: 'ubuntu-16.04'
+        python.version: '3.8'
+        os: linux
       # Python38Windows:
       #   imageName: 'vs2017-win2016'
       #   python.version: '3.8'
@@ -58,7 +59,6 @@ jobs:
         imageName: 'macos-10.13'
         python.version: '3.8'
         os: osx
-
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -69,11 +69,25 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
+  - script: git submodule update --init --recursive
+    displayName: 'Set up multibuild'
+
   - script: |
-      git submodule update --init --recursive
       # This is gettext needed for envsubst on osx =/
       brew install gettext
       brew link --force gettext
+    condition: eq(variables['os'], 'osx')
+    displayName: 'Before install (Mac)'
+
+  - powershell: |
+      # Install new Python if necessary
+      .\multibuild\install_python.ps1
+      SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+      python -m pip install -U pip setuptools wheel virtualenv
+    condition: eq(variables['os'], 'win')
+    displayName: 'Before install (Windows)'
+
+  - script: |
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
@@ -89,11 +103,23 @@ jobs:
       clean_code $REPO_DIR $BUILD_COMMIT
       build_wheel $REPO_DIR $PLAT
       install_run $PLAT
-    condition: eq(variables['Agent.OS'], 'Darwin')
-    displayName: 'Install and build wheel (OSX)'
+    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
+    displayName: 'Install and build wheel (Mac / Linux)'
+
+  - script: |
+      pip install -Ur ./requirements.txt
+      python -u run.py appveyor-build --build-spec build-spec.json
+    condition: eq(variables['os'], 'win')
+    displayName: 'Install and build wheel (Windows)'
 
   - task: CopyFiles@2
     inputs:
       contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
-    displayName: 'Copy artifacts'
+    displayName: 'Copy wheels'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: wheels
+    displayName: 'Publish wheels in pipeline'
