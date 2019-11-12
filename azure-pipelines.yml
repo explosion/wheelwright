@@ -75,7 +75,7 @@ jobs:
   - task: CopyFiles@2
     inputs:
       # This is hard-coded in the Docker scripts for Linux
-      contents: 'multibuild/**'
+      contents: '/**'
       targetFolder: /io//$(Build.SourcesDirectory)
     condition: eq(variables['os'], 'linux')
     displayName: 'Set up multibuild (Linux)'
@@ -88,8 +88,8 @@ jobs:
     displayName: 'Before install (Mac)'
 
   - script: |
+      ls /io
       pip install virtualenv
-      ls /io//$(Build.SourcesDirectory)
     condition: eq(variables['os'], 'linux')
     displayName: 'Before install (Linux)'
 
