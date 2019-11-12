@@ -1,6 +1,7 @@
 # Project specific
 github-secret-token.txt
 wheels/*
+.vscode/
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
