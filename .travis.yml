@@ -15,12 +15,12 @@ services: docker
 # Try to cache Homebrew stuff for faster OSX builds
 # https://stackoverflow.com/a/57017412/6400719
 cache:
+  ccache: true
   directories:
     - $HOME/Library/Caches/Homebrew
     - /usr/local/Homebrew
 before_cache:
   - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then brew cleanup; fi
-  - if [ "${TRAVIS_OS_NAME}" = "osx" ]; then find /usr/local/Homebrew \! -regex ".+\.git.+" -delete; fi
 if: type = push AND tag IS blank AND branch =~ /^branch-for-/
 matrix:
   include:
@@ -54,6 +54,9 @@ before_install:
 # This is gettext needed for envsubst on osx =/
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install gettext; fi
 - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew link --force gettext; fi
+# https://stackoverflow.com/a/47589257/6400719
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update; fi
+- if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install ccache; fi
 - pip install -Ur ./requirements.txt
 - eval $(python ./run.py build-spec build-spec.json)
 - git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
