@@ -16,64 +16,64 @@ variables:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
-- job: "sdist"
-  variables:
-    python.version: '3.8'
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
+# - job: "sdist"
+#   variables:
+#     python.version: '3.8'
+#   steps:
+#   - task: UsePythonVersion@0
+#     inputs:
+#       versionSpec: '$(python.version)'
+#       architecture: 'x64'
 
-  - bash: |
-      pip install -Ur ./requirements.txt
-      eval $(python ./run.py build-spec build-spec.json)
-      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
-      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
-      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
-      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
-    displayName: 'Set variables'
+#   - bash: |
+#       pip install -Ur ./requirements.txt
+#       eval $(python ./run.py build-spec build-spec.json)
+#       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
+#       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
+#       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+#       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
+#     displayName: 'Set variables'
 
-  - script: |
-      git clone $(clone_url) $(checkout)
-      cd $(checkout)
-      python -m pip install -U pip
-      pip install -r requirements.txt
-      python setup.py sdist
-    displayName: 'Install and build sdist'
+#   - script: |
+#       git clone $(clone_url) $(checkout)
+#       cd $(checkout)
+#       python -m pip install -U pip
+#       pip install -r requirements.txt
+#       python setup.py sdist
+#     displayName: 'Install and build sdist'
 
-  - bash: |
-      cd $(Build.SourcesDirectory)/$(checkout)
-      SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
-      pip install dist/$SDIST
-      rm -rf $(package_name)
-      python -m pytest --pyargs $(package_name)
-    displayName: 'Install from sdist & run tests'
+#   - bash: |
+#       cd $(Build.SourcesDirectory)/$(checkout)
+#       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
+#       pip install dist/$SDIST
+#       rm -rf $(package_name)
+#       python -m pytest --pyargs $(package_name)
+#     displayName: 'Install from sdist & run tests'
 
-  - task: CopyFiles@2
-    inputs:
-      contents: '$(checkout)/dist/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    displayName: 'Copy sdist'
+#   - task: CopyFiles@2
+#     inputs:
+#       contents: '$(checkout)/dist/**'
+#       targetFolder: $(Build.ArtifactStagingDirectory)
+#       flattenFolders: true
+#     displayName: 'Copy sdist'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: '$(ARTIFACT_NAME)'
-    displayName: 'Publish sdist to artifacts'
+#   - task: PublishBuildArtifacts@1
+#     inputs:
+#       pathtoPublish: $(Build.ArtifactStagingDirectory)
+#       artifactName: '$(ARTIFACT_NAME)'
+#     displayName: 'Publish sdist to artifacts'
 
-  - task: GitHubRelease@0
-    inputs:
-      gitHubConnection: '$(GH_CONNECTION)'
-      repositoryName: '$(Build.Repository.Name)'
-      action: 'edit'
-      tagSource: manual
-      tag: '$(release_tag)'
-      addChangeLog: false
-      assetUploadMode: replace
-      assets: '$(Build.ArtifactStagingDirectory)/*'
-    displayName: 'Upload to GitHub release'
+#   - task: GitHubRelease@0
+#     inputs:
+#       gitHubConnection: '$(GH_CONNECTION)'
+#       repositoryName: '$(Build.Repository.Name)'
+#       action: 'edit'
+#       tagSource: manual
+#       tag: '$(release_tag)'
+#       addChangeLog: false
+#       assetUploadMode: replace
+#       assets: '$(Build.ArtifactStagingDirectory)/*'
+#     displayName: 'Upload to GitHub release'
 
 - job: 'wheels'
   continueOnError: true
@@ -217,6 +217,7 @@ jobs:
         wheel_file = os.listdir('./dist')[0]
         wheel_path = os.path.join('./dist', wheel_file)
         os.rename(wheel_path, wheel_path.replace("cp38m-win", "cp38-win"))
+        print(os.listdir('./dist'))
       failOnStderr: true
       workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
     condition: and(eq(variables['os'], 'win'), eq(variables['python.version'], '3.8'))
@@ -224,6 +225,7 @@ jobs:
 
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
+      ls
       WHEEL=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$WHEEL
       rm -rf $(package_name)
