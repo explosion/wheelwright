@@ -89,7 +89,7 @@ def build(repo, commit, package_name=None):
         },
     }
     bs_json = json.dumps(bs)
-    click.info("Creating release {} to collect assets...".format(release_name))
+    msg.text("Creating release {} to collect assets".format(release_name))
     release_template = "https://github.com/{}/{}\n\n### Build spec\n\n```json\n{}\n```"
     release_text = release_template.format(user, package, json.dumps(bs, indent=4))
     release = repo.create_git_release(release_name, release_name, release_text)
