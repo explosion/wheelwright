@@ -19,27 +19,35 @@ jobs:
       Python35Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.5'
+        os: linux
       Python35Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.5'
+        os: win
       Python36Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.6'
+        os: linux
       Python36Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.6'
+        os: win
       Python36Mac:
         imageName: 'macos-10.13'
         python.version: '3.6'
+        os: osx
       Python37Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.7'
+        os: linux
       Python37Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.7'
+        os: win
       Python37Mac:
         imageName: 'macos-10.13'
         python.version: '3.7'
+        os: osx
       Python38Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.8'
@@ -147,3 +155,9 @@ jobs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: wheels
     displayName: 'Publish wheel to artifacts'
+
+- job: 'Test'
+  dependsOn: Wheels
+  continueOnError: true
+  steps:
+    - script: ls $(Build.ArtifactStagingDirectory)
