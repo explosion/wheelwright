@@ -115,40 +115,6 @@ python run.py download cymem-v1.31.2
 
 ## API
 
-### `run.py check`
-
-Verify that everything is set up correctly.
-
-```
-python run.py check
-
-┬ ┬┬ ┬┌─┐┌─┐┬  ┬ ┬┬─┐┬┌─┐┬ ┬┌┬┐
-│││├─┤├┤ ├┤ │  │││├┬┘││ ┬├─┤ │
-└┴┘┴ ┴└─┘└─┘┴─┘└┴┘┴└─┴└─┘┴ ┴ ┴
-
-Checking if things are set up correctly...
-
-✓ Using build repo explosion/wheelwright
-✓ Found GitHub secret in github-secret-token.txt file.
-✓ Connected to GitHub with token for user @explosion-bot
-✓ Checked GitHub rate limiting: 4982/5000 remaining
-✓ azure-pipelines.yml exists in root directory.
-```
-
-### `run.py build`
-
-Build wheels for a given repo and commit / tag.
-
-```bash
-python run.py build explosion/cymem v1.32.1
-```
-
-| Argument         | Type       | Description                                                            |
-| ---------------- | ---------- | ---------------------------------------------------------------------- |
-| `repo`           | positional | The repository to build, in `user/repo` format.                        |
-| `commit`         | positional | The commit to build.                                                   |
-| `--package-name` | option     | Optional alternative Python package name, if different from repo name. |
-
 ### `run.py download`
 
 Download existing wheels for a release ID (name of build repo tag). The
