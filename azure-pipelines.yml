@@ -200,10 +200,35 @@ jobs:
     displayName: 'Build wheel (Mac / Linux)'
 
   - script: |
-      pip install -Ur ./requirements.txt
-      python -u run.py windows-build --build-spec build-spec.json
+      git clone $(clone_url) $(checkout)
+      cd $(checkout)
+      git checkout $(commit)
+      pip install -Ur requirements.txt
+      python setup.py bdist_wheel
     condition: eq(variables['os'], 'win')
     displayName: 'Install and build wheel (Windows)'
+
+  - task: PythonScript@0
+    inputs:
+      scriptSource: inline
+      script: |
+        # https://github.com/pypa/pip/issues/6951
+        import os
+        wheel = os.listdir('./dist')[-1]
+        os.rename(wheel, wheel.replace("cp38m-win", "cp38-win"))
+      failOnStderr: true
+      workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
+    condition: and(eq(variables['os'], 'win'), eq(variables['python.version'], '3.8'))
+    displayName: Fix wheel name (Windows, Python 3.8)
+
+  - bash: |
+      cd $(Build.SourcesDirectory)/$(checkout)
+      WHEEL=$(python -c "import os;print(os.listdir('./dist')[-1])" 2>&1)
+      pip install dist/$WHEEL
+      rm -rf $(package_name)
+      python -m pytest --pyargs $(package_name)
+    condition: eq(variables['os'], 'win')
+    displayName: 'Test wheel (Windows)'
 
   - task: CopyFiles@2
     inputs:
