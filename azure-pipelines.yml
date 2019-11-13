@@ -69,6 +69,7 @@ jobs:
       action: 'edit'
       tagSource: manual
       tag: '$(release_tag)'
+      addChangeLog: false
       assets: '$(Build.ArtifactStagingDirectory)/*'
     displayName: 'Upload to GitHub release'
 
