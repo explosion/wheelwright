@@ -213,7 +213,7 @@ jobs:
 
   - task: GitHubRelease@0
     inputs:
-      gitHubConnection: 'explosion (5)'
+      gitHubConnection: 'wheelwright'
       repositoryName: '$(Build.Repository.Name)'
       action: 'edit'
       target: '$(commit)'
