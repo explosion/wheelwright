@@ -34,7 +34,6 @@ jobs:
   - bash: |
       eval $(python ./run.py build-spec build-spec.json)
       cd $(Build.SourcesDirectory)/$REPO_DIR
-      ls .
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$SDIST
       rm -rf $BUILD_SPEC_PACKAGE_NAME
@@ -43,7 +42,7 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-      contents: 'dist/**'
+      contents: 'checkout/dist/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     displayName: 'Copy sdist'
