@@ -224,8 +224,7 @@ jobs:
     displayName: Fix wheel name (Windows, Python 3.8)
 
   - bash: |
-      cd $(Build.SourcesDirectory)/$(checkout)
-      ls
+      cd $(checkout)
       WHEEL=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$WHEEL
       rm -rf $(package_name)
