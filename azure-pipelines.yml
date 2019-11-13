@@ -23,7 +23,7 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
-  - script: |
+  - bash: |
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
@@ -146,6 +146,7 @@ jobs:
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
+      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
     displayName: 'Set variables'
 
@@ -212,11 +213,10 @@ jobs:
 
   # - task: GitHubRelease@0
   #   inputs:
-  #     gitHubConnection:
-  #     repositoryName: '$(Build.Repository.Name)'
+  #     gitHubConnection: TODO
+  #     repositoryName: $(Build.Repository.Name)
   #     action: 'edit'
-  #     #target: '$(Build.SourceVersion)' # Required when action == Create || Action == Edit
-  #     #tagSource: 'auto' # Required when action == Create# Options: auto, manual
-  #     #tag: # Required when action == Edit || Action == Delete || TagSource == Manual
+  #     target: $(commit)
+  #     tag: $(release_tag)
   #     assets: '$(Build.ArtifactStagingDirectory)/*'
   #   displayName: 'Upload to GitHub release'
