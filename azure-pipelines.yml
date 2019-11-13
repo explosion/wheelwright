@@ -163,6 +163,7 @@ jobs:
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+      echo "##vso[build.updatebuildnumber]$BUILD_SPEC_RELEASE_ID"
     displayName: 'Set variables'
 
   - script: |
