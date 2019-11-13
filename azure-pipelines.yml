@@ -25,30 +25,29 @@ jobs:
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
+      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
+      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
     displayName: 'Set variables'
 
   - script: |
-      echo "Clone URL"
-      echo $CLONE_URL
-      git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
-      cd $REPO_DIR
+      git clone $(clone_url) $(checkout)
+      cd $(checkout)
       python -m pip install -U pip
       pip install -r requirements.txt
       python setup.py sdist
     displayName: 'Install and build sdist'
 
   - bash: |
-      eval $(python ./run.py build-spec build-spec.json)
-      cd $(Build.SourcesDirectory)/$REPO_DIR
+      cd $(Build.SourcesDirectory)/$(checkout)
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$SDIST
-      rm -rf $BUILD_SPEC_PACKAGE_NAME
-      python -m pytest --pyargs $BUILD_SPEC_PACKAGE_NAME
+      rm -rf $(package_name)
+      python -m pytest --pyargs $(package_name)
     displayName: 'Install from sdist & run tests'
 
   - task: CopyFiles@2
     inputs:
-      contents: 'checkout/dist/**'
+      contents: '$(checkout)/dist/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     displayName: 'Copy sdist'
