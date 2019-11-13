@@ -1,5 +1,3 @@
-# coding: utf8
-
 import os
 import os.path
 import re
@@ -33,13 +31,6 @@ SECRET_FILE = "github-secret-token.txt"
 
 # We substitute the project name into this string to get the URL to clone:
 DEFAULT_CLONE_TEMPLATE = "https://github.com/{}.git"
-
-# All the statuses we want to wait for, maps github name -> our display name
-STATUSES = {
-    "continuous-integration/appveyor/branch": "Appveyor",
-    "continuous-integration/travis-ci/push": "Travis",
-}
-NA_STATE = "n/a"
 
 # github.enable_console_debug_logging()
 
@@ -240,9 +231,7 @@ def build(repo, commit, package_name=None):
     click.secho("Building in repo {}".format(repo_id))
     click.secho("Building wheels for {}/{}\n".format(user, package))
     clone_url = DEFAULT_CLONE_TEMPLATE.format("{}/{}".format(user, package))
-    print(repo_id)
     repo = get_gh().get_repo(repo_id)
-
     click.secho("Finding a unique name for this release...", fg="yellow")
     # Pick the release_name by finding an unused one
     i = 1
@@ -256,7 +245,6 @@ def build(repo, commit, package_name=None):
             break
         i += 1
     branch_name = "branch-for-" + release_name
-
     bs = {
         "clone-url": clone_url,
         "package-name": package_name,
@@ -268,7 +256,6 @@ def build(repo, commit, package_name=None):
         },
     }
     bs_json = json.dumps(bs)
-
     click.secho(
         "Creating release {} to collect assets...".format(release_name), fg="yellow"
     )
@@ -278,7 +265,6 @@ def build(repo, commit, package_name=None):
         release_name,
         release_template.format(user, package, json.dumps(bs, indent=4)),
     )
-    print(release.html_url)
     click.secho("Creating build branch...", fg="yellow")
     # 'master' is a 'Commit'. 'master.commit' is a 'GitCommit'. These are
     # different types that are mostly *not* interchangeable:
@@ -294,18 +280,11 @@ def build(repo, commit, package_name=None):
         "Building: {}".format(release_name), tree, [master_gitcommit]
     )
     repo.create_git_ref("refs/heads/" + branch_name, our_gitcommit.sha)
-    print("Commit is {} in branch {}.".format(our_gitcommit.sha[:8], branch_name))
-
-    click.secho("Waiting for build to complete...", fg="yellow")
-    # get_combined_status needs a Commit, not a GitCommit
-    our_commit = repo.get_commit(our_gitcommit.sha)
-    combined_status = our_commit.get_combined_status()
-    for status in combined_status.statuses:
-        print(status.context, status.target_url)
-    print(
-        "Release:",
-        "https://github.com/{}/releases/tag/{}".format(repo_id, release_name),
-    )
+    print("Commit is {} in branch {}".format(our_gitcommit.sha[:8], branch_name))
+    checks_template = "https://github.com/{}/{}/commit/{}/checks"
+    print("Release:", release.html_url)
+    # TODO: use correct repo
+    print("Checks: ", checks_template.format(user, package, our_gitcommit.sha))
 
 
 @cli.command(name="download")
@@ -316,65 +295,6 @@ def download_release_assets(release_id):
     repo_id = _get_repo_id()
     click.secho("Downloading from repo {}".format(repo_id))
     _download_release_assets(repo_id, release_id)
-
-
-@cli.command(name="check")
-def check():
-    """Verify that everything is set up correctly."""
-    print_ok = lambda text: click.secho("\u2713 {}".format(text), fg="green")
-    print_no = lambda text: click.secho("\u2718 {}".format(text), fg="red")
-
-    click.secho(LOGO, fg="cyan")
-    click.secho("Checking if things are set up correctly...\n")
-
-    # Check build repo
-    try:
-        repo_id = _get_repo_id()
-        print_ok("Using build repo {}".format(repo_id))
-    except:  # noqa: E722
-        print_no(
-            "Couldn't get build repo name via git or {} env variable.".format(
-                ENV_REPO_NAME
-            )
-        )
-
-    # Check GitHub secret
-    secret_env = os.environ.get(ENV_GH_SECRET)
-    secret_path = ROOT / SECRET_FILE
-    if secret_env:
-        print_ok(
-            "Found GitHub secret in {} environment variable.".format(ENV_GH_SECRET)
-        )
-    if secret_path.exists():
-        print_ok("Found GitHub secret in {} file.".format(SECRET_FILE))
-    if not secret_env and not secret_path.exists():
-        print_no(
-            "No Github secret found in environment variable or {}.".format(SECRET_FILE)
-        )
-    else:
-        # Check token
-        try:
-            gh = get_gh()
-            gh_user = gh.get_user().login
-        except github.GithubException as e:
-            gh = None
-            print_no(
-                "Couldn't connect to GitHub. Maybe the token is invalid?\n{}".format(e)
-            )
-        if gh is not None:
-            print_ok("Connected to GitHub with token for user @{}".format(gh_user))
-            rate_limit = gh.rate_limiting
-            print_ok(
-                "Checked GitHub rate limiting: {}/{} remaining".format(*rate_limit)
-            )
-
-    # Check CI files
-    for ci_file in ["azure-pipelines.yml"]:
-        ci_path = ROOT / ci_file
-        if not ci_path.exists():
-            print_no("No {} found in root directory.".format(ci_file))
-        else:
-            print_ok("{} exists in root directory.".format(ci_file))
 
 
 if __name__ == "__main__":
