@@ -24,7 +24,7 @@ jobs:
   - script: |
       pip install -Ur ./requirements.txt
       eval $(python ./run.py build-spec build-spec.json)
-      echo "##vso[task.setvariable variable=CLONE_URL;isOutput=true]$BUILD_SPEC_CLONE_URL"
+      echo "##vso[task.setvariable variable=clone_url]test"
     displayName: 'Set variables'
 
   - script: |
