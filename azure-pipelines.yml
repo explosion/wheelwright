@@ -33,10 +33,9 @@ jobs:
 
   - bash: |
       eval $(python ./run.py build-spec build-spec.json)
-      rm -rf $BUILD_SPEC_PACKAGE_NAME
-      ls dist
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$SDIST
+      rm -rf $BUILD_SPEC_PACKAGE_NAME
       python -m pytest --pyargs $BUILD_SPEC_PACKAGE_NAME
     displayName: 'Install from sdist & run tests'
 
