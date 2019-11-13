@@ -47,3 +47,5 @@ function pip_wheel_cmd {
 
 # This is necessary because the Travis OSX environment is old.
 export MACOSX_DEPLOYMENT_TARGET="10.9"
+
+export MULTIBUILD_DIR="multibuild"

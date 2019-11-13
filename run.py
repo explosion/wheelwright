@@ -41,15 +41,6 @@ STATUSES = {
     'continuous-integration/travis-ci/push': 'Travis',
 }
 NA_STATE = 'n/a'
-FINAL_STATES = {'error', 'failure', 'success'}
-BAD_STATES = {'error', 'failure'}
-STATUS_COLORS = {
-    'pending': 'blue',
-    'success': 'green',
-    'failure': 'red',
-    'error': 'red'
-}
-
 
 #github.enable_console_debug_logging()
 
@@ -117,14 +108,11 @@ def _get_repo_id():
         git_ssh = re.match(r'git@github\.com:(.*/.*)\.git$', git_url)
         if git_ssh:
             return git_ssh.groups()[0]
-
         git_https = re.match(r'https://github\.com/(.*/.*)\.git$', git_url)
         if git_https:
             return git_https.groups()[0]
-
     except subprocess.CalledProcessError:
         pass
-
     click.secho("Error: Not a valid repository: {}.".format(Path.cwd()), fg='red')
     click.secho("Make sure you're in the build repo directory or use the "
                 "{} environment variable to specify the <user>/<repo> "
@@ -190,6 +178,8 @@ def build_spec_to_shell(build_spec):
         "BUILD_SPEC_PACKAGE_NAME='{package-name}'\n"
         .format(**bs)
     )
+    release_id = bs.get("upload-to", {}).get("release-id", "")
+    sys.stdout.write("BUILD_SPEC_RELEASE_ID='{}'\n".format(release_id))
 
 
 @cli.command(name='upload')
@@ -200,7 +190,7 @@ def upload(build_spec, paths):
     _do_upload(bs, paths)
 
 
-@cli.command(name='appveyor-build')
+@cli.command(name='windows-build')
 @click.option('--build-spec', type=click.Path(exists=True, dir_okay=False), required=True)
 def appveyor_build(build_spec):
     bs = get_build_spec(build_spec)
@@ -222,7 +212,6 @@ def appveyor_build(build_spec):
     os.mkdir('tmp_for_test')
     with cd('tmp_for_test'):
         run(['pytest', '--pyargs', bs['package-name']])
-    _do_upload(bs, wheels)
 
 
 @cli.command(name='build')
@@ -296,51 +285,10 @@ def build(repo, commit, package_name=None):
     click.secho("Waiting for build to complete...", fg='yellow')
     # get_combined_status needs a Commit, not a GitCommit
     our_commit = repo.get_commit(our_gitcommit.sha)
-    showed_urls = {}
-    while True:
-        time.sleep(10)
-        combined_status = our_commit.get_combined_status()
-        display_name_to_state = {}
-        for display_name in STATUSES.values():
-            display_name_to_state[display_name] = NA_STATE
-        for status in combined_status.statuses:
-            if status.context in STATUSES:
-                display_name = STATUSES[status.context]
-                display_name_to_state[display_name] = status.state
-                if display_name not in showed_urls:
-                    print("{} logs: {}".format(
-                        display_name, status.target_url
-                    ))
-                    showed_urls[display_name] = status.target_url
-
-        displays = [
-            click.style("[{} - {}]".format(name, state), fg=STATUS_COLORS.get(state, 'white'))
-            for name, state in display_name_to_state.items()
-        ]
-        click.echo(" ".join(displays))
-        pending = False
-        failed = False
-        # The Github states are: "error", "failure", "success", "pending"
-        for state in display_name_to_state.values():
-            if state == NA_STATE:
-                continue
-            if state not in FINAL_STATES:
-                pending = True
-            if state in BAD_STATES:
-                failed = True
-        if failed or not pending:
-            break
-
-    release = get_release(repo_id, release_name)
-    if failed:
-        click.secho("*** Failed! ***", bg='red', fg='black')
-        for display_name, url in showed_urls.items():
-            print("{} logs: {}".format(display_name, url))
-        release.update_release('\u274c ' + release.title, release.body)
-        sys.exit(1)
-    else:
-        _download_release_assets(repo_id, release_name)
-        release.update_release('\u2705 ' + release.title, release.body)
+    combined_status = our_commit.get_combined_status()
+    for status in combined_status.statuses:
+        print(status.context, status.target_url)
+    print("Release:", "https://github.com/{}/releases/tag/{}".format(repo_id, release_name))
 
 
 @cli.command(name='download')
@@ -396,7 +344,7 @@ def check():
 
     # Check CI files
     token_var = 'GITHUB_SECRET_TOKEN'
-    for ci_file in ('.travis.yml', 'appveyor.yml'):
+    for ci_file in ['azure-pipelines.yml']:
         ci_path = ROOT / ci_file
         if not ci_path.exists():
             print_no("No {} found in root directory.".format(ci_file))
