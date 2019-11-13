@@ -12,7 +12,7 @@ variables:
   HOMEBREW_NO_AUTO_UPDATE: 1
 
 jobs:
-- job: "sdist"
+- job: "SDIST"
   variables:
     python.version: '3.8'
   steps:
@@ -34,7 +34,8 @@ jobs:
   - bash: |
       eval $(python ./run.py build-spec build-spec.json)
       rm -rf $BUILD_SPEC_PACKAGE_NAME
-      SDIST=$(python -c "import os;print(os.listdir('./dist')[-1])" 2>&1)
+      ls dist
+      SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$SDIST
       python -m pytest --pyargs $BUILD_SPEC_PACKAGE_NAME
     displayName: 'Install from sdist & run tests'
@@ -52,146 +53,146 @@ jobs:
       artifactName: sdist
     displayName: 'Publish sdist to artifacts'
 
-- job: 'wheels'
-  continueOnError: true
-  strategy:
-    matrix:
-      Python35Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.5'
-        os: linux
-      Python35Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.5'
-        os: win
-      Python36Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.6'
-        os: linux
-      Python36Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.6'
-        os: win
-      Python36Mac:
-        imageName: 'macos-10.13'
-        python.version: '3.6'
-        os: osx
-      Python37Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.7'
-        os: linux
-      Python37Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.7'
-        os: win
-      Python37Mac:
-        imageName: 'macos-10.13'
-        python.version: '3.7'
-        os: osx
-      Python38Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.8'
-        os: linux
-      Python38Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.8'
-        os: win
-      Python38Mac:
-        imageName: 'macos-10.13'
-        python.version: '3.8'
-        os: osx
-    maxParallel: 4
-  pool:
-    vmImage: $(imageName)
+# - job: 'WHEELS'
+#   continueOnError: true
+#   strategy:
+#     matrix:
+#       Python35Linux:
+#         imageName: 'ubuntu-16.04'
+#         python.version: '3.5'
+#         os: linux
+#       Python35Windows:
+#         imageName: 'vs2017-win2016'
+#         python.version: '3.5'
+#         os: win
+#       Python36Linux:
+#         imageName: 'ubuntu-16.04'
+#         python.version: '3.6'
+#         os: linux
+#       Python36Windows:
+#         imageName: 'vs2017-win2016'
+#         python.version: '3.6'
+#         os: win
+#       Python36Mac:
+#         imageName: 'macos-10.13'
+#         python.version: '3.6'
+#         os: osx
+#       Python37Linux:
+#         imageName: 'ubuntu-16.04'
+#         python.version: '3.7'
+#         os: linux
+#       Python37Windows:
+#         imageName: 'vs2017-win2016'
+#         python.version: '3.7'
+#         os: win
+#       Python37Mac:
+#         imageName: 'macos-10.13'
+#         python.version: '3.7'
+#         os: osx
+#       Python38Linux:
+#         imageName: 'ubuntu-16.04'
+#         python.version: '3.8'
+#         os: linux
+#       Python38Windows:
+#         imageName: 'vs2017-win2016'
+#         python.version: '3.8'
+#         os: win
+#       Python38Mac:
+#         imageName: 'macos-10.13'
+#         python.version: '3.8'
+#         os: osx
+#     maxParallel: 4
+#   pool:
+#     vmImage: $(imageName)
 
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
+#   steps:
+#   - task: UsePythonVersion@0
+#     inputs:
+#       versionSpec: '$(python.version)'
+#       architecture: 'x64'
 
-  - script: git submodule update --init --recursive
-    displayName: 'Set up multibuild'
+#   - script: git submodule update --init --recursive
+#     displayName: 'Set up multibuild'
 
-  - script: |
-      # This is gettext needed for envsubst on osx =/
-      brew install gettext
-      brew link --force gettext
-    condition: eq(variables['os'], 'osx')
-    displayName: 'Before install (Mac)'
+#   - script: |
+#       # This is gettext needed for envsubst on osx =/
+#       brew install gettext
+#       brew link --force gettext
+#     condition: eq(variables['os'], 'osx')
+#     displayName: 'Before install (Mac)'
 
-  # - task: PowerShell@2
-  #   inputs:
-  #     filePath: ./multibuild/install_python.ps1
-  #   condition: eq(variables['os'], 'win')
-  #   displayName: 'Install new Python if needed (Windows)'
+#   # - task: PowerShell@2
+#   #   inputs:
+#   #     filePath: ./multibuild/install_python.ps1
+#   #   condition: eq(variables['os'], 'win')
+#   #   displayName: 'Install new Python if needed (Windows)'
 
-  - script: |
-      SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
-      python -m pip install -U pip setuptools wheel virtualenv
-    condition: eq(variables['os'], 'win')
-    displayName: 'Before install (Windows)'
+#   - script: |
+#       SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+#       python -m pip install -U pip setuptools wheel virtualenv
+#     condition: eq(variables['os'], 'win')
+#     displayName: 'Before install (Windows)'
 
-  - script: |
-      pip install virtualenv
-      pip install -Ur ./requirements.txt
-      eval $(python ./run.py build-spec build-spec.json)
-      git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
-      export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
-      export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
-      cat config.sh.template | envsubst > config.sh
-    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
-    displayName: 'Install (Mac / Linux)'
+#   - script: |
+#       pip install virtualenv
+#       pip install -Ur ./requirements.txt
+#       eval $(python ./run.py build-spec build-spec.json)
+#       git clone "${BUILD_SPEC_CLONE_URL}" "$REPO_DIR"
+#       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
+#       export PACKAGE_NAME="${BUILD_SPEC_PACKAGE_NAME}"
+#       cat config.sh.template | envsubst > config.sh
+#     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
+#     displayName: 'Install (Mac / Linux)'
 
-  - task: CopyFiles@2
-    # This is hard-coded in the Docker scripts for Linux
-    inputs:
-      contents: '/**'
-      targetFolder: /io
-    condition: eq(variables['os'], 'linux')
-    displayName: 'Copy multibuild files (Linux)'
+#   - task: CopyFiles@2
+#     # This is hard-coded in the Docker scripts for Linux
+#     inputs:
+#       contents: '/**'
+#       targetFolder: /io
+#     condition: eq(variables['os'], 'linux')
+#     displayName: 'Copy multibuild files (Linux)'
 
-  - script: |
-      eval $(python ./run.py build-spec build-spec.json)
-      export MB_PYTHON_VERSION=$(python.version)
-      export TRAVIS_PYTHON_VERSION=$(python.version)
-      export TRAVIS_OS_NAME=$(os)
-      export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
-      source $(Build.SourcesDirectory)/multibuild/common_utils.sh
-      source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
-      before_install
-      clean_code $REPO_DIR $BUILD_COMMIT
-      export CONFIG_PATH=/io/config.sh
-      export MULTIBUILD_DIR=multibuild
-      build_wheel $REPO_DIR $PLAT
-      install_run $PLAT
-    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
-    displayName: 'Build wheel (Mac / Linux)'
+#   - script: |
+#       eval $(python ./run.py build-spec build-spec.json)
+#       export MB_PYTHON_VERSION=$(python.version)
+#       export TRAVIS_PYTHON_VERSION=$(python.version)
+#       export TRAVIS_OS_NAME=$(os)
+#       export BUILD_COMMIT="${BUILD_SPEC_COMMIT}"
+#       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
+#       source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
+#       before_install
+#       clean_code $REPO_DIR $BUILD_COMMIT
+#       export CONFIG_PATH=/io/config.sh
+#       export MULTIBUILD_DIR=multibuild
+#       build_wheel $REPO_DIR $PLAT
+#       install_run $PLAT
+#     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
+#     displayName: 'Build wheel (Mac / Linux)'
 
-  - script: |
-      pip install -Ur ./requirements.txt
-      python -u run.py windows-build --build-spec build-spec.json
-    condition: eq(variables['os'], 'win')
-    displayName: 'Install and build wheel (Windows)'
+#   - script: |
+#       pip install -Ur ./requirements.txt
+#       python -u run.py windows-build --build-spec build-spec.json
+#     condition: eq(variables['os'], 'win')
+#     displayName: 'Install and build wheel (Windows)'
 
-  - task: CopyFiles@2
-    inputs:
-      contents: 'checkout/dist/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    condition: eq(variables['os'], 'win')
-    displayName: 'Copy wheel (Windows)'
+#   - task: CopyFiles@2
+#     inputs:
+#       contents: 'checkout/dist/**'
+#       targetFolder: $(Build.ArtifactStagingDirectory)
+#       flattenFolders: true
+#     condition: eq(variables['os'], 'win')
+#     displayName: 'Copy wheel (Windows)'
 
-  - task: CopyFiles@2
-    inputs:
-      contents: 'wheelhouse/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
-    displayName: 'Copy wheel (Mac / Linux)'
+#   - task: CopyFiles@2
+#     inputs:
+#       contents: 'wheelhouse/**'
+#       targetFolder: $(Build.ArtifactStagingDirectory)
+#       flattenFolders: true
+#     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
+#     displayName: 'Copy wheel (Mac / Linux)'
 
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: artifacts
-    displayName: 'Publish artifact'
+#   - task: PublishBuildArtifacts@1
+#     inputs:
+#       pathtoPublish: $(Build.ArtifactStagingDirectory)
+#       artifactName: artifacts
+#     displayName: 'Publish artifact'
