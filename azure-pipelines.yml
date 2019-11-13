@@ -2,6 +2,7 @@ trigger:
   branches:
     include:
     - branch-for-*
+pr: none
 
 variables:
   GH_CONNECTION: wheelwright
