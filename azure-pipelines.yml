@@ -26,8 +26,13 @@ jobs:
       architecture: 'x64'
 
   - bash: |
-      pip install -Ur ./requirements.txt
-      eval $(python ./run.py build-spec build-spec.json)
+      eval $(python -c "
+      import json; import sys
+      with open('build-spec.json') as f: spec = json.load(f)
+      release_id = spec.get('upload-to', {}).get('release-id', '')
+      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
@@ -156,8 +161,14 @@ jobs:
     displayName: 'Before install (Windows)'
 
   - bash: |
-      pip install -Ur ./requirements.txt
-      eval $(python ./run.py build-spec build-spec.json)
+      eval $(python -c "
+      import json; import sys
+      with open('build-spec.json') as f: spec = json.load(f)
+      release_id = spec.get('upload-to', {}).get('release-id', '')
+      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
+      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
@@ -214,16 +225,18 @@ jobs:
       script: |
         # https://github.com/pypa/pip/issues/6951
         import os
-        wheel = os.listdir('./dist')[-1]
-        os.rename(wheel, wheel.replace("cp38m-win", "cp38-win"))
+        wheel_file = os.listdir('./dist')[0]
+        wheel_path = os.path.join('./dist', wheel_file)
+        os.rename(wheel_path, wheel_path.replace("cp38m-win", "cp38-win"))
+        print(os.listdir('./dist'))
       failOnStderr: true
       workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
     condition: and(eq(variables['os'], 'win'), eq(variables['python.version'], '3.8'))
     displayName: Fix wheel name (Windows, Python 3.8)
 
   - bash: |
-      cd $(Build.SourcesDirectory)/$(checkout)
-      WHEEL=$(python -c "import os;print(os.listdir('./dist')[-1])" 2>&1)
+      cd $(checkout)
+      WHEEL=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       pip install dist/$WHEEL
       rm -rf $(package_name)
       python -m pytest --pyargs $(package_name)

@@ -1,12 +1,8 @@
 import os
-import os.path
 import re
 import sys
-import glob
-import shutil
 import json
 import subprocess
-from contextlib import contextmanager
 import github
 import click
 import requests
@@ -48,141 +44,10 @@ DEFAULT_CLONE_TEMPLATE = "https://github.com/{}.git"
 # github.enable_console_debug_logging()
 
 
-def get_gh():
-    token_path = ROOT / SECRET_FILE
-    if ENV.GH_SECRET in os.environ:
-        token = os.environ[ENV.GH_SECRET]
-    elif token_path.exists():
-        with token_path.open("r", encoding="utf-8") as f:
-            token = f.read().strip()
-    else:
-        err = "Can't find Github token (checked {} envvar and {}"
-        msg.fail(err.format(ENV.GH_SECRET, token_path), exits=1)
-    return github.Github(token)
-
-
-def get_release(repo_id, release_id):
-    gh = get_gh()
-    repo = gh.get_repo(repo_id)
-    # https://pygithub.readthedocs.io/en/latest/github_objects/GitRelease.html
-    release = repo.get_release(release_id)
-    if release is None:
-        msg.fail("Release not found: {}".format(release_id), exits=1)
-    return release
-
-
-def get_build_spec(build_spec_path):
-    with open(build_spec_path) as f:
-        return json.load(f)
-
-
-@contextmanager
-def cd(d):
-    orig_dir = os.getcwd()
-    try:
-        os.chdir(d)
-        yield
-    finally:
-        os.chdir(orig_dir)
-
-
-def run(cmd):
-    print("Running:", cmd)
-    subprocess.check_call(cmd)
-
-
-def _get_repo_id():
-    if ENV.REPO_NAME in os.environ:
-        return os.environ[ENV.REPO_NAME]
-    # detect current GitHub repo from working directory
-    # TODO: make less hacky? We could read from the .git/config, but that'd be
-    # even more messy
-    try:
-        result = subprocess.check_output(
-            ["git", "config", "--get", "remote.origin.url"]
-        )
-        git_url = result.decode("utf-8").strip()
-        git_ssh = re.match(r"git@github\.com:(.*/.*)\.git$", git_url)
-        if git_ssh:
-            return git_ssh.groups()[0]
-        git_https = re.match(r"https://github\.com/(.*/.*)\.git$", git_url)
-        if git_https:
-            return git_https.groups()[0]
-    except subprocess.CalledProcessError:
-        pass
-    msg.fail(
-        "Error: Not a valid repository: {}.".format(Path.cwd()),
-        "Make sure you're in the build repo directory or use the "
-        "{} environment variable to specify the <user>/<repo> "
-        "build repository.".format(ENV.REPO_NAME),
-        exits=1,
-    )
-
-
-def _download_release_assets(repo_id, release_id):
-    download_path = WHEELS_DIR / release_id
-    msg.info("Downloading to {}/...".format(download_path))
-    if not download_path.exists():
-        download_path.mkdir(parents=True)
-    with requests.Session() as s:
-        release = get_release(repo_id, release_id)
-        for asset in release.get_assets():
-            print("  - " + asset.name)
-            save_path = download_path / asset.name
-            r = s.get(asset.browser_download_url)
-            with save_path.open("wb") as f:
-                f.write(r.content)
-    msg.good("All done!", "See {}/ for your wheels.".format(download_path))
-
-
-################################################################
-
-
 @click.group()
 def cli():
     """Build release wheels for Python projects"""
     pass
-
-
-@cli.command(name="build-spec")
-@click.argument(
-    "build_spec", type=click.Path(exists=True, dir_okay=False), required=True
-)
-def build_spec_to_shell(build_spec):
-    bs = get_build_spec(build_spec)
-    sys.stdout.write(
-        "BUILD_SPEC_CLONE_URL='{clone-url}'\n"
-        "BUILD_SPEC_COMMIT='{commit}'\n"
-        "BUILD_SPEC_PACKAGE_NAME='{package-name}'\n".format(**bs)
-    )
-    release_id = bs.get("upload-to", {}).get("release-id", "")
-    sys.stdout.write("BUILD_SPEC_RELEASE_ID='{}'\n".format(release_id))
-
-
-@cli.command(name="windows-build")
-@click.option(
-    "--build-spec", type=click.Path(exists=True, dir_okay=False), required=True
-)
-def windows_build(build_spec):
-    bs = get_build_spec(build_spec)
-    run(["git", "clone", bs["clone-url"], "checkout"])
-    with cd("checkout"):
-        run(["git", "checkout", bs["commit"]])
-        run(["pip", "install", "-Ur", "requirements.txt"])
-        run(["python", "setup.py", "bdist_wheel"])
-    wheels = []
-    for wheel in glob.glob("checkout\\dist\\*.whl"):
-        # No idea what I'm doing here... https://github.com/pypa/pip/issues/6951
-        if "cp38m-win" in wheel:
-            fixed_wheel = wheel.replace("cp38m-win", "cp38-win")
-            shutil.move(wheel, fixed_wheel)
-            wheels.append(fixed_wheel)
-        else:
-            wheels.append(wheel)
-    run(["pip", "install"] + wheels)
-    os.mkdir("tmp_for_test")
-    with cd("tmp_for_test"):
-        run(["pytest", "--pyargs", bs["package-name"]])
 
 
 @cli.command(name="build")
@@ -192,7 +57,7 @@ def windows_build(build_spec):
 def build(repo, commit, package_name=None):
     """Build wheels for a given repo and commit / tag."""
     print(LOGO)
-    repo_id = _get_repo_id()
+    repo_id = get_repo_id()
     user, package = repo.split("/", 1)
     if package_name is None:
         package_name = package
@@ -255,9 +120,69 @@ def build(repo, commit, package_name=None):
 def download_release_assets(release_id):
     """Download existing wheels for a release ID (name of build repo tag)."""
     print(LOGO)
-    repo_id = _get_repo_id()
+    repo_id = get_repo_id()
     msg.info("Downloading from repo {}".format(repo_id))
-    _download_release_assets(repo_id, release_id)
+    download_path = WHEELS_DIR / release_id
+    msg.info("Downloading to {}/...".format(download_path))
+    if not download_path.exists():
+        download_path.mkdir(parents=True)
+    with requests.Session() as s:
+        release = get_release(repo_id, release_id)
+        for asset in release.get_assets():
+            print("  - " + asset.name)
+            save_path = download_path / asset.name
+            r = s.get(asset.browser_download_url)
+            with save_path.open("wb") as f:
+                f.write(r.content)
+    msg.good("All done!", "See {}/ for your wheels.".format(download_path))
+
+
+def get_gh():
+    token_path = ROOT / SECRET_FILE
+    if ENV.GH_SECRET in os.environ:
+        token = os.environ[ENV.GH_SECRET]
+    elif token_path.exists():
+        with token_path.open("r", encoding="utf-8") as f:
+            token = f.read().strip()
+    else:
+        err = "Can't find Github token (checked {} envvar and {}"
+        msg.fail(err.format(ENV.GH_SECRET, token_path), exits=1)
+    return github.Github(token)
+
+
+def get_release(repo_id, release_id):
+    gh = get_gh()
+    repo = gh.get_repo(repo_id)
+    # https://pygithub.readthedocs.io/en/latest/github_objects/GitRelease.html
+    release = repo.get_release(release_id)
+    if release is None:
+        msg.fail("Release not found: {}".format(release_id), exits=1)
+    return release
+
+
+def get_repo_id():
+    if ENV.REPO_NAME in os.environ:
+        return os.environ[ENV.REPO_NAME]
+    # detect current GitHub repo from working directory
+    try:
+        cmd = ["git", "config", "--get", "remote.origin.url"]
+        result = subprocess.check_output(cmd)
+        git_url = result.decode("utf-8").strip()
+        git_ssh = re.match(r"git@github\.com:(.*/.*)\.git$", git_url)
+        if git_ssh:
+            return git_ssh.groups()[0]
+        git_https = re.match(r"https://github\.com/(.*/.*)\.git$", git_url)
+        if git_https:
+            return git_https.groups()[0]
+    except subprocess.CalledProcessError:
+        pass
+    msg.fail(
+        "Error: Not a valid repository: {}.".format(Path.cwd()),
+        "Make sure you're in the build repo directory or use the "
+        "{} environment variable to specify the <user>/<repo> "
+        "build repository.".format(ENV.REPO_NAME),
+        exits=1,
+    )
 
 
 if __name__ == "__main__":
