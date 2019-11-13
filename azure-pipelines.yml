@@ -57,7 +57,7 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: $ARTIFACT_NAME
+      artifactName: '$(ARTIFACT_NAME)'
     displayName: 'Publish sdist to artifacts'
 
 - job: 'wheels'
@@ -208,15 +208,15 @@ jobs:
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: $ARTIFACT_NAME
+      artifactName: '$(ARTIFACT_NAME)'
     displayName: 'Publish artifact'
 
-  # - task: GitHubRelease@0
-  #   inputs:
-  #     gitHubConnection: TODO
-  #     repositoryName: $(Build.Repository.Name)
-  #     action: 'edit'
-  #     target: $(commit)
-  #     tag: $(release_tag)
-  #     assets: '$(Build.ArtifactStagingDirectory)/*'
-  #   displayName: 'Upload to GitHub release'
+  - task: GitHubRelease@0
+    inputs:
+      gitHubConnection: 'explosion (5)'
+      repositoryName: '$(Build.Repository.Name)'
+      action: 'edit'
+      target: '$(commit)'
+      tag: '$(release_tag)'
+      assets: '$(Build.ArtifactStagingDirectory)/*'
+    displayName: 'Upload to GitHub release'
