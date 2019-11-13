@@ -35,7 +35,7 @@ jobs:
       eval $(python ./run.py build-spec build-spec.json)
       rm -rf $BUILD_SPEC_PACKAGE_NAME
       SDIST=$(python -c "import os;print(os.listdir('./dist')[-1])" 2>&1)
-      pip install $REPO_DIR/dist/$SDIST
+      pip install dist/$SDIST
       python -m pytest --pyargs $BUILD_SPEC_PACKAGE_NAME
     displayName: 'Install from sdist & run tests'
 
@@ -195,9 +195,3 @@ jobs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: artifacts
     displayName: 'Publish artifact'
-
-- job: 'Test'
-  dependsOn: Wheels
-  continueOnError: true
-  steps:
-    - script: ls $(Build.ArtifactStagingDirectory)
