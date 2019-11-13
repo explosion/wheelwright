@@ -190,6 +190,8 @@ def build_spec_to_shell(build_spec):
         "BUILD_SPEC_PACKAGE_NAME='{package-name}'\n"
         .format(**bs)
     )
+    release_id = bs.get("upload-to", {}).get("release-id", "")
+    sys.stdout.write("BUILD_SPEC_RELEASE_ID='{}'\n".format(release_id))
 
 
 @cli.command(name='upload')
