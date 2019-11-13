@@ -156,8 +156,14 @@ jobs:
     displayName: 'Before install (Windows)'
 
   - bash: |
-      pip install -Ur ./requirements.txt
-      eval $(python ./run.py build-spec build-spec.json)
+      eval $(python -c "
+      import json; import sys
+      with open('build-spec.json') as f: spec = json.load(f)
+      release_id = spec.get('upload-to', {}).get('release-id', '')
+      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
+      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
