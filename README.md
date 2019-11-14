@@ -26,6 +26,8 @@ packaging.
 
 [![Azure Pipelines](https://img.shields.io/badge/Azure%20Pipelines-view%20builds-green.svg?longCache=true&style=flat-square&logo=azure-pipelines)](https://dev.azure.com/explosion-ai/public/_build?definitionId=15)
 
+<img width="803" alt="" src="https://user-images.githubusercontent.com/13643239/68905692-598efb00-0742-11ea-800b-630767858201.png">
+
 ## Usage Guide
 
 ### Quickstart
