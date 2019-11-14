@@ -165,15 +165,18 @@ jobs:
       import json; import sys
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '')
+      use_llvm = spec.get('options', {}).get('llvm', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
-      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))")
+      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
+      sys.stdout.write('BUILD_SPEC_LLVM={}\n'.format(use_llvm))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+      echo "##vso[task.setvariable variable=llvm]$BUILD_SPEC_LLVM"
       echo "##vso[build.updatebuildnumber]$BUILD_SPEC_RELEASE_ID"
     displayName: 'Set variables'
 
@@ -210,7 +213,14 @@ jobs:
     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
     displayName: 'Build wheel (Mac / Linux)'
 
+  - script: choco install llvm
+    condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'))
+    displayName: 'Install LLVM if needed (Windows)'
+
+  # The env variables are needed to compile things like Blis
   - script: |
+      set "PATH=C:\Program Files\LLVM\bin;%PATH%"
+      set "INCLUDE=%$VC_INCLUDEPATH%"
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
