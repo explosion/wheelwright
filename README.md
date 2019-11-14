@@ -97,8 +97,8 @@ provide the token via the `GITHUB_SECRET_TOKEN` environment variable.
 
 ## Building wheels
 
-If you want to build wheels for the `v1.31.2` tag inside the `explosion/cymem`
-repository, then run:
+Note that the `run.py` script requires Python 3.6+. If you want to build wheels
+for the `v1.31.2` tag inside the `explosion/cymem` repository, then run:
 
 ```bash
 cd wheelwright
