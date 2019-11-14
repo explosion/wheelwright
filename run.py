@@ -111,9 +111,8 @@ def build(repo, commit, package_name=None, llvm=False):
         )
         repo.create_git_ref(f"refs/heads/{branch_name}", our_gitcommit.sha)
     msg.good(f"Commit is {our_gitcommit.sha[:8]} in branch {branch_name}")
-    checks = f"https://github.com/{user}/{package}/commit/{our_gitcommit.sha}/checks"
     msg.text(f"Release: {release.html_url}")
-    msg.text(f"Checks:  {checks}")
+    msg.text(f"Checks:  https://github.com/{repo_id}/commit/{our_gitcommit.sha}/checks")
 
 
 @cli.command(name="download")
