@@ -2,6 +2,7 @@
 github-secret-token.txt
 wheels/*
 .vscode/
+.flake8
 .prettierrc
 
 # Byte-compiled / optimized / DLL files
