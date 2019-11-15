@@ -5,6 +5,8 @@ trigger:
 pr: none
 
 variables:
+  # Name of the service connection set up in Azure Pipelines, used to upload
+  # release artifacts to GitHub. Set to false to disable.
   GH_CONNECTION: wheelwright
   REPO_DIR: checkout
   ARTIFACT_NAME: artifacts
@@ -25,6 +27,9 @@ jobs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
 
+  # This is messy, but the most convenient way to turn a JSON file into env
+  # variables without requiring extra dependencies. The "##vso" stuff makes the
+  # variables available to later steps.
   - bash: |
       eval $(python -c "
       import json; import sys
@@ -141,18 +146,12 @@ jobs:
   - script: git submodule update --init --recursive
     displayName: 'Set up multibuild'
 
+  # This is gettext needed for envsubst on osx =/
   - script: |
-      # This is gettext needed for envsubst on osx =/
       brew install gettext
       brew link --force gettext
     condition: eq(variables['os'], 'osx')
     displayName: 'Before install (Mac)'
-
-  # - task: PowerShell@2
-  #   inputs:
-  #     filePath: ./multibuild/install_python.ps1
-  #   condition: eq(variables['os'], 'win')
-  #   displayName: 'Install new Python if needed (Windows)'
 
   - script: |
       SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
@@ -160,6 +159,9 @@ jobs:
     condition: eq(variables['os'], 'win')
     displayName: 'Before install (Windows)'
 
+  # This is messy, but the most convenient way to turn a JSON file into env
+  # variables without requiring extra dependencies. The "##vso" stuff makes the
+  # variables available to later steps.
   - bash: |
       eval $(python -c "
       import json; import sys
@@ -189,8 +191,8 @@ jobs:
     condition: or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux'))
     displayName: 'Install (Mac / Linux)'
 
+  # This is hard-coded in the Docker scripts for Linux
   - task: CopyFiles@2
-    # This is hard-coded in the Docker scripts for Linux
     inputs:
       contents: '/**'
       targetFolder: $LINUX_TARGET
@@ -229,11 +231,11 @@ jobs:
     condition: eq(variables['os'], 'win')
     displayName: 'Install and build wheel (Windows)'
 
+  # Temporary workaround, see: https://github.com/pypa/pip/issues/6951
   - task: PythonScript@0
     inputs:
       scriptSource: inline
       script: |
-        # https://github.com/pypa/pip/issues/6951
         import os
         wheel_file = os.listdir('./dist')[0]
         wheel_path = os.path.join('./dist', wheel_file)
@@ -285,4 +287,5 @@ jobs:
       addChangeLog: false
       assetUploadMode: replace
       assets: '$(Build.ArtifactStagingDirectory)/*'
+    condition: not(eq(variables['GH_CONNECTION'], 'false'))
     displayName: 'Upload to GitHub release'
