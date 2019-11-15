@@ -1,6 +1,6 @@
 <a href="https://explosion.ai"><img src="https://explosion.ai/assets/img/logo.svg" width="125" height="125" align="right" /></a>
 
-# Wheelwright
+# wheelwright
 
 This repo builds **release wheels and source packages** for Python libraries
 available as GitHub repositories. We're currently using it to build wheels for
@@ -65,7 +65,13 @@ pip install -r requirements.txt
 [Click here to generate a personal GitHub token.](https://github.com/settings/tokens/new)
 Give it some memorable description, and check the box to give it the "repo"
 scope. This will give you some gibberish like
-`f7d4d475c85ba2ae9557391279d1fc2368f95c38`.
+`f7d4d475c85ba2ae9557391279d1fc2368f95c38`. Next go into your `wheelwright`
+checkout, and create a file called `github-secret-token.txt` and write the
+gibberish into this file.
+
+Don't worry, `github-secret-token.txt` is listed in `.gitignore`, so it's
+difficult to accidentally commit it. Instead of adding the file, you can also
+provide the token via the `GITHUB_SECRET_TOKEN` environment variable.
 
 #### Security notes
 
@@ -79,20 +85,6 @@ scope. This will give you some gibberish like
 - This token is only used to access the `wheelwright` repository, so if you want
   to be extra-careful you could create a new GitHub user, grant them access to
   this repo only, and then use a token generated with that user's account.
-
-Next go into your `wheelwright` checkout, and create a file called
-`github-secret-token.txt`. Write the gibberish into this file:
-
-```bash
-cd wheelwright
-my-editor github-secret-token.txt
-cat github-secret-token.txt
-f7d4d475c85ba2ae9557391279d1fc2368f95c38
-```
-
-Don't worry, `github-secret-token.txt` is listed in `.gitignore`, so it's
-difficult to accidentally commit it. Instead of adding the file, you can also
-provide the token via the `GITHUB_SECRET_TOKEN` environment variable.
 
 ### Building wheels
 
@@ -111,6 +103,16 @@ custom release process, or download them manually:
 ```bash
 python run.py download cymem-v1.31.2
 ```
+
+In Azure Pipelines, the artifacts are available via the "Artifacts" button. You
+can also set up a
+[release pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/?view=azure-devops)
+with `twine` authentication, so you can publish your package to PyPi in one
+click. Also see
+[this blog post](https://iscinumpy.gitlab.io/post/azure-devops-releases/) for an
+example.
+
+<img width="1383" alt="" src="https://user-images.githubusercontent.com/13643239/68909644-51898800-074f-11ea-9b6f-38f8a9d5a4b0.png">
 
 ## 🎛 API
 
