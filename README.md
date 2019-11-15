@@ -2,14 +2,14 @@
 
 # Wheelwright
 
-This repo builds release wheels for Python libraries available as GitHub
-repositories. We're currently using it to build wheels for
+This repo builds **release wheels and source packages** for Python libraries
+available as GitHub repositories. We're currently using it to build wheels for
 [spaCy](https://github.com/explosion/spaCy) and our
 [other libraries](https://github.com/explosion). The build repository integrates
 with
 [Azure Pipelines](https://azure.microsoft.com/de-de/services/devops/pipelines/)
-and builds the sdist and wheels for macOS, Linux and Windows on Python 3.5+. All
-wheels are available in the
+and builds the artifacts for **macOS**, **Linux** and **Windows** on **Python
+3.5+**. All wheels are available in the
 [releases](https://github.com/explosion/wheelwright/releases).
 
 🙏 **Special thanks** to [Nathaniel J. Smith](https://github.com/njsmith/) for
@@ -94,7 +94,7 @@ Don't worry, `github-secret-token.txt` is listed in `.gitignore`, so it's
 difficult to accidentally commit it. Instead of adding the file, you can also
 provide the token via the `GITHUB_SECRET_TOKEN` environment variable.
 
-## Building wheels
+### Building wheels
 
 Note that the `run.py` script requires Python 3.6+. If you want to build wheels
 for the `v1.31.2` tag inside the `explosion/cymem` repository, then run:
@@ -114,7 +114,7 @@ python run.py download cymem-v1.31.2
 
 ## 🎛 API
 
-### `run.py build`
+### <kbd>command</kbd> `run.py build`
 
 Build wheels for a given repo and commit / tag.
 
@@ -128,7 +128,7 @@ python run.py build explosion/cymem v1.32.1
 | `commit`         | positional | The commit to build.                                                   |
 | `--package-name` | option     | Optional alternative Python package name, if different from repo name. |
 
-### `run.py download`
+### <kbd>command</kbd> `run.py download`
 
 Download existing wheels for a release ID (name of build repo tag). The
 downloaded wheels will be placed in a directory `wheels`.
@@ -143,12 +143,12 @@ python run.py download cymem-v1.31.2
 
 ### Environment variables
 
-| Name                     | Description                                                                 | Default                              |
-| ------------------------ | --------------------------------------------------------------------------- | ------------------------------------ |
-| `WHEELWRIGHT_ROOT`       | Root directory of the build repo                                            | Same directory as `run.py`           |
-| `WHEELWRIGHT_WHEELS_DIR` | Directory for downloaded wheels                                             | `/wheels` in root directory          |
-| `WHEELWRIGHT_REPO`       | Build repository in `user/repo` format                                      | Automatically read from `git config` |
-| `GITHUB_SECRET_TOKEN`    | Personal GitHub access token, if not provided via `github-secret-token.txt` | -                                    |
+| Name                     | Description                                                                  | Default                               |
+| ------------------------ | ---------------------------------------------------------------------------- | ------------------------------------- |
+| `WHEELWRIGHT_ROOT`       | Root directory of the build repo.                                            | Same directory as `run.py`.           |
+| `WHEELWRIGHT_WHEELS_DIR` | Directory for downloaded wheels.                                             | `/wheels` in root directory.          |
+| `WHEELWRIGHT_REPO`       | Build repository in `user/repo` format.                                      | Automatically read from `git config`. |
+| `GITHUB_SECRET_TOKEN`    | Personal GitHub access token, if not provided via `github-secret-token.txt`. | -                                     |
 
 ## ⁉️ FAQ
 
