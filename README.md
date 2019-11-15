@@ -28,7 +28,7 @@ packaging.
 
 <img width="803" alt="" src="https://user-images.githubusercontent.com/13643239/68905692-598efb00-0742-11ea-800b-630767858201.png">
 
-## Usage Guide
+## 🎡 Usage
 
 ### Quickstart
 
@@ -62,25 +62,22 @@ Next, install its requirements (ideally in a virtual environment):
 pip install -r requirements.txt
 ```
 
-[Click here to generate a personal Github token.](https://github.com/settings/tokens/new)
+[Click here to generate a personal GitHub token.](https://github.com/settings/tokens/new)
 Give it some memorable description, and check the box to give it the "repo"
-scope. This will give you some gibberish like:
-
-```
-f7d4d475c85ba2ae9557391279d1fc2368f95c38
-```
+scope. This will give you some gibberish like
+`f7d4d475c85ba2ae9557391279d1fc2368f95c38`.
 
 #### Security notes
 
 - Be careful with this gibberish; anyone who gets it can impersonate you to
-  Github.
+  GitHub.
 
 - If you're ever worried that your token has been compromised, you can
   [delete it here](https://github.com/settings/tokens), and then generate a new
   one.
 
 - This token is only used to access the `wheelwright` repository, so if you want
-  to be extra-careful you could create a new Github user, grant them access to
+  to be extra-careful you could create a new GitHub user, grant them access to
   this repo only, and then use a token generated with that user's account.
 
 Next go into your `wheelwright` checkout, and create a file called
@@ -115,7 +112,7 @@ custom release process, or download them manually:
 python run.py download cymem-v1.31.2
 ```
 
-## API
+## 🎛 API
 
 ### `run.py build`
 
@@ -153,23 +150,22 @@ python run.py download cymem-v1.31.2
 | `WHEELWRIGHT_REPO`       | Build repository in `user/repo` format                                      | Automatically read from `git config` |
 | `GITHUB_SECRET_TOKEN`    | Personal GitHub access token, if not provided via `github-secret-token.txt` | -                                    |
 
-## FAQ
+## ⁉️ FAQ
 
 ### What does this actually do?
 
-The `build` command uses the Github API to create a Github release in this repo,
+The `build` command uses the GitHub API to create a GitHub release in this repo,
 called something like `cymem-v1.31.2`. Don't be confused: this is not a real
-release! We're just abusing Github releases to have a temporary place to collect
-the wheel files as we build them.
-
-Then it creates a new branch of this repo, and in the branch it creates a file
-called `build-spec.json` describing which project and commit you want to build.
+release! We're just abusing GitHub releases to have a temporary place to collect
+the wheel files as we build them. Then it creates a new branch of this repo, and
+in the branch it creates a file called `build-spec.json` describing which
+project and commit you want to build.
 
 When Azure Pipelines sees this branch, it springs into action, and starts build
 jobs running on a variety of architectures and Python versions. These build jobs
 read the `build-spec.json` file, and then check out the specified
 project/revision, build it, test it, and finally attach the resulting wheel to
-the Github release we created earlier.
+the GitHub release we created earlier.
 
 ### What if something goes wrong?
 
@@ -189,20 +185,20 @@ Essentially we run:
 
 ```console
 # Setup
-$ git clone https://github.com/USER-NAME/PROJECT-NAME.git checkout
-$ cd checkout
-$ git checkout REVISION
+git clone https://github.com/USER-NAME/PROJECT-NAME.git checkout
+cd checkout
+git checkout REVISION
 
 # Build
-$ cd checkout
-$ pip install -Ur requirements.txt
-$ python setup.py bdist_wheel
+cd checkout
+pip install -Ur requirements.txt
+python setup.py bdist_wheel
 
 # Test
-$ cd empty-directory
-$ pip install -Ur ../checkout/requirements.txt
-$ pip install THE-BUILT-WHEEL
-$ pytest --pyargs PROJECT-NAME
+cd empty-directory
+pip install -Ur ../checkout/requirements.txt
+pip install THE-BUILT-WHEEL
+pytest --pyargs PROJECT-NAME
 ```
 
 Some things to note:
@@ -253,17 +249,8 @@ git commit -am "Updated multibuild snapshot"
 Multibuild was originally designed to do Linux and macOS builds, and with the
 idea that you'd create a separate repo for each project with custom
 configuration. We kluge it into working for us by reading configuration out of
-the `build-spec.json` file and using it to configure various settings. On
-Windows we use Multibuild's `install_python` script, both otherwise the Windows
-code is all custom.
-
-Most of the actual configuration is in the `azure-pipelines.yml` file. It also
-uses the `run.py` script to perform various actions, ranging from parsing the
-`build-spec.json` file to (on Windows) coordinating the whole build/test
-process.
-
-Unfortunately, there are currently no automated tests. Sorry 😞 They would need
-Github permissions and all kinds of things.
+the `build-spec.json` file and using it to configure various settings. Most of
+the actual configuration is in the `azure-pipelines.yml` file.
 
 ### I'm not Explosion, but I want to use this too!
 
