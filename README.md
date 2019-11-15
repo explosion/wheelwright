@@ -48,6 +48,18 @@ packaging.
    artifacts in Azure Pipelines, so you can add a release process that uploads
    them to PyPi.
 
+### Package requirements
+
+Wheelwright currently makes the following assumptions about the packages you're
+building and their repos:
+
+- The repo includes a `requirements.txt` that lists all dependencies for
+  building and testing.
+- The project uses `pytest` for testing and tests are shipped inside the main
+  package so they can be run from an installed wheel.
+- The `setup.py` takes care of the whole setup and no other steps are required:
+  `setup.py sdist` builds the sdist and `setup.py bdist_wheel` builds the wheel.
+
 ### Setup and Installation
 
 Make a local clone of this repo:
@@ -208,17 +220,14 @@ Some things to note:
 The build/test phases currently have varying levels of isolation from each
 other:
 
-- On Windows, they use the same Python environment.
-- On macOS, they use different virtualenvs.
+- On Windows and macOS / OSX, they use the same Python environment.
 - On Linux, they run in different docker containers, which are running different
   Linux distros, to make sure the binaries really are portable.
 
 We use the same `requirements.txt` for both building and testing. You could
 imagine splitting those into two separate files, in order to make sure that
 dependency resolution is working, that we don't have any run-time dependency on
-Cython, etc., but currently we don't. If doing this then it would also make
-sense to be more careful about splitting up the build/test environments, and
-about separating the `run.py` helper script from the build/test environments.
+Cython, etc., but currently we don't.
 
 We assume that projects use pytest for testing, and that they ship their tests
 inside their main package, so that you can run the tests directly from an
