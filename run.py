@@ -59,7 +59,7 @@ def build(repo, commit, package_name=None, llvm=False):
     """Build wheels for a given repo and commit / tag."""
     print(LOGO)
     repo_id = get_repo_id()
-    user, package = repo.split("/", 1)
+    user, package = repo.lower().split("/", 1)
     if package_name is None:
         package_name = package
     msg.info(f"Building in repo {repo_id}")
