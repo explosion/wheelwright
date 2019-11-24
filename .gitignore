@@ -1,3 +1,5 @@
+tmp/
+
 # Project specific
 github-secret-token.txt
 wheels/*
