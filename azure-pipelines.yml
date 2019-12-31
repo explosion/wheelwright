@@ -159,7 +159,7 @@ jobs:
     vmImage: $(imageName)
 
   steps:
-  - script: |
+  - bash: |
       echo $(active)
       echo "##vso[task.setvariable variable=isActive]$(active)"
     displayName: 'Set status'
