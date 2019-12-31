@@ -151,8 +151,7 @@ jobs:
 
   steps:
   - bash: |
-      is35=0
-      if [ "$(python.version)" == "3.5" ]; then is35=1 fi
+      is35=0; [ "$(python.version)" == "3.5" ] && is35=1
       isActive=$(( is35 && $(py35) || ! is35 ? 1 : 0 ))
       echo $isActive
       echo "##vso[task.setvariable variable=isActive]$(isActive)"
