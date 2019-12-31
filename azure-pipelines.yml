@@ -150,11 +150,14 @@ jobs:
     py35: $[ dependencies.sdist.outputs['set_variables.py35'] ]
 
   steps:
+  # This could probably be done more elegantly. Comparison happens here so we
+  # can use the value of the py35 variable and assign a variable "active" that's
+  # available to all subsequent build steps in the pipeline
   - bash: |
-      is35=0; [ "$(python.version)" == "3.5" ] && is35=1
-      active=$(( is35 && $(py35) || ! is35 ? 1 : 0 ))
-      echo $active
-      echo "##vso[task.setvariable variable=active]$(active)"
+      IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
+      ACTIVE=$(( IS35 && $(py35) || ! IS35 ? 1 : 0 ))
+      echo $ACTIVE
+      echo "##vso[task.setvariable variable=active]$ACTIVE"
     displayName: 'Set status'
 
   - task: UsePythonVersion@0
