@@ -39,7 +39,7 @@ jobs:
       eval $(python -c "
       import json; import sys
       with open('build-spec.json') as f: spec = json.load(f)
-      release_id = spec.get('upload-to', {}).get('release-id', '')
+      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       build_py35 = spec.get('options', {}).get('py35', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
@@ -190,7 +190,7 @@ jobs:
       eval $(python -c "
       import json; import sys
       with open('build-spec.json') as f: spec = json.load(f)
-      release_id = spec.get('upload-to', {}).get('release-id', '')
+      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       use_llvm = spec.get('options', {}).get('llvm', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
