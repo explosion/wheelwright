@@ -159,27 +159,32 @@ jobs:
     vmImage: $(imageName)
 
   steps:
+  - script: |
+      echo $(active)
+      echo "##vso[task.setvariable variable=isActive]$(active)"
+    displayName: 'Set status'
+
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '$(python.version)'
       architecture: 'x64'
-    condition: eq(variables['active'], 'true')
+    condition: eq(variables['isActive'], 'true')
 
   - script: git submodule update --init --recursive
-    condition: eq(variables['active'], 'true')
+    condition: eq(variables['isActive'], 'true')
     displayName: 'Set up multibuild'
 
   # This is gettext needed for envsubst on osx =/
   - script: |
       brew install gettext
       brew link --force gettext
-    condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'osx'), eq(variables['isActive'], 'true'))
     displayName: 'Before install (Mac)'
 
   - script: |
       SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
       python -m pip install -U pip setuptools wheel virtualenv
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['isActive'], 'true'))
     displayName: 'Before install (Windows)'
 
   # This is messy, but the most convenient way to turn a JSON file into env
@@ -191,7 +196,6 @@ jobs:
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '')
       use_llvm = spec.get('options', {}).get('llvm', '')
-      build_py35 = spec.get('options', {}).get('build_py35', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
@@ -204,7 +208,7 @@ jobs:
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=llvm]$BUILD_SPEC_LLVM"
       echo "##vso[build.updatebuildnumber]$BUILD_SPEC_RELEASE_ID"
-    condition: eq(variables['active'], 'true')
+    condition: eq(variables['isActive'], 'true')
     displayName: 'Set variables'
 
   - script: |
@@ -213,7 +217,7 @@ jobs:
       export BUILD_COMMIT=$(commit)
       export PACKAGE_NAME=$(package_name)
       cat config.sh.template | envsubst > config.sh
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 'true'))
+    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['isActive'], 'true'))
     displayName: 'Install (Mac / Linux)'
 
   # This is hard-coded in the Docker scripts for Linux
@@ -221,7 +225,7 @@ jobs:
     inputs:
       contents: '/**'
       targetFolder: $LINUX_TARGET
-    condition: and(eq(variables['os'], 'linux'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'linux'), eq(variables['isActive'], 'true'))
     displayName: 'Copy multibuild files (Linux)'
 
   - script: |
@@ -237,11 +241,11 @@ jobs:
       export MULTIBUILD_DIR=multibuild
       build_wheel $(checkout) $PLAT
       install_run $PLAT
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 'true'))
+    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['isActive'], 'true'))
     displayName: 'Build wheel (Mac / Linux)'
 
   - script: choco install llvm
-    condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['isActive'], 'true'))
     displayName: 'Install LLVM if needed (Windows)'
 
   # The env variables are needed to compile things like Blis
@@ -253,7 +257,7 @@ jobs:
       git checkout $(commit)
       pip install -Ur requirements.txt
       python setup.py bdist_wheel
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['isActive'], 'true'))
     displayName: 'Install and build wheel (Windows)'
 
   # Temporary workaround, see: https://github.com/pypa/pip/issues/6951
@@ -268,7 +272,7 @@ jobs:
         print(os.listdir('./dist'))
       failOnStderr: true
       workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
-    condition: and(eq(variables['os'], 'win'), eq(variables['python.version'], '3.8'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['python.version'], '3.8'), eq(variables['isActive'], 'true'))
     displayName: Fix wheel name (Windows, Python 3.8)
 
   - bash: |
@@ -277,7 +281,7 @@ jobs:
       pip install dist/$WHEEL
       rm -rf $(package_name)
       python -m pytest --pyargs $(package_name)
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['isActive'], 'true'))
     displayName: 'Test wheel (Windows)'
 
   - task: CopyFiles@2
@@ -285,7 +289,7 @@ jobs:
       contents: 'checkout/dist/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 'true'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['isActive'], 'true'))
     displayName: 'Copy wheel (Windows)'
 
   - task: CopyFiles@2
@@ -293,14 +297,14 @@ jobs:
       contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 'true'))
+    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['isActive'], 'true'))
     displayName: 'Copy wheel (Mac / Linux)'
 
   - task: PublishBuildArtifacts@1
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: '$(ARTIFACT_NAME)'
-    condition: eq(variables['active'], 'true')
+    condition: eq(variables['isActive'], 'true')
     displayName: 'Publish artifact'
 
   - task: GitHubRelease@0
@@ -313,5 +317,5 @@ jobs:
       addChangeLog: false
       assetUploadMode: replace
       assets: '$(Build.ArtifactStagingDirectory)/*'
-    condition: and(not(eq(variables['GH_CONNECTION'], 'false')), eq(variables['active'], 'true'))
+    condition: and(not(eq(variables['GH_CONNECTION'], 'false')), eq(variables['isActive'], 'true'))
     displayName: 'Upload to GitHub release'
