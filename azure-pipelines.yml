@@ -147,12 +147,15 @@ jobs:
   pool:
     vmImage: $(imageName)
   variables:
-    active: $[ dependencies.sdist.outputs['set_variables.py35'] ]
+    py35: $[ dependencies.sdist.outputs['set_variables.py35'] ]
 
   steps:
   - bash: |
-      echo "$(active)"
-      echo "##vso[task.setvariable variable=isActive]$(active)"
+      is35=$(( $(python.version) == "3.5" ? 1 : 0 ))
+      is35Active=$(( is35 && $(py35) ? 1 : 0 ))
+      isActive=$(( is35Active || ! is35 ? 1 : 0 ))
+      echo $isActive
+      echo "##vso[task.setvariable variable=isActive]$(isActive)"
     displayName: 'Set status'
 
   - task: UsePythonVersion@0
