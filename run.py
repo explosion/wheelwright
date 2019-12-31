@@ -54,8 +54,9 @@ def cli():
 @click.argument("repo", required=True)
 @click.argument("commit", required=True)
 @click.option("--package-name", help="Python package name, if different from repo")
+@click.option("--py35", is_flag=True, help="Build wheels for Python 3.5")
 @click.option("--llvm", is_flag=True, help="Requires LLVM to be installed")
-def build(repo, commit, package_name=None, llvm=False):
+def build(repo, commit, package_name=None, py35=False, llvm=False):
     """Build wheels for a given repo and commit / tag."""
     print(LOGO)
     repo_id = get_repo_id()
@@ -83,7 +84,7 @@ def build(repo, commit, package_name=None, llvm=False):
         "clone-url": clone_url,
         "package-name": package_name,
         "commit": commit,
-        "options": {"llvm": llvm},
+        "options": {"llvm": llvm, "py35": py35},
         "upload-to": {
             "type": "github-release",
             "repo-id": repo_id,
