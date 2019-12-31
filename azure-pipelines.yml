@@ -103,60 +103,51 @@ jobs:
         imageName: 'ubuntu-16.04'
         python.version: '3.5'
         os: linux
-        active: $[ dependencies.sdist.outputs['set_variables.py35'] ]
       Python35Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.5'
         os: win
-        active: $[ dependencies.sdist.outputs['set_variables.py35'] ]
       Python36Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.6'
         os: linux
-        active: true
       Python36Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.6'
         os: win
-        active: true
       Python36Mac:
         imageName: 'macos-10.13'
         python.version: '3.6'
         os: osx
-        active: true
       Python37Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.7'
         os: linux
-        active: true
       Python37Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.7'
         os: win
-        active: true
       Python37Mac:
         imageName: 'macos-10.13'
         python.version: '3.7'
         os: osx
-        active: true
       Python38Linux:
         imageName: 'ubuntu-16.04'
         python.version: '3.8'
         os: linux
-        active: true
       Python38Windows:
         imageName: 'vs2017-win2016'
         python.version: '3.8'
         os: win
-        active: true
       Python38Mac:
         imageName: 'macos-10.13'
         python.version: '3.8'
         os: osx
-        active: true
     maxParallel: 4
   pool:
     vmImage: $(imageName)
+  variables:
+    active: $[ dependencies.sdist.outputs['set_variables.py35'] ]
 
   steps:
   - bash: |
