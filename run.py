@@ -44,7 +44,7 @@ DEFAULT_CLONE_TEMPLATE = "https://github.com/{}.git"
 # github.enable_console_debug_logging()
 
 
-cli = Typer(name="Build release wheels for Python projects")
+cli = Typer(help="Build release wheels for Python projects")
 
 
 @cli.command(name="build")
