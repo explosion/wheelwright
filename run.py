@@ -4,7 +4,7 @@ import sys
 import json
 import subprocess
 import github
-import click
+from typer import Typer, Option
 import requests
 from pathlib import Path
 from wasabi import msg, color
@@ -44,19 +44,17 @@ DEFAULT_CLONE_TEMPLATE = "https://github.com/{}.git"
 # github.enable_console_debug_logging()
 
 
-@click.group()
-def cli():
-    """Build release wheels for Python projects"""
-    pass
+cli = Typer(name="Build release wheels for Python projects")
 
 
 @cli.command(name="build")
-@click.argument("repo", required=True)
-@click.argument("commit", required=True)
-@click.option("--package-name", help="Python package name, if different from repo")
-@click.option("--py35", is_flag=True, help="Build wheels for Python 3.5")
-@click.option("--llvm", is_flag=True, help="Requires LLVM to be installed")
-def build(repo, commit, package_name=None, py35=False, llvm=False):
+def build(
+    repo: str,
+    commit: str,
+    package_name: str = Option(None, help="Package name (if different from repo)"),
+    py35: bool = Option(False, "--py35", help="Build wheels for Python 3.5"),
+    llvm: bool = Option(False, "--llvm", help="Requires LLVM to be installed"),
+):
     """Build wheels for a given repo and commit / tag."""
     print(LOGO)
     repo_id = get_repo_id()
@@ -117,8 +115,7 @@ def build(repo, commit, package_name=None, py35=False, llvm=False):
 
 
 @cli.command(name="download")
-@click.argument("release-id")
-def download_release_assets(release_id):
+def download_release_assets(release_id: str):
     """Download existing wheels for a release ID (name of build repo tag)."""
     print(LOGO)
     repo_id = get_repo_id()
