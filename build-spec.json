@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/srsly.git", "package-name": "srsly", "commit": "v1.0.1", "options": {"llvm": false, "py35": true}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "srsly-v1.0.1"}}
