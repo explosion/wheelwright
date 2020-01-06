@@ -156,17 +156,17 @@ jobs:
   # TODO: looks like this currently doesn't work?
   - bash: |
       IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
-      echo $IS35
+      echo "Python 3.5:" $IS35
       ACTIVE=$(( IS35 && $(py35) || ! IS35 ? 1 : 0 ))
-      echo $ACTIVE
+      echo "Build active:" $ACTIVE
       echo "##vso[task.setvariable variable=active]$ACTIVE"
     displayName: 'Set status'
 
-  # - task: UsePythonVersion@0
-  #   inputs:
-  #     versionSpec: '$(python.version)'
-  #     architecture: 'x64'
-  #   condition: eq(variables['active'], 1)
+  - task: UsePythonVersion@0
+    inputs:
+      versionSpec: '$(python.version)'
+      architecture: 'x64'
+    condition: eq(variables['active'], 1)
 
   # - script: git submodule update --init --recursive
   #   condition: eq(variables['active'], 1)
