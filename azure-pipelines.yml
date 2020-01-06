@@ -155,6 +155,7 @@ jobs:
   # available to all subsequent build steps in the pipeline
   # TODO: looks like this currently doesn't work?
   - bash: |
+      echo $(py35)
       IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
       echo "Python 3.5:" $IS35
       ACTIVE=$(( IS35 && $(py35) || ! IS35 ? 1 : 0 ))
