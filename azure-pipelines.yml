@@ -153,12 +153,12 @@ jobs:
   # This could probably be done more elegantly. Comparison happens here so we
   # can use the value of the py35 variable and assign a variable "active" that's
   # available to all subsequent build steps in the pipeline
-  # TODO: looks like this currently doesn't work?
   - bash: |
-      echo $(py35)
+      BUILD35=0; [ "$(py35)" == "True" ] && BUILD35=1
+      echo "Build Python 3.5:" $BUILD35
       IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
-      echo "Python 3.5:" $IS35
-      ACTIVE=$(( IS35 && $(py35) || ! IS35 ? 1 : 0 ))
+      echo "Is Python 3.5:" $IS35
+      ACTIVE=$(( IS35 && BUILD35 || ! IS35 ? 1 : 0 ))
       echo "Build active:" $ACTIVE
       echo "##vso[task.setvariable variable=active]$ACTIVE"
     displayName: 'Set status'
