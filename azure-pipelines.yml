@@ -66,6 +66,12 @@ jobs:
       python setup.py sdist
     displayName: 'Install and build sdist'
 
+    - script: |
+      pip install -U wheel
+      python setup.py bdist_wheel
+    displayName: 'Build universal wheel'
+    condition: eq(variables['sdist_only'], 'True')
+
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
@@ -153,6 +159,7 @@ jobs:
     vmImage: $(imageName)
   variables:
     py35: $[ dependencies.sdist.outputs['set_variables.py35'] ]
+    sdist_only: $[ dependencies.sdist.outputs['set_variables.sdist_only'] ]
 
   steps:
   # This could probably be done more elegantly. Comparison happens here so we
