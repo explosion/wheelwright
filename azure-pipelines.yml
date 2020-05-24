@@ -121,7 +121,7 @@ jobs:
         python.version: '3.6'
         os: win
       Python36Mac:
-        imageName: 'macos-10.13'
+        imageName: 'macos-10.15'
         python.version: '3.6'
         os: osx
       Python37Linux:
@@ -133,7 +133,7 @@ jobs:
         python.version: '3.7'
         os: win
       Python37Mac:
-        imageName: 'macos-10.13'
+        imageName: 'macos-10.15'
         python.version: '3.7'
         os: osx
       Python38Linux:
@@ -145,7 +145,7 @@ jobs:
         python.version: '3.8'
         os: win
       Python38Mac:
-        imageName: 'macos-10.13'
+        imageName: 'macos-10.15'
         python.version: '3.8'
         os: osx
     maxParallel: 4
