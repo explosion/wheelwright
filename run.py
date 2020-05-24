@@ -61,9 +61,11 @@ def build(
     repo_id = get_repo_id()
     user, package = repo.lower().split("/", 1)
     if package_name is None:
-        package_name = package
+        package_name = package.replace("-", "_")
     msg.info(f"Building in repo {repo_id}")
     msg.info(f"Building wheels for {user}/{package}\n")
+    if sdist_only:
+        msg.warn("Building only sdist and no wheels")
     clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package}")
     repo = get_gh().get_repo(repo_id)
     with msg.loading("Finding a unique name for this release..."):
