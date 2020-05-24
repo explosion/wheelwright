@@ -70,7 +70,7 @@ jobs:
       pip install -U wheel
       python setup.py bdist_wheel
     displayName: 'Build universal wheel'
-    condition: eq(variables['sdist_only'], 'True')
+    condition: eq(variables['set_variables.sdist_only'], 'True')
 
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
@@ -107,6 +107,7 @@ jobs:
 
 - job: 'wheels'
   dependsOn: 'sdist'
+  condition: not(eq(dependencies.sdist.outputs['set_variables.sdist_only'], 'True'))
   continueOnError: true
   strategy:
     matrix:
