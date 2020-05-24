@@ -136,13 +136,14 @@ Build wheels for a given repo and commit / tag.
 python run.py build explosion/cymem v1.32.1
 ```
 
-| Argument         | Type       | Description                                                                                        |
-| ---------------- | ---------- | -------------------------------------------------------------------------------------------------- |
-| `repo`           | positional | The repository to build, in `user/repo` format.                                                    |
-| `commit`         | positional | The commit to build.                                                                               |
-| `--package-name` | option     | Optional alternative Python package name, if different from repo name.                             |
-| `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger additional step in Windows build pipeline. |
-| `--py35`         | flag       | Also build wheels to Python 3.5.                                                                   |
+| Argument         | Type       | Description                                                                                                                        |
+| ---------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
+| `repo`           | positional | The repository to build, in `user/repo` format.                                                                                    |
+| `commit`         | positional | The commit to build.                                                                                                               |
+| `--package-name` | option     | Optional alternative Python package name, if different from repo name.                                                             |
+| `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger additional step in Windows build pipeline.                                 |
+| `--py35`         | flag       | Also build wheels to Python 3.5.                                                                                                   |
+| `--universal`    | flag       | Build sdist and universal wheels (pure Python with no compiled extensions). If enabled, no platform-specific wheels will be built. |
 
 ### <kbd>command</kbd> `run.py download`
 

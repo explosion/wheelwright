@@ -41,19 +41,19 @@ jobs:
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       build_py35 = spec.get('options', {}).get('py35', '')
-      sdist_only = spec.get('options', {}).get('sdist_only', '')
+      universal = spec.get('options', {}).get('universal', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_SDIST_ONLY={}\n'.format(sdist_only))")
+      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
-      echo "##vso[task.setvariable variable=sdist_only;isOutput=true]$BUILD_SPEC_SDIST_ONLY"
+      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
     name: set_variables
     displayName: 'Set variables'
 
@@ -71,7 +71,7 @@ jobs:
       pip install -U wheel
       python setup.py bdist_wheel
     displayName: 'Build universal wheel'
-    condition: eq(variables['set_variables.sdist_only'], 'True')
+    condition: eq(variables['set_variables.universal'], 'True')
 
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
@@ -108,7 +108,7 @@ jobs:
 
 - job: 'wheels'
   dependsOn: 'sdist'
-  condition: not(eq(dependencies.sdist.outputs['set_variables.sdist_only'], 'True'))
+  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
   strategy:
     matrix:
