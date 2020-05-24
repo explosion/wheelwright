@@ -65,7 +65,7 @@ def build(
     msg.info(f"Building in repo {repo_id}")
     msg.info(f"Building wheels for {user}/{package}\n")
     if sdist_only:
-        msg.warn("Building only sdist and no wheels")
+        msg.warn("Building only universal sdist and wheel, no cross-platform wheels")
     clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package}")
     repo = get_gh().get_repo(repo_id)
     with msg.loading("Finding a unique name for this release..."):
