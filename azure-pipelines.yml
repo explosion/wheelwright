@@ -67,6 +67,7 @@ jobs:
     displayName: 'Install and build sdist'
 
   - script: |
+      cd $(checkout)
       pip install -U wheel
       python setup.py bdist_wheel
     displayName: 'Build universal wheel'
