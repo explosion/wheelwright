@@ -54,6 +54,7 @@ def build(
     package_name: str = Option(None, help="Package name (if different from repo)"),
     py35: bool = Option(False, "--py35", help="Build wheels for Python 3.5"),
     llvm: bool = Option(False, "--llvm", help="Requires LLVM to be installed"),
+    sdist_only: bool = Option(False, "--sdist-only", help="Only build sdist"),
 ):
     """Build wheels for a given repo and commit / tag."""
     print(LOGO)
@@ -82,7 +83,7 @@ def build(
         "clone-url": clone_url,
         "package-name": package_name,
         "commit": commit,
-        "options": {"llvm": llvm, "py35": py35},
+        "options": {"llvm": llvm, "py35": py35, "sdist_only": sdist_only},
         "upload-to": {
             "type": "github-release",
             "repo-id": repo_id,
