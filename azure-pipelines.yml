@@ -46,7 +46,7 @@ jobs:
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))")
+      sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
       sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
