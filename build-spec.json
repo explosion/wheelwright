@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/honnibal/pkuseg-python.git", "package-name": "pkuseg", "commit": "master", "options": {"llvm": false, "py35": false, "universal": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "pkuseg-master-2"}}
