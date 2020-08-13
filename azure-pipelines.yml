@@ -24,6 +24,8 @@ jobs:
     vmImage: 'ubuntu-18.04'
   variables:
     python.version: '3.8'
+    CC: gcc-9
+    CXX: g++-9
   steps:
   - task: UsePythonVersion@0
     inputs:
