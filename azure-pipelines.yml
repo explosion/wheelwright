@@ -16,7 +16,7 @@ variables:
   PLAT: x86_64
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
-  MANYLINUX_VERSION: 1
+  MANYLINUX_VERSION: 2014
 
 jobs:
 - job: "sdist"
