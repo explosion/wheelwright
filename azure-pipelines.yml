@@ -16,6 +16,7 @@ variables:
   PLAT: x86_64
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
+  MANYLINUX_VERSION: 1
 
 jobs:
 - job: "sdist"
@@ -242,6 +243,7 @@ jobs:
     displayName: 'Copy multibuild files (Linux)'
 
   - script: |
+      export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
       export TRAVIS_OS_NAME=$(os)
