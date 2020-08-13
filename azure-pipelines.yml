@@ -53,6 +53,7 @@ jobs:
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
       sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
       sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
@@ -64,6 +65,8 @@ jobs:
     displayName: 'Set variables'
 
   - script: |
+      export CC=$(CC)
+      export CXX=$(CXX)
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
@@ -74,6 +77,8 @@ jobs:
 
   - script: |
       cd $(checkout)
+      export CC=$(CC)
+      export CXX=$(CXX)
       pip install -U wheel
       python setup.py bdist_wheel
     displayName: 'Build universal wheel'
