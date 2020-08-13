@@ -20,6 +20,8 @@ variables:
 
 jobs:
 - job: "sdist"
+  pool:
+    vmImage: 'ubuntu-18.04'
   variables:
     python.version: '3.8'
   steps:
