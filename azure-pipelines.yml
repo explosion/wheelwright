@@ -79,7 +79,7 @@ jobs:
       cd $(checkout)
       export CC=$(CC)
       export CXX=$(CXX)
-      pip install -U wheel
+      pip install "wheel==0.31.1"
       python setup.py bdist_wheel
     displayName: 'Build universal wheel'
     condition: eq(variables['set_variables.universal'], 'True')
