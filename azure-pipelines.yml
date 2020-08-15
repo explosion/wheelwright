@@ -71,7 +71,7 @@ jobs:
       cd $(checkout)
       git checkout $(commit)
       python -m pip install -U pip
-      pip install -r requirements.txt
+      python -m pip install -r requirements.txt
       python setup.py sdist
     displayName: 'Install and build sdist'
 
@@ -79,7 +79,7 @@ jobs:
       cd $(checkout)
       export CC=$(CC)
       export CXX=$(CXX)
-      pip install "wheel==0.31.1"
+      python -m pip install -U wheel
       python setup.py bdist_wheel
     displayName: 'Build universal wheel'
     condition: eq(variables['set_variables.universal'], 'True')
@@ -87,7 +87,7 @@ jobs:
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
-      pip install dist/$SDIST
+      python -m pip install dist/$SDIST
       rm -rf $(package_name)
       python -m pytest --pyargs $(package_name)
     displayName: 'Install from sdist & run tests'
