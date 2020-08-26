@@ -89,6 +89,7 @@ jobs:
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       python -m pip install dist/$SDIST
       rm -rf $(package_name)
+      pip install pytest
       python -m pytest --pyargs $(package_name)
     displayName: 'Install from sdist & run tests'
 
