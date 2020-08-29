@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy.git", "package-name": "spacy", "commit": "chore/delete-old-files-v3", "options": {"llvm": false, "py35": false, "universal": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy-chore/delete-old-files-v3"}}
