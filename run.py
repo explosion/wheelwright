@@ -49,12 +49,15 @@ cli = Typer(help="Build release wheels for Python projects")
 
 @cli.command(name="build")
 def build(
+    # fmt: off
     repo: str,
     commit: str,
     package_name: str = Option(None, help="Package name (if different from repo)"),
     py35: bool = Option(False, "--py35", help="Build wheels for Python 3.5"),
     llvm: bool = Option(False, "--llvm", help="Requires LLVM to be installed"),
     universal: bool = Option(False, "--universal", help="Build universal (pure Python) wheel and sdist"),
+    skip_tests: bool = Option(False, "--skip-tests", help="Don't run tests (e.g. if package doesn't have any)"),
+    # fmt: on
 ):
     """Build wheels for a given repo and commit / tag."""
     print(LOGO)
@@ -66,6 +69,8 @@ def build(
     msg.info(f"Building wheels for {user}/{package}\n")
     if universal:
         msg.warn("Building only universal sdist and wheel, no cross-platform wheels")
+    if skip_tests:
+        msg.warn("Not running any tests")
     clone_url = DEFAULT_CLONE_TEMPLATE.format(f"{user}/{package}")
     repo = get_gh().get_repo(repo_id)
     with msg.loading("Finding a unique name for this release..."):
@@ -85,7 +90,12 @@ def build(
         "clone-url": clone_url,
         "package-name": package_name,
         "commit": commit,
-        "options": {"llvm": llvm, "py35": py35, "universal": universal},
+        "options": {
+            "llvm": llvm,
+            "py35": py35,
+            "universal": universal,
+            "skip_tests": skip_tests,
+        },
         "upload-to": {
             "type": "github-release",
             "repo-id": repo_id,

@@ -46,12 +46,14 @@ jobs:
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       build_py35 = spec.get('options', {}).get('py35', '')
+      skip_tests = spec.get('options', {}).get('skip_tests', '')
       universal = spec.get('options', {}).get('universal', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
       sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
+      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
       sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
 
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
@@ -60,6 +62,7 @@ jobs:
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
+      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
       echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
     name: set_variables
     displayName: 'Set variables'
@@ -91,6 +94,7 @@ jobs:
       rm -rf $(package_name)
       pip install pytest
       python -m pytest --pyargs $(package_name)
+    condition: ne(variables['set_variables.skip_tests'], 'True')
     displayName: 'Install from sdist & run tests'
 
   - task: CopyFiles@2
