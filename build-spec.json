@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-stanza.git", "package-name": "spacy_stanza", "commit": "v0.2.4", "options": {"llvm": false, "py35": false, "universal": true}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_stanza-v0.2.4"}}
