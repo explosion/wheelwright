@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/ml-datasets.git", "package-name": "ml_datasets", "commit": "v0.2", "options": {"llvm": false, "py35": false, "universal": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "ml_datasets-v0.2"}}
