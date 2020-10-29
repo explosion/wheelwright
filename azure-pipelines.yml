@@ -315,7 +315,7 @@ jobs:
         print(os.listdir('./dist'))
       failOnStderr: true
       workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
-    condition: and(eq(variables['os'], 'win'), eq(variables['python.version'], '3.8'), eq(variables['active'], 1))
+    condition: and(eq(variables['os'], 'win'), or(eq(variables['python.version'], '3.8'), eq(variables['python.version'], '3.9')), eq(variables['active'], 1))
     displayName: Fix wheel name (Windows, Python 3.8)
 
   - bash: |
