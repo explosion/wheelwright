@@ -70,12 +70,6 @@ jobs:
     name: set_variables
     displayName: 'Set variables'
 
-  - bash: |
-      BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt";
-      echo "BUILD_DEPENDS:" $BUILD_DEPENDS
-    condition: eq(variables['set_variables.build_constraints'], 'True')
-    displayName: 'Set build constraints'
-
   - script: |
       export CC=$(CC)
       export CXX=$(CXX)
@@ -251,13 +245,15 @@ jobs:
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_LLVM={}\n'.format(use_llvm))")
+      sys.stdout.write('BUILD_SPEC_LLVM={}\n'.format(use_llvm))
+      sys.stdout.write('BUILD_SPEC_BUILD_CONSTRAINTS={}\n'.format(build_constraints))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=llvm]$BUILD_SPEC_LLVM"
+      echo "##vso[task.setvariable variable=build_constraints]$BUILD_SPEC_BUILD_CONSTRAINTS"
       echo "##vso[build.updatebuildnumber]$BUILD_SPEC_RELEASE_ID"
     condition: eq(variables['active'], 1)
     displayName: 'Set variables'
