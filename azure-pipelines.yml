@@ -21,9 +21,9 @@ variables:
 jobs:
 - job: "sdist"
   pool:
-    vmImage: 'ubuntu-16.04'
+    vmImage: 'ubuntu-20.04'
   variables:
-    python.version: '3.6'
+    python.version: '3.8'
     CC: gcc-9
     CXX: g++-9
   steps:
