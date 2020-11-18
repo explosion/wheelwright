@@ -76,7 +76,7 @@ jobs:
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       export PIP_CONSTRAINTS="-c build-constraints.txt"
       echo "PIP_CONSTRAINTS:" $PIP_CONSTRAINTS
-    condition: ne(variables['set_variables.build_constraints'], 'True')
+    condition: eq(variables['set_variables.build_constraints'], 'True')
     displayName: 'Set build constraints'
 
   - script: |
