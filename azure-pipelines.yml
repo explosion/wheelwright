@@ -17,6 +17,7 @@ variables:
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
   MANYLINUX_VERSION: 2014
+  PIP_CONSTRAINTS: ""
 
 jobs:
 - job: "sdist"
@@ -26,7 +27,6 @@ jobs:
     python.version: '3.8'
     CC: gcc-9
     CXX: g++-9
-    PIP_CONSTRAINTS: ""
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -72,9 +72,9 @@ jobs:
     displayName: 'Set variables'
 
   - bash: |
-      export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
+      BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt";
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
-      export PIP_CONSTRAINTS="-c build-constraints.txt"
+      PIP_CONSTRAINTS="-c build-constraints.txt";
       echo "PIP_CONSTRAINTS:" $PIP_CONSTRAINTS
     condition: eq(variables['set_variables.build_constraints'], 'True')
     displayName: 'Set build constraints'
@@ -86,8 +86,8 @@ jobs:
       cd $(checkout)
       git checkout $(commit)
       python -m pip install -U pip
-      echo "PIP_CONSTRAINTS:" $PIP_CONSTRAINTS
-      python -m pip install -r requirements.txt $PIP_CONSTRAINTS
+      echo "PIP_CONSTRAINTS:" $(PIP_CONSTRAINTS)
+      python -m pip install -r requirements.txt $(PIP_CONSTRAINTS)
       python setup.py sdist
     displayName: 'Install and build sdist'
 
@@ -311,7 +311,7 @@ jobs:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
-      pip install -r requirements.txt $PIP_CONSTRAINTS
+      pip install -r requirements.txt $(PIP_CONSTRAINTS)
       python setup.py bdist_wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Install and build wheel (Windows)'
