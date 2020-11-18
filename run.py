@@ -57,6 +57,7 @@ def build(
     llvm: bool = Option(False, "--llvm", help="Requires LLVM to be installed"),
     universal: bool = Option(False, "--universal", help="Build universal (pure Python) wheel and sdist"),
     skip_tests: bool = Option(False, "--skip-tests", help="Don't run tests (e.g. if package doesn't have any)"),
+    build_constraints: bool = Option(False, "--build-constraints", help="Use build constraints for build requirements"),
     # fmt: on
 ):
     """Build wheels for a given repo and commit / tag."""
@@ -95,6 +96,7 @@ def build(
             "py35": py35,
             "universal": universal,
             "skip_tests": skip_tests,
+            "build_constraints": build_constraints,
         },
         "upload-to": {
             "type": "github-release",

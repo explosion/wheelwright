@@ -11,7 +11,7 @@ variables:
   REPO_DIR: checkout
   ARTIFACT_NAME: artifacts
   LINUX_TARGET: /io
-  BUILD_DEPENDS: "-Ur checkout/requirements.txt"
+  BUILD_DEPENDS: "-r checkout/requirements.txt"
   TEST_DEPENDS: "-Ur checkout/requirements.txt"
   PLAT: x86_64
   UNICODE_WIDTH: 32
@@ -26,6 +26,7 @@ jobs:
     python.version: '3.8'
     CC: gcc-9
     CXX: g++-9
+    PIP_CONSTRAINTS: ""
   steps:
   - task: UsePythonVersion@0
     inputs:
@@ -48,6 +49,7 @@ jobs:
       build_py35 = spec.get('options', {}).get('py35', '')
       skip_tests = spec.get('options', {}).get('skip_tests', '')
       universal = spec.get('options', {}).get('universal', '')
+      build_constraints = spec.get('options', {}).get('build_constraints', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
@@ -55,6 +57,7 @@ jobs:
       sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
       sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
       sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+      sys.stdout.write('BUILD_SPEC_BUILD_CONSTRAINTS={}\n'.format(build_constraints))")
 
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
@@ -64,8 +67,17 @@ jobs:
       echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
       echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
       echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
+      echo "##vso[task.setvariable variable=build_constraints;isOutput=true]$BUILD_SPEC_BUILD_CONSTRAINTS"
     name: set_variables
     displayName: 'Set variables'
+
+  - bash: |
+      export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
+      echo "BUILD_DEPENDS:" $BUILD_DEPENDS
+      export PIP_CONSTRAINTS="-c build-constraints.txt"
+      echo "PIP_CONSTRAINTS:" $PIP_CONSTRAINTS
+    condition: ne(variables['set_variables.build_constraints'], 'True')
+    displayName: 'Set build constraints'
 
   - script: |
       export CC=$(CC)
@@ -74,7 +86,7 @@ jobs:
       cd $(checkout)
       git checkout $(commit)
       python -m pip install -U pip
-      python -m pip install -r requirements.txt
+      python -m pip install -r requirements.txt $PIP_CONSTRAINTS
       python setup.py sdist
     displayName: 'Install and build sdist'
 
@@ -90,9 +102,11 @@ jobs:
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
       SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
-      python -m pip install dist/$SDIST
       rm -rf $(package_name)
-      pip install pytest
+      python -m pip freeze > installed.txt
+      python -m pip uninstall -y -r installed.txt
+      python -m pip install dist/$SDIST
+      pip install -r requirements.txt
       python -m pytest --pyargs $(package_name)
     condition: ne(variables['set_variables.skip_tests'], 'True')
     displayName: 'Install from sdist & run tests'
@@ -296,7 +310,7 @@ jobs:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
-      pip install -Ur requirements.txt
+      pip install -r requirements.txt $PIP_CONSTRAINTS
       python setup.py bdist_wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Install and build wheel (Windows)'
