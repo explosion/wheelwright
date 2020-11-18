@@ -280,7 +280,12 @@ jobs:
     displayName: 'Copy multibuild files (Linux)'
 
   - script: |
-      export BUILD_DEPENDS=$(BUILD_DEPENDS); [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
+      export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
+    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1), eq(variables['build_constraints'], 'True'))
+    displayName: 'Set dependencies with constraints (Mac / Linux)'
+
+  - script: |
+      [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
       echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
@@ -314,12 +319,12 @@ jobs:
 
   - script: |
       python -m pip install -r requirements.txt
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'False'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'False'))
     displayName: 'Install dependencies without constraints (Windows)'
 
   - script: |
       python -m pip install -r requirements.txt -c build-constraints.txt
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'True'))
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'True'))
     displayName: 'Install dependencies with constraints (Windows)'
 
   # The env variables are needed to compile things like Blis
