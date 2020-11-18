@@ -326,6 +326,7 @@ jobs:
 
   # The env variables are needed to compile things like Blis
   - script: |
+      cd $(checkout)
       python setup.py bdist_wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Build wheel (Windows)'
