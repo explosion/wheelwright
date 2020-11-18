@@ -241,6 +241,7 @@ jobs:
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       use_llvm = spec.get('options', {}).get('llvm', '')
+      build_constraints = spec.get('options', {}).get('build_constraints', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
