@@ -74,8 +74,6 @@ jobs:
   - bash: |
       BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt";
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
-      PIP_CONSTRAINTS="-c build-constraints.txt";
-      echo "PIP_CONSTRAINTS:" $PIP_CONSTRAINTS
     condition: eq(variables['set_variables.build_constraints'], 'True')
     displayName: 'Set build constraints'
 
@@ -312,7 +310,9 @@ jobs:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
-      pip install -r requirements.txt $(PIP_CONSTRAINTS)
+      PIP_CONSTRAINTS=""; [ "$(build_constraints)" == "True" ] && PIP_CONSTRAINTS="-c build-constraints.txt"
+      echo "PIP_CONSTRAINTS:" $(PIP_CONSTRAINTS)
+      python -m pip install -r requirements.txt $(PIP_CONSTRAINTS)
       python setup.py bdist_wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Install and build wheel (Windows)'
