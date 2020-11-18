@@ -56,7 +56,7 @@ jobs:
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
       sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
       sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
-      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))
       sys.stdout.write('BUILD_SPEC_BUILD_CONSTRAINTS={}\n'.format(build_constraints))")
 
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
