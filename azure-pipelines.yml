@@ -314,12 +314,12 @@ jobs:
 
   - script: |
       python -m pip install -r requirements.txt
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'False')
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'False'))
     displayName: 'Install dependencies without constraints (Windows)'
 
   - script: |
       python -m pip install -r requirements.txt -c build-constraints.txt
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'True')
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'True'))
     displayName: 'Install dependencies with constraints (Windows)'
 
   # The env variables are needed to compile things like Blis
