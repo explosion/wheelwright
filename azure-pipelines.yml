@@ -82,10 +82,8 @@ jobs:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
-      python -m pip install -U pip
-      PIP_CONSTRAINTS=""; [ "$(build_constraints)" == "True" ] && PIP_CONSTRAINTS="-c build-constraints.txt"
-      echo "PIP_CONSTRAINTS:" $(PIP_CONSTRAINTS)
-      python -m pip install -r requirements.txt $(PIP_CONSTRAINTS)
+      python -m pip install -U pip setuptools
+      python -m pip install -r requirements.txt
       python setup.py sdist
     displayName: 'Install and build sdist'
 
@@ -282,7 +280,7 @@ jobs:
     displayName: 'Copy multibuild files (Linux)'
 
   - script: |
-      export BUILD_DEPENDS=$(BUILD_DEPENDS); [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c build-constraints.txt"
+      export BUILD_DEPENDS=$(BUILD_DEPENDS); [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
       echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
@@ -311,12 +309,24 @@ jobs:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
-      PIP_CONSTRAINTS=""; [ "$(build_constraints)" == "True" ] && PIP_CONSTRAINTS="-c build-constraints.txt"
-      echo "PIP_CONSTRAINTS:" $(PIP_CONSTRAINTS)
-      python -m pip install -r requirements.txt $(PIP_CONSTRAINTS)
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
+    displayName: 'Check out and set up (Windows)'
+
+  - script: |
+      python -m pip install -r requirements.txt
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'False')
+    displayName: 'Install dependencies without constraints (Windows)'
+
+  - script: |
+      python -m pip install -r requirements.txt -c build-constraints.txt
+    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['set_variables.build_constraints'], 'True')
+    displayName: 'Install dependencies with constraints (Windows)'
+
+  # The env variables are needed to compile things like Blis
+  - script: |
       python setup.py bdist_wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Install and build wheel (Windows)'
+    displayName: 'Build wheel (Windows)'
 
   # Temporary workaround, see: https://github.com/pypa/pip/issues/6951
   - task: PythonScript@0
