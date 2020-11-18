@@ -86,6 +86,7 @@ jobs:
       cd $(checkout)
       git checkout $(commit)
       python -m pip install -U pip
+      echo "PIP_CONSTRAINTS:" $PIP_CONSTRAINTS
       python -m pip install -r requirements.txt $PIP_CONSTRAINTS
       python setup.py sdist
     displayName: 'Install and build sdist'
