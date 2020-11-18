@@ -17,14 +17,14 @@ variables:
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
   MANYLINUX_VERSION: 2014
-  PIP_CONSTRAINTS: ""
+  PIP_CONSTRAINTS: "-c build-constraints.txt"
 
 jobs:
 - job: "sdist"
   pool:
-    vmImage: 'ubuntu-20.04'
+    vmImage: 'ubuntu-16.04'
   variables:
-    python.version: '3.8'
+    python.version: '3.6'
     CC: gcc-9
     CXX: g++-9
   steps:
@@ -86,6 +86,7 @@ jobs:
       cd $(checkout)
       git checkout $(commit)
       python -m pip install -U pip
+      PIP_CONSTRAINTS=""; [ "$(build_constraints)" == "True" ] && PIP_CONSTRAINTS="-c build-constraints.txt"
       echo "PIP_CONSTRAINTS:" $(PIP_CONSTRAINTS)
       python -m pip install -r requirements.txt $(PIP_CONSTRAINTS)
       python setup.py sdist
