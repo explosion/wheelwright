@@ -11,7 +11,7 @@ variables:
   REPO_DIR: checkout
   ARTIFACT_NAME: artifacts
   LINUX_TARGET: /io
-  BUILD_DEPENDS: "-r checkout/requirements.txt"
+  BUILD_DEPENDS: "-Ur checkout/requirements.txt"
   TEST_DEPENDS: "-Ur checkout/requirements.txt"
   PLAT: x86_64
   UNICODE_WIDTH: 32
@@ -316,13 +316,13 @@ jobs:
 
   - script: |
       cd $(checkout)
-      python -m pip install -r requirements.txt
+      python -m pip install -Ur requirements.txt
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'False'))
     displayName: 'Install dependencies without constraints (Windows)'
 
   - script: |
       cd $(checkout)
-      python -m pip install -r requirements.txt -c build-constraints.txt
+      python -m pip install -Ur requirements.txt -c build-constraints.txt
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'True'))
     displayName: 'Install dependencies with constraints (Windows)'
 
