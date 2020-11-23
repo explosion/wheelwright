@@ -78,7 +78,7 @@ jobs:
       git checkout $(commit)
     displayName: 'Checkout commit'
 
-  - script |
+  - script: |
       cd $(checkout)
       python -m pip install -U pip setuptools
       python -m pip install -r requirements.txt
