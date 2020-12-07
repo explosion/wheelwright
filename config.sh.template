@@ -11,14 +11,9 @@ function pre_build {
     if [ $INSTALL_RUST ]; then
         echo "Installing Rust..."
         curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
-	echo $HOME
-	echo $PATH
         export PATH="$HOME/.cargo/bin:$PATH"
-	echo $HOME
-	echo $PATH
-	rustc --version
+        rustc --version
     fi
-    echo "PATH:" $PATH
 }
 
 function run_tests {
