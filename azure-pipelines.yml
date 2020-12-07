@@ -293,11 +293,9 @@ jobs:
       echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
       export INSTALL_RUST=""
       [ "$(rust)" == "True" ] && export INSTALL_RUST=1
-      [ "$(os)" == "linux"] && export CONFIG_PATH=$(LINUX_TARGET)/config.sh
-      echo "LINUX_TARGET:" $(LINUX_TARGET)
-      ls $(LINUX_TARGET)
+      echo "INSTALL_RUST:" $(INSTALL_RUST)
+      export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $(CONFIG_PATH)
-      cat $(CONFIG_PATH)
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
