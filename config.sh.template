@@ -12,7 +12,9 @@ function pre_build {
         echo "Installing Rust..."
         curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
         export PATH="$HOME/.cargo/bin:$PATH"
+	rustc --version
     fi
+    echo "PATH:" $PATH
 }
 
 function run_tests {
