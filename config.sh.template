@@ -8,11 +8,10 @@
 # container, thereby customizing the build for multibuild.
 
 function pre_build {
-    echo "PRE_BUILD:" $INSTALL_RUST
     if [ $INSTALL_RUST ]; then
         echo "Installing Rust..."
-        #curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
-        #export PATH="$HOME/.cargo/bin:$PATH"
+        curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
+        export PATH="$HOME/.cargo/bin:$PATH"
     fi
 }
 
