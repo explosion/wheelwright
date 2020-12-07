@@ -157,42 +157,42 @@ jobs:
         imageName: 'macos-10.15'
         python.version: '3.6'
         os: osx
-      Python37Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.7'
-        os: linux
-      Python37Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.7'
-        os: win
-      Python37Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.7'
-        os: osx
-      Python38Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.8'
-        os: linux
-      Python38Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.8'
-        os: win
-      Python38Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.8'
-        os: osx
-      Python39Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.9'
-        os: linux
-      Python39Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.9'
-        os: win
-      Python39Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.9'
-        os: osx
+#      Python37Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.7'
+#        os: linux
+#      Python37Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.7'
+#        os: win
+#      Python37Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.7'
+#        os: osx
+#      Python38Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.8'
+#        os: linux
+#      Python38Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.8'
+#        os: win
+#      Python38Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.8'
+#        os: osx
+#      Python39Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.9'
+#        os: linux
+#      Python39Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.9'
+#        os: win
+#      Python39Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.9'
+#        os: osx
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -293,9 +293,9 @@ jobs:
       echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
       export INSTALL_RUST=""
       [ "$(rust)" == "True" ] && export INSTALL_RUST=1
-      echo "INSTALL_RUST:" $(INSTALL_RUST)
+      echo "INSTALL_RUST:" $INSTALL_RUST
       export CONFIG_PATH=$LINUX_TARGET/config.sh
-      echo "CONFIG_PATH:" $(CONFIG_PATH)
+      echo "CONFIG_PATH:" $CONFIG_PATH
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
@@ -319,8 +319,9 @@ jobs:
   - script: |
       curl -sSf -o rustup-init.exe https://win.rustup.rs
       rustup-init.exe -y --profile minimal --default-toolchain stable --default-host x86_64-pc-windows-msvc
-      set PATH=%PATH%;%USERPROFILE%\.cargo\bin
-      echo "##vso[task.setvariable variable=PATH;]%PATH%;%USERPROFILE%\.cargo\bin"
+      set "PATH=%PATH%;%USERPROFILE%\.cargo\bin"
+      echo "%PATH%"
+      #echo "##vso[task.setvariable variable=PATH;]%PATH%;%USERPROFILE%\.cargo\bin"
     condition: and(eq(variables['os'], 'win'), eq(variables['rust'], 'true'), eq(variables['active'], 1))
     displayName: 'Install Rust if needed (Windows)'
 
