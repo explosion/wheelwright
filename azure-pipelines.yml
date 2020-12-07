@@ -271,6 +271,9 @@ jobs:
       git clone $(clone_url) $(checkout)
       export BUILD_COMMIT=$(commit)
       export PACKAGE_NAME=$(package_name)
+      export INSTALL_RUST=""
+      [ "$(rust)" == "True" ] && export INSTALL_RUST=1
+      echo "INSTALL_RUST:" $INSTALL_RUST
       cat config.sh.template | envsubst > config.sh
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Install (Mac / Linux)'
@@ -291,10 +294,7 @@ jobs:
   - script: |
       [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
       echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
-      export INSTALL_RUST=""
-      [ "$(rust)" == "True" ] && export INSTALL_RUST=1
-      echo "INSTALL_RUST:" $INSTALL_RUST
-      export CONFIG_PATH=$LINUX_TARGET/config.sh
+      [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $CONFIG_PATH
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
@@ -320,8 +320,6 @@ jobs:
       curl -sSf -o rustup-init.exe https://win.rustup.rs
       rustup-init.exe -y --profile minimal --default-toolchain stable --default-host x86_64-pc-windows-msvc
       set "PATH=%PATH%;%USERPROFILE%\.cargo\bin"
-      echo "%PATH%"
-      #echo "##vso[task.setvariable variable=PATH;]%PATH%;%USERPROFILE%\.cargo\bin"
     condition: and(eq(variables['os'], 'win'), eq(variables['rust'], 'true'), eq(variables['active'], 1))
     displayName: 'Install Rust if needed (Windows)'
 
