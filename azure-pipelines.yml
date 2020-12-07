@@ -274,7 +274,7 @@ jobs:
       export INSTALL_RUST=""
       [ "$(rust)" == "True" ] && export INSTALL_RUST=1
       echo "INSTALL_RUST:" $INSTALL_RUST
-      cat config.sh.template | envsubst > config.sh
+      cat config.sh.template | envsubst \$PACKAGE_NAME,\$INSTALL_RUST > config.sh
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Install (Mac / Linux)'
 
