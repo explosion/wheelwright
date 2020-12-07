@@ -271,7 +271,7 @@ jobs:
       git clone $(clone_url) $(checkout)
       export BUILD_COMMIT=$(commit)
       export PACKAGE_NAME=$(package_name)
-      cat config.sh.template | envsubst > config.sh
+      cat config.sh.template | envsubst > $(LINUX_TARGET)/config.sh
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Install (Mac / Linux)'
 
@@ -303,6 +303,8 @@ jobs:
       before_install
       clean_code $(checkout) $(commit)
       export CONFIG_PATH=$LINUX_TARGET/config.sh
+      echo "CONFIG_PATH:" $(CONFIG_PATH)
+      cat $(CONFIG_PATH)
       export MULTIBUILD_DIR=multibuild
       export BLIS_ARCH=$PLAT
       build_wheel $(checkout) $PLAT
