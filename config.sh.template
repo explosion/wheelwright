@@ -7,6 +7,15 @@
 # The config.sh script allows us to overwrite these functions within the docker
 # container, thereby customizing the build for multibuild.
 
+function pre_build {
+    echo $INSTALL_RUST
+    if [ $INSTALL_RUST ]; then
+        echo "Installing Rust..."
+        #curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
+        #export PATH="$HOME/.cargo/bin:$PATH"
+    fi
+}
+
 function run_tests {
     # Test whether pytest is already installed.
     # Holy crap bash sucks :(. This conditional took much googling.

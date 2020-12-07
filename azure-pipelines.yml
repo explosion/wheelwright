@@ -245,12 +245,14 @@ jobs:
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       use_llvm = spec.get('options', {}).get('llvm', '')
+      use_rust = spec.get('options', {}).get('rust', '')
       build_constraints = spec.get('options', {}).get('build_constraints', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
       sys.stdout.write('BUILD_SPEC_LLVM={}\n'.format(use_llvm))
+      sys.stdout.write('BUILD_SPEC_RUST={}\n'.format(use_rust))
       sys.stdout.write('BUILD_SPEC_BUILD_CONSTRAINTS={}\n'.format(build_constraints))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
@@ -258,6 +260,7 @@ jobs:
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=llvm]$BUILD_SPEC_LLVM"
+      echo "##vso[task.setvariable variable=rust]$BUILD_SPEC_RUST"
       echo "##vso[task.setvariable variable=build_constraints]$BUILD_SPEC_BUILD_CONSTRAINTS"
       echo "##vso[build.updatebuildnumber]$BUILD_SPEC_RELEASE_ID"
     condition: eq(variables['active'], 1)
@@ -288,6 +291,8 @@ jobs:
   - script: |
       [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
       echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
+      export INSTALL_RUST=""
+      [ "$(rust)" == "True" ] && export INSTALL_RUST=1
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
@@ -299,6 +304,7 @@ jobs:
       clean_code $(checkout) $(commit)
       export CONFIG_PATH=$LINUX_TARGET/config.sh
       export MULTIBUILD_DIR=multibuild
+      export BLIS_ARCH=$PLAT
       build_wheel $(checkout) $PLAT
       install_run $PLAT
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
@@ -307,6 +313,14 @@ jobs:
   - script: choco install llvm
     condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 1))
     displayName: 'Install LLVM if needed (Windows)'
+
+  - script: |
+      curl -sSf -o rustup-init.exe https://win.rustup.rs
+      rustup-init.exe -y --profile minimal --default-toolchain stable --default-host x86_64-pc-windows-msvc
+      set PATH=%PATH%;%USERPROFILE%\.cargo\bin
+      echo "##vso[task.setvariable variable=PATH;]%PATH%;%USERPROFILE%\.cargo\bin"
+    condition: and(eq(variables['os'], 'win'), eq(variables['rust'], 'true'), eq(variables['active'], 1))
+    displayName: 'Install Rust if needed (Windows)'
 
   # The env variables are needed to compile things like Blis
   - script: |
