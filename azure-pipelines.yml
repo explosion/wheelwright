@@ -83,7 +83,7 @@ jobs:
   - script: |
       cd $(checkout)
       [ -e "build-constraints.txt" ] && exit 1
-    condition: ne(variables['build_constraints'], 'True')
+    condition: ne(variables['set_variables.build_constraints'], 'True')
     displayName: 'Check if --build-constraints option is missing'
 
   - script: |
