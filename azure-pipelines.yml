@@ -165,42 +165,42 @@ jobs:
         imageName: 'macos-10.15'
         python.version: '3.6'
         os: osx
-      Python37Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.7'
-        os: linux
-      Python37Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.7'
-        os: win
-      Python37Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.7'
-        os: osx
-      Python38Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.8'
-        os: linux
-      Python38Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.8'
-        os: win
-      Python38Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.8'
-        os: osx
-      Python39Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.9'
-        os: linux
-      Python39Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.9'
-        os: win
-      Python39Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.9'
-        os: osx
+        #      Python37Linux:
+        #        imageName: 'ubuntu-16.04'
+        #        python.version: '3.7'
+        #        os: linux
+        #      Python37Windows:
+        #        imageName: 'vs2017-win2016'
+        #        python.version: '3.7'
+        #        os: win
+        #      Python37Mac:
+        #        imageName: 'macos-10.15'
+        #        python.version: '3.7'
+        #        os: osx
+        #      Python38Linux:
+        #        imageName: 'ubuntu-16.04'
+        #        python.version: '3.8'
+        #        os: linux
+        #      Python38Windows:
+        #        imageName: 'vs2017-win2016'
+        #        python.version: '3.8'
+        #        os: win
+        #      Python38Mac:
+        #        imageName: 'macos-10.15'
+        #        python.version: '3.8'
+        #        os: osx
+        #      Python39Linux:
+        #        imageName: 'ubuntu-16.04'
+        #        python.version: '3.9'
+        #        os: linux
+        #      Python39Windows:
+        #        imageName: 'vs2017-win2016'
+        #        python.version: '3.9'
+        #        os: win
+        #      Python39Mac:
+        #        imageName: 'macos-10.15'
+        #        python.version: '3.9'
+        #        os: osx
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -342,6 +342,12 @@ jobs:
       python -m pip install -Ur requirements.txt
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'False'))
     displayName: 'Install dependencies without constraints (Windows)'
+
+  - bash: |
+      cd $(checkout)
+      if [ -e "build-constraints.txt" ]; then python -m pip install -Ur requirements.txt -c build-constraints.txt; else python -m pip install -Ur requirements.txt; fi
+    condition: eq(variables['os'], 'win'), eq(variables['active'], 1))
+    displayName: 'Test build constraints in Windows bash'
 
   - script: |
       cd $(checkout)
