@@ -82,7 +82,7 @@ jobs:
   # but the --build-constraints options isn't set
   - script: |
       cd $(checkout)
-      [ -e "build-constraints.txt" ] && exit 1
+      if [ -e "build-constraints.txt" ]; then exit 1; fi
     condition: ne(variables['set_variables.build_constraints'], 'True')
     displayName: 'Check if --build-constraints option is missing'
 
