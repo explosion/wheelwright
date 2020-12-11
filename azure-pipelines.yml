@@ -280,7 +280,7 @@ jobs:
     condition: and(eq(variables['os'], 'linux'), eq(variables['active'], 1))
     displayName: 'Copy multibuild files (Linux)'
 
-  - script: |
+  - bash: |
       if [ -e "$(checkout)/build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; fi
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
