@@ -154,42 +154,42 @@ jobs:
         imageName: 'macos-10.15'
         python.version: '3.6'
         os: osx
-        #      Python37Linux:
-        #        imageName: 'ubuntu-16.04'
-        #        python.version: '3.7'
-        #        os: linux
-        #      Python37Windows:
-        #        imageName: 'vs2017-win2016'
-        #        python.version: '3.7'
-        #        os: win
-        #      Python37Mac:
-        #        imageName: 'macos-10.15'
-        #        python.version: '3.7'
-        #        os: osx
-        #      Python38Linux:
-        #        imageName: 'ubuntu-16.04'
-        #        python.version: '3.8'
-        #        os: linux
-        #      Python38Windows:
-        #        imageName: 'vs2017-win2016'
-        #        python.version: '3.8'
-        #        os: win
-        #      Python38Mac:
-        #        imageName: 'macos-10.15'
-        #        python.version: '3.8'
-        #        os: osx
-        #      Python39Linux:
-        #        imageName: 'ubuntu-16.04'
-        #        python.version: '3.9'
-        #        os: linux
-        #      Python39Windows:
-        #        imageName: 'vs2017-win2016'
-        #        python.version: '3.9'
-        #        os: win
-        #      Python39Mac:
-        #        imageName: 'macos-10.15'
-        #        python.version: '3.9'
-        #        os: osx
+      Python37Linux:
+        imageName: 'ubuntu-16.04'
+        python.version: '3.7'
+        os: linux
+      Python37Windows:
+        imageName: 'vs2017-win2016'
+        python.version: '3.7'
+        os: win
+      Python37Mac:
+        imageName: 'macos-10.15'
+        python.version: '3.7'
+        os: osx
+      Python38Linux:
+        imageName: 'ubuntu-16.04'
+        python.version: '3.8'
+        os: linux
+      Python38Windows:
+        imageName: 'vs2017-win2016'
+        python.version: '3.8'
+        os: win
+      Python38Mac:
+        imageName: 'macos-10.15'
+        python.version: '3.8'
+        os: osx
+      Python39Linux:
+        imageName: 'ubuntu-16.04'
+        python.version: '3.9'
+        os: linux
+      Python39Windows:
+        imageName: 'vs2017-win2016'
+        python.version: '3.9'
+        os: win
+      Python39Mac:
+        imageName: 'macos-10.15'
+        python.version: '3.9'
+        os: osx
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -283,7 +283,7 @@ jobs:
   - bash: |
       cd $(checkout)
       git checkout $(commit)
-      if [ -e "build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; else echo "$(checkout)/build-constraints.txt not found"; fi
+      if [ -e "build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; fi
       cd ..
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
