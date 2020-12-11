@@ -281,6 +281,9 @@ jobs:
     displayName: 'Copy multibuild files (Linux)'
 
   - bash: |
+      pwd
+      ls
+      ls $(checkout)
       echo "CHECKOUT:" $(checkout)
       if [ -e $(checkout)/build-constraints.txt ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; else echo "$(checkout)/build-constraints.txt not found"; fi
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
