@@ -78,6 +78,14 @@ jobs:
       git checkout $(commit)
     displayName: 'Checkout commit'
 
+  # this is inelegant: fail if "build-constraints.txt" is present in the repo
+  # but the --build-constraints options isn't set
+  - script: |
+      cd $(checkout)
+      [ -e "build-constraints.txt" ] && exit 1
+    condition: eq(variables['build_constraints'], 'False')
+    displayName: 'Check if --build-constraints option is missing'
+
   - script: |
       cd $(checkout)
       python -m pip install -U pip setuptools
