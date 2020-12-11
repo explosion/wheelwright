@@ -346,7 +346,7 @@ jobs:
   - bash: |
       cd $(checkout)
       if [ -e "build-constraints.txt" ]; then python -m pip install -Ur requirements.txt -c build-constraints.txt; else python -m pip install -Ur requirements.txt; fi
-    condition: eq(variables['os'], 'win'), eq(variables['active'], 1))
+    condition: eq(variables['os'], 'win'), eq(variables['active'], 1)
     displayName: 'Test build constraints in Windows bash'
 
   - script: |
