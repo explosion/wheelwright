@@ -48,7 +48,6 @@ jobs:
       build_py35 = spec.get('options', {}).get('py35', '')
       skip_tests = spec.get('options', {}).get('skip_tests', '')
       universal = spec.get('options', {}).get('universal', '')
-      build_constraints = spec.get('options', {}).get('build_constraints', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
@@ -56,7 +55,6 @@ jobs:
       sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
       sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
       sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))
-      sys.stdout.write('BUILD_SPEC_BUILD_CONSTRAINTS={}\n'.format(build_constraints))")
 
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
@@ -66,7 +64,6 @@ jobs:
       echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
       echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
       echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
-      echo "##vso[task.setvariable variable=build_constraints;isOutput=true]$BUILD_SPEC_BUILD_CONSTRAINTS"
     name: set_variables
     displayName: 'Set variables'
 
@@ -77,14 +74,6 @@ jobs:
       cd $(checkout)
       git checkout $(commit)
     displayName: 'Checkout commit'
-
-  # this is inelegant: fail if "build-constraints.txt" is present in the repo
-  # but the --build-constraints options isn't set
-  - script: |
-      cd $(checkout)
-      if [ -e "build-constraints.txt" ]; then exit 1; fi
-    condition: ne(variables['set_variables.build_constraints'], 'True')
-    displayName: 'Check if --build-constraints option is missing'
 
   - script: |
       cd $(checkout)
@@ -254,14 +243,12 @@ jobs:
       release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
       use_llvm = spec.get('options', {}).get('llvm', '')
       use_rust = spec.get('options', {}).get('rust', '')
-      build_constraints = spec.get('options', {}).get('build_constraints', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
       sys.stdout.write('BUILD_SPEC_LLVM={}\n'.format(use_llvm))
       sys.stdout.write('BUILD_SPEC_RUST={}\n'.format(use_rust))
-      sys.stdout.write('BUILD_SPEC_BUILD_CONSTRAINTS={}\n'.format(build_constraints))")
       echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
@@ -269,7 +256,6 @@ jobs:
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=llvm]$BUILD_SPEC_LLVM"
       echo "##vso[task.setvariable variable=rust]$BUILD_SPEC_RUST"
-      echo "##vso[task.setvariable variable=build_constraints]$BUILD_SPEC_BUILD_CONSTRAINTS"
       echo "##vso[build.updatebuildnumber]$BUILD_SPEC_RELEASE_ID"
     condition: eq(variables['active'], 1)
     displayName: 'Set variables'
@@ -295,7 +281,7 @@ jobs:
     displayName: 'Copy multibuild files (Linux)'
 
   - script: |
-      [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
+      if [ -e "$(checkout)/build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; fi
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $CONFIG_PATH
@@ -337,23 +323,11 @@ jobs:
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Check out and set up (Windows)'
 
-  - script: |
-      cd $(checkout)
-      python -m pip install -Ur requirements.txt
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'False'))
-    displayName: 'Install dependencies without constraints (Windows)'
-
   - bash: |
       cd $(checkout)
       if [ -e "build-constraints.txt" ]; then python -m pip install -Ur requirements.txt -c build-constraints.txt; else python -m pip install -Ur requirements.txt; fi
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Test build constraints in Windows bash'
-
-  - script: |
-      cd $(checkout)
-      python -m pip install -Ur requirements.txt -c build-constraints.txt
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1), eq(variables['build_constraints'], 'True'))
-    displayName: 'Install dependencies with constraints (Windows)'
+    displayName: 'Install dependencies (Windows)'
 
   # The env variables are needed to compile things like Blis
   - script: |
