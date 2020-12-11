@@ -295,13 +295,8 @@ jobs:
     displayName: 'Copy multibuild files (Linux)'
 
   - script: |
-      export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1), eq(variables['build_constraints'], 'True'))
-    displayName: 'Set dependencies with constraints (Mac / Linux)'
-
-  - script: |
       [ "$(build_constraints)" == "True" ] && export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"
-      echo "BUILD_DEPENDS:" $(BUILD_DEPENDS)
+      echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $CONFIG_PATH
       export MB_ML_VER=$(MANYLINUX_VERSION)
