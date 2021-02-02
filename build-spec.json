@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-transformers.git", "package-name": "spacy_transformers", "commit": "v1.0.1", "options": {"llvm": false, "py35": false, "universal": true, "skip_tests": true}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_transformers-v1.0.1-2"}}
