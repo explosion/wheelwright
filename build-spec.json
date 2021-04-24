@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-legacy.git", "package-name": "spacy_legacy", "commit": "v3.0.5", "options": {"llvm": false, "rust": false, "py35": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_legacy-v3.0.5-2"}}
