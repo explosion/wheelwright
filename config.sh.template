@@ -44,7 +44,7 @@ function abspath {
 function pip_wheel_cmd {
     local abs_wheelhouse=$1
     local wheelhouse=$(abspath ${WHEEL_SDIR:-wheelhouse})
-    export MACOSX_DEPLOYMENT_TARGET="10.9"
+    #export MACOSX_DEPLOYMENT_TARGET="10.9"
     python setup.py bdist_wheel
     ls -lah .
     ls dist/
@@ -54,5 +54,5 @@ function pip_wheel_cmd {
 }
 
 
-export MACOSX_DEPLOYMENT_TARGET="10.9"
+#export MACOSX_DEPLOYMENT_TARGET="10.9"
 export MULTIBUILD_DIR="multibuild"
