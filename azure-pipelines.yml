@@ -185,12 +185,12 @@ jobs:
 #        imageName: 'vs2017-win2016'
 #        python.version: '3.9'
 #        os: win
-      Python39Mac:
+      Python39MacX86_64:
         imageName: 'macos-10.15'
         python.version: '3.9'
         os: osx
         plat: "x86_64"
-      Python39Mac:
+      Python39MacARM64:
         imageName: 'macos-10.15'
         python.version: '3.9'
         os: osx
