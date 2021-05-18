@@ -13,7 +13,7 @@ variables:
   LINUX_TARGET: /io
   BUILD_DEPENDS: "-Ur checkout/requirements.txt"
   TEST_DEPENDS: "-Ur checkout/requirements.txt"
-  PLAT: x86_64
+  PLAT: universal2
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
   MANYLINUX_VERSION: 2014
@@ -134,58 +134,58 @@ jobs:
   continueOnError: true
   strategy:
     matrix:
-      Python35Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.5'
-        os: linux
-      Python35Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.5'
-        os: win
-      Python36Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.6'
-        os: linux
-      Python36Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.6'
-        os: win
-      Python36Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.6'
-        os: osx
-      Python37Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.7'
-        os: linux
-      Python37Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.7'
-        os: win
-      Python37Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.7'
-        os: osx
-      Python38Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.8'
-        os: linux
-      Python38Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.8'
-        os: win
-      Python38Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.8'
-        os: osx
-      Python39Linux:
-        imageName: 'ubuntu-16.04'
-        python.version: '3.9'
-        os: linux
-      Python39Windows:
-        imageName: 'vs2017-win2016'
-        python.version: '3.9'
-        os: win
+#      Python35Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.5'
+#        os: linux
+#      Python35Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.5'
+#        os: win
+#      Python36Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.6'
+#        os: linux
+#      Python36Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.6'
+#        os: win
+#      Python36Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.6'
+#        os: osx
+#      Python37Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.7'
+#        os: linux
+#      Python37Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.7'
+#        os: win
+#      Python37Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.7'
+#        os: osx
+#      Python38Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.8'
+#        os: linux
+#      Python38Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.8'
+#        os: win
+#      Python38Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.8'
+#        os: osx
+#      Python39Linux:
+#        imageName: 'ubuntu-16.04'
+#        python.version: '3.9'
+#        os: linux
+#      Python39Windows:
+#        imageName: 'vs2017-win2016'
+#        python.version: '3.9'
+#        os: win
       Python39Mac:
         imageName: 'macos-10.15'
         python.version: '3.9'
