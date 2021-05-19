@@ -99,6 +99,8 @@ steps:
       export PLAT=${{ parameters.PLAT }}
       echo "PLAT:" $PLAT
       export DOCKER_TEST_IMAGE=multibuild/xenial_${{ parameters.PLAT }}
+      [ $PLAT == "aarch64" ] && export DOCKER_TEST_IMAGE=multibuild/xenial_arm64v8
+      echo "DOCKER_TEST_IMAGE" $DOCKER_TEST_IMAGE
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=${{ parameters.python_version }}
       export TRAVIS_PYTHON_VERSION=${{ parameters.python_version }}
