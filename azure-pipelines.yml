@@ -13,6 +13,7 @@ variables:
   LINUX_TARGET: /io
   BUILD_DEPENDS: "-Ur checkout/requirements.txt"
   TEST_DEPENDS: "-Ur checkout/requirements.txt"
+  PLAT: x86_64
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
   MANYLINUX_VERSION: 2014
@@ -189,12 +190,11 @@ jobs:
         imageName: 'macos-10.15'
         python.version: '3.9'
         os: osx
-        plat: "x86_64"
       Python39MacARM64:
         imageName: 'macos-10.15'
         python.version: '3.9'
         os: osx
-        plat: "arm64"
+        PLAT: "arm64"
     maxParallel: 4
   pool:
     vmImage: $(imageName)
