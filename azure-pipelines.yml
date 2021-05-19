@@ -306,7 +306,8 @@ jobs:
       export MULTIBUILD_DIR=multibuild
       export BLIS_ARCH=$PLAT
       build_wheel $(checkout) $PLAT
-      install_run $PLAT
+      export PYTHON_PLAT=`python -c "import platform; print(platform.machine())"`
+      if [ $PLAT == $PYTHON_PLAT ]; then install_run $PLAT; fi
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Build wheel (Mac / Linux)'
 
