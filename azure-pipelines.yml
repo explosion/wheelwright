@@ -190,11 +190,11 @@ jobs:
 #        imageName: 'macos-10.15'
 #        python.version: '3.9'
 #        os: osx
-#      Python39MacARM64:
-#        imageName: 'macos-10.15'
-#        python.version: '3.9'
-#        os: osx
-#        plat: "arm64"
+      Python39MacARM64:
+        imageName: 'macos-10.15'
+        python.version: '3.9'
+        os: osx
+        plat: "arm64"
     maxParallel: 4
   pool:
     vmImage: $(imageName)
