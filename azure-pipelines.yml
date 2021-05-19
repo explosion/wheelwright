@@ -186,16 +186,16 @@ jobs:
 #        imageName: 'vs2017-win2016'
 #        python.version: '3.9'
 #        os: win
-#      Python39MacX86_64:
-#        imageName: 'macos-10.15'
-#        python.version: '3.9'
-#        os: osx
-      Python39MacARM64:
+      Python39MacX86_64:
         imageName: 'macos-10.15'
         python.version: '3.9'
         os: osx
-        plat: "arm64"
-    maxParallel: 4
+#      Python39MacARM64:
+#        imageName: 'macos-10.15'
+#        python.version: '3.9'
+#        os: osx
+#        plat: "arm64"
+#    maxParallel: 4
   pool:
     vmImage: $(imageName)
   variables:
