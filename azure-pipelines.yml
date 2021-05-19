@@ -216,12 +216,16 @@ jobs:
     matrix:
       Python36LinuxARM64:
         python.version: '3.6'
+        os: linux
       Python37LinuxARM64:
         python.version: '3.7'
+        os: linux
       Python38LinuxARM64:
         python.version: '3.8'
+        os: linux
       Python39LinuxARM64:
         python.version: '3.9'
+        os: linux
   pool:
     name: "LinuxARM64"
 
