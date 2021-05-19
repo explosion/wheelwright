@@ -212,6 +212,8 @@ jobs:
   dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
+  workspace:
+    clean: all
   strategy:
     matrix:
       Python36LinuxARM64:
