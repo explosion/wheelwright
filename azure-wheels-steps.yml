@@ -11,7 +11,7 @@ steps:
   - bash: |
       BUILD35=0; [ "$(py35)" == "True" ] && BUILD35=1
       echo "Build Python 3.5:" $BUILD35
-      IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
+      IS35=0; [ "${{ parameters.python_version }}" == "3.5" ] && IS35=1
       echo "Is Python 3.5:" $IS35
       ACTIVE=$(( IS35 && BUILD35 || ! IS35 ? 1 : 0 ))
       echo "Build active:" $ACTIVE
@@ -20,8 +20,8 @@ steps:
 
   - task: UsePythonVersion@0
     inputs:
-      versionSpec: '$(python_version)'
-      architecture: '$(architecture)'
+      versionSpec: '${{ parameters.python_version }}'
+      architecture: '${{ parameters.architecture }}'
     condition: eq(variables['active'], 1)
 
   - script: git submodule update --init --recursive
@@ -96,10 +96,11 @@ steps:
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $CONFIG_PATH
+      export PLAT=${{ parameters.PLAT }}
       echo "PLAT:" $PLAT
       export MB_ML_VER=$(MANYLINUX_VERSION)
-      export MB_PYTHON_VERSION=$(python.version)
-      export TRAVIS_PYTHON_VERSION=$(python.version)
+      export MB_PYTHON_VERSION=${{ parameters.python_version }}
+      export TRAVIS_PYTHON_VERSION=${{ parameters.python_version }}
       export TRAVIS_OS_NAME=$(os)
       export BUILD_COMMIT=$(commit)
       source $(Build.SourcesDirectory)/multibuild/common_utils.sh
@@ -163,7 +164,7 @@ steps:
         print(os.listdir('./dist'))
       failOnStderr: true
       workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
-    condition: and(eq(variables['os'], 'win'), or(eq(variables['python.version'], '3.8'), eq(variables['python.version'], '3.9')), eq(variables['active'], 1))
+    condition: and(eq(variables['os'], 'win'), or(eq(variables['python_version'], '3.8'), eq(variables['python_version'], '3.9')), eq(variables['active'], 1))
     displayName: Fix wheel name (Windows, Python 3.8)
 
   - bash: |
