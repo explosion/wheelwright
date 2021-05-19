@@ -293,6 +293,7 @@ jobs:
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
       [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $CONFIG_PATH
+      echo "PLAT:" $PLAT
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=$(python.version)
       export TRAVIS_PYTHON_VERSION=$(python.version)
