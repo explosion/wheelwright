@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-lookups-data.git", "package-name": "spacy_lookups_data", "commit": "v1.0.2", "options": {"llvm": false, "rust": false, "py35": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_lookups_data-v1.0.2"}}
