@@ -174,14 +174,19 @@ jobs:
 #        imageName: 'vs2017-win2016'
 #        python.version: '3.8'
 #        os: win
-#      Python38Mac:
-#        imageName: 'macos-10.15'
-#        python.version: '3.8'
-#        os: osx
-#      Python39Linux:
-#        imageName: 'ubuntu-16.04'
-#        python.version: '3.9'
-#        os: linux
+      Python38MacX86_64:
+        imageName: 'macos-10.15'
+        python.version: '3.8'
+        os: osx
+      Python38MacARM64:
+        imageName: 'macos-10.15'
+        python.version: '3.8'
+        os: osx
+        plat: "arm64"
+      Python39Linux:
+        imageName: 'ubuntu-16.04'
+        python.version: '3.9'
+        os: linux
 #      Python39Windows:
 #        imageName: 'vs2017-win2016'
 #        python.version: '3.9'
@@ -190,11 +195,11 @@ jobs:
         imageName: 'macos-10.15'
         python.version: '3.9'
         os: osx
-#      Python39MacARM64:
-#        imageName: 'macos-10.15'
-#        python.version: '3.9'
-#        os: osx
-#        plat: "arm64"
+      Python39MacARM64:
+        imageName: 'macos-10.15'
+        python.version: '3.9'
+        os: osx
+        plat: "arm64"
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -208,32 +213,32 @@ jobs:
       architecture: 'x64'
       PLAT: '$(plat)'
 
-- job: 'wheelslinuxarm'
-  dependsOn: 'sdist'
-  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
-  continueOnError: true
-  workspace:
-    clean: all
-  strategy:
-    matrix:
-      Python36LinuxARM64:
-        python.version: '3.6'
-        os: linux
-      Python37LinuxARM64:
-        python.version: '3.7'
-        os: linux
-      Python38LinuxARM64:
-        python.version: '3.8'
-        os: linux
-      Python39LinuxARM64:
-        python.version: '3.9'
-        os: linux
-  pool:
-    name: "LinuxARM64"
-
-  steps:
-  - template: azure-wheels-steps.yml
-    parameters:
-      python_version: '$(python.version)'
-      architecture: 'ARM64'
-      PLAT: 'aarch64'
+#- job: 'wheelslinuxarm'
+#  dependsOn: 'sdist'
+#  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
+#  continueOnError: true
+#  workspace:
+#    clean: all
+#  strategy:
+#    matrix:
+#      Python36LinuxARM64:
+#        python.version: '3.6'
+#        os: linux
+#      Python37LinuxARM64:
+#        python.version: '3.7'
+#        os: linux
+#      Python38LinuxARM64:
+#        python.version: '3.8'
+#        os: linux
+#      Python39LinuxARM64:
+#        python.version: '3.9'
+#        os: linux
+#  pool:
+#    name: "LinuxARM64"
+#
+#  steps:
+#  - template: azure-wheels-steps.yml
+#    parameters:
+#      python_version: '$(python.version)'
+#      architecture: 'ARM64'
+#      PLAT: 'aarch64'
