@@ -195,7 +195,7 @@ jobs:
 #        python.version: '3.9'
 #        os: osx
 #        plat: "arm64"
-#    maxParallel: 4
+    maxParallel: 4
   pool:
     vmImage: $(imageName)
   variables:
