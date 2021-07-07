@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-ray.git", "package-name": "spacy_ray", "commit": "v0.1.4", "options": {"llvm": false, "rust": false, "py35": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_ray-v0.1.4"}}
