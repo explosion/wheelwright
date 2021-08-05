@@ -118,6 +118,11 @@ steps:
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Build wheel (Mac / Linux)'
 
+  - script: |
+      rm wheelhouse/*universal2.whl
+    condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
+    displayName: 'Remove universal2 wheel (Mac)'
+
   - script: choco install llvm
     condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 1))
     displayName: 'Install LLVM if needed (Windows)'
