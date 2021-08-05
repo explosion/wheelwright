@@ -119,7 +119,7 @@ steps:
     displayName: 'Build wheel (Mac / Linux)'
 
   - script: |
-      rm wheelhouse/*universal2.whl
+      rm -f checkout/dist/*universal2.whl
     condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
     displayName: 'Remove universal2 wheel (Mac)'
 
