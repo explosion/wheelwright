@@ -84,7 +84,7 @@ steps:
   - task: CopyFiles@2
     inputs:
       contents: '/**'
-      targetFolder: $(LINUX_TARGET)
+      targetFolder: $LINUX_TARGET
     condition: and(eq(variables['os'], 'linux'), eq(variables['active'], 1))
     displayName: 'Copy multibuild files (Linux)'
 
@@ -94,7 +94,7 @@ steps:
       if [ -e "build-constraints.txt" ]; then export BUILD_DEPENDS="$(BUILD_DEPENDS) -c checkout/build-constraints.txt"; fi
       cd ..
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
-      [ "$(os)" == "linux" ] && export CONFIG_PATH=$(LINUX_TARGET)/config.sh
+      [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
       echo "CONFIG_PATH:" $CONFIG_PATH
       export PLAT=${{ parameters.PLAT }}
       echo "PLAT:" $PLAT
