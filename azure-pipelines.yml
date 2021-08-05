@@ -135,7 +135,7 @@ jobs:
   strategy:
     matrix:
 #      Python35Linux:
-#        imageName: 'ubuntu-16.04'
+#        imageName: 'ubuntu-18.04'
 #        python.version: '3.5'
 #        os: linux
 #      Python35Windows:
@@ -143,7 +143,7 @@ jobs:
 #        python.version: '3.5'
 #        os: win
 #      Python36Linux:
-#        imageName: 'ubuntu-16.04'
+#        imageName: 'ubuntu-18.04'
 #        python.version: '3.6'
 #        os: linux
 #      Python36Windows:
@@ -155,7 +155,7 @@ jobs:
 #        python.version: '3.6'
 #        os: osx
 #      Python37Linux:
-#        imageName: 'ubuntu-16.04'
+#        imageName: 'ubuntu-18.04'
 #        python.version: '3.7'
 #        os: linux
 #      Python37Windows:
@@ -167,7 +167,7 @@ jobs:
 #        python.version: '3.7'
 #        os: osx
 #      Python38Linux:
-#        imageName: 'ubuntu-16.04'
+#        imageName: 'ubuntu-18.04'
 #        python.version: '3.8'
 #        os: linux
 #      Python38Windows:
@@ -184,7 +184,7 @@ jobs:
         os: osx
         plat: "arm64"
       Python39Linux:
-        imageName: 'ubuntu-16.04'
+        imageName: 'ubuntu-18.04'
         python.version: '3.9'
         os: linux
 #      Python39Windows:
