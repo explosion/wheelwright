@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/adrianeboyd/fasttext.git", "package-name": "floret", "commit": "v0.10.0.dev0", "options": {"llvm": false, "rust": false, "py35": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "floret-v0.10.0.dev0-2"}}
