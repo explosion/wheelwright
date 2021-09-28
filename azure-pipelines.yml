@@ -21,7 +21,7 @@ variables:
 jobs:
 - job: "sdist"
   pool:
-    vmImage: 'ubuntu-20.04'
+    vmImage: "macos-10.14"
   variables:
     python.version: '3.8'
     CC: gcc-9
@@ -82,14 +82,14 @@ jobs:
       python setup.py sdist
     displayName: 'Install and build sdist'
 
-  - script: |
-      cd $(checkout)
-      export CC=$(CC)
-      export CXX=$(CXX)
-      python -m pip install -U wheel
-      python setup.py bdist_wheel
-    displayName: 'Build universal wheel'
-    condition: eq(variables['set_variables.universal'], 'True')
+    #  - script: |
+    #      cd $(checkout)
+    #      export CC=$(CC)
+    #      export CXX=$(CXX)
+    #      python -m pip install -U wheel
+    #      python setup.py bdist_wheel
+    #    displayName: 'Build universal wheel'
+    #    condition: eq(variables['set_variables.universal'], 'True')
 
   - bash: |
       cd $(Build.SourcesDirectory)/$(checkout)
