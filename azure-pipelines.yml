@@ -24,8 +24,8 @@ jobs:
     vmImage: "macos-10.14"
   variables:
     python.version: '3.8'
-    CC: gcc-9
-    CXX: g++-9
+    CC: clang
+    CXX: clang++
   steps:
   - task: UsePythonVersion@0
     inputs:
