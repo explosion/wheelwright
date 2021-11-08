@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-alignments.git", "package-name": "spacy_alignments", "commit": "v0.8.4", "options": {"llvm": false, "rust": true, "py35": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_alignments-v0.8.4"}}
