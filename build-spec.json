@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/fastapi-explosion-extras.git", "package-name": "fastapi_explosion_extras", "commit": "v0.1.10", "options": {"llvm": false, "rust": false, "py35": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "fastapi-explosion-extras-v0.1.10-2"}}
