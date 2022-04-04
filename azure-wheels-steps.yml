@@ -69,7 +69,7 @@ steps:
     displayName: 'Set variables'
 
   - script: |
-      python -m pip install virtualenv
+      python -m pip install -U pip setuptools wheel virtualenv
       git clone $(clone_url) $(checkout)
       export BUILD_COMMIT=$(commit)
       export PACKAGE_NAME=$(package_name)
