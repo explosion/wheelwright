@@ -14,7 +14,8 @@ function pre_build {
         export PATH="$HOME/.cargo/bin:$PATH"
         rustup target add aarch64-apple-darwin
         rustc --version
-	export PYO3_CROSS_LIB_DIR="/Users/runner/work/1/s/venv/lib"
+	ls -la /Users/runner/work/1/s/venv/bin/python
+	#export PYO3_CROSS_LIB_DIR="/Users/runner/work/1/s/venv/lib"
     fi
 }
 
