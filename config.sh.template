@@ -15,7 +15,7 @@ function pre_build {
         rustup target add aarch64-apple-darwin
         rustc --version
 	ls -la /Users/runner/work/1/s/venv/bin/python
-	#export PYO3_CROSS_LIB_DIR="/Users/runner/work/1/s/venv/lib"
+	export PYO3_CROSS_LIB_DIR="/Library/Frameworks/Python.framework/Versions/3.9/lib"
     fi
 }
 
