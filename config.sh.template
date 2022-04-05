@@ -13,6 +13,14 @@ function pre_build {
         curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
         export PATH="$HOME/.cargo/bin:$PATH"
         rustc --version
+	# this is intended only for osx arm64
+	# there is most likely a better way to do this
+	if [ $PLAT == "arm64" ]; then
+            rustup target add aarch64-apple-darwin
+	    export PYO3_CROSS_PYTHON_VERSION=`python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"`
+	    export PYO3_CROSS_LIB_DIR="/Library/Frameworks/Python.framework/Versions/$PYO3_CROSS_PYTHON_VERSION/lib"
+	    echo $PYO3_CROSS_LIB_DIR
+	fi
     fi
 }
 
