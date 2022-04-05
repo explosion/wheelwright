@@ -12,10 +12,14 @@ function pre_build {
         echo "Installing Rust..."
         curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable
         export PATH="$HOME/.cargo/bin:$PATH"
-        rustup target add aarch64-apple-darwin
         rustc --version
-	export PYTHON_MAJOR_MINOR=`python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"`
-	export PYO3_CROSS_LIB_DIR="/Library/Frameworks/Python.framework/Versions/$PYTHON_MAJOR_MINOR/lib"
+	# this is intended only for osx arm64
+	# there is most likely a better way to do this
+	if [ $PLAT == "arm64" ]; then
+            rustup target add aarch64-apple-darwin
+	    export PYTHON_MAJOR_MINOR=`python -c "import sys; print(f'{sys.version_info.major}.{sys.version_info.minor}')"`
+	    export PYO3_CROSS_LIB_DIR="/Library/Frameworks/Python.framework/Versions/$PYTHON_MAJOR_MINOR/lib"
+	fi
     fi
 }
 
