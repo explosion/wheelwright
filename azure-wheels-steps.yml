@@ -100,7 +100,7 @@ steps:
       echo "PLAT:" $PLAT
       [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="firestorm"
       echo "BLIS_ARCH:" $BLIS_ARCH
-      [ "$(os)" == "osx" ] && export BLIS_COMPILER="clang $CFLAGS"
+      [ "$(os)" == "osx" ] && export BLIS_COMPILER="clang -arch $PLAT"
       export MB_ML_VER=$(MANYLINUX_VERSION)
       export MB_PYTHON_VERSION=${{ parameters.python_version }}
       export TRAVIS_PYTHON_VERSION=${{ parameters.python_version }}
