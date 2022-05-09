@@ -108,7 +108,10 @@ steps:
       before_install
       clean_code $(checkout) $(commit)
       export MULTIBUILD_DIR=multibuild
-      export BLIS_ARCH=$PLAT
+      [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="firestorm"
+      echo "BLIS_ARCH:" $BLIS_ARCH
+      [ "$(os)" == "osx" ] && export BLIS_COMPILER="clang -arch $PLAT"
+      echo "BLIS_COMPILER:" $BLIS_COMPILER
       build_wheel $(checkout) $PLAT
       export PYTHON_PLAT=`python -c "import platform; print(platform.machine())"`
       if [ $PLAT == $PYTHON_PLAT ]; then install_run $PLAT; fi
