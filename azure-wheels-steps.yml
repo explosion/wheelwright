@@ -108,7 +108,6 @@ steps:
       before_install
       clean_code $(checkout) $(commit)
       export MULTIBUILD_DIR=multibuild
-      export BLIS_ARCH=$PLAT
       build_wheel $(checkout) $PLAT
       export PYTHON_PLAT=`python -c "import platform; print(platform.machine())"`
       if [ $PLAT == $PYTHON_PLAT ]; then install_run $PLAT; fi
