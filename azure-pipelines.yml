@@ -134,84 +134,84 @@ jobs:
   continueOnError: true
   strategy:
     matrix:
-      Python35Linux:
-        imageName: 'ubuntu-18.04'
-        python.version: '3.5'
-        os: linux
-      Python35Windows:
-        imageName: 'windows-2019'
-        python.version: '3.5'
-        os: win
-      Python36Linux:
-        imageName: 'ubuntu-18.04'
-        python.version: '3.6'
-        os: linux
-      Python36Windows:
-        imageName: 'windows-2019'
-        python.version: '3.6'
-        os: win
-      Python36Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.6'
-        os: osx
-      Python37Linux:
-        imageName: 'ubuntu-18.04'
-        python.version: '3.7'
-        os: linux
-      Python37Windows:
-        imageName: 'windows-2019'
-        python.version: '3.7'
-        os: win
-      Python37Mac:
-        imageName: 'macos-10.15'
-        python.version: '3.7'
-        os: osx
-      Python38Linux:
-        imageName: 'ubuntu-18.04'
-        python.version: '3.8'
-        os: linux
-      Python38Windows:
-        imageName: 'windows-2019'
-        python.version: '3.8'
-        os: win
-      Python38MacX86_64:
-        imageName: 'macos-10.15'
-        python.version: '3.8'
-        os: osx
+#      Python35Linux:
+#        imageName: 'ubuntu-18.04'
+#        python.version: '3.5'
+#        os: linux
+#      Python35Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.5'
+#        os: win
+#      Python36Linux:
+#        imageName: 'ubuntu-18.04'
+#        python.version: '3.6'
+#        os: linux
+#      Python36Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.6'
+#        os: win
+#      Python36Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.6'
+#        os: osx
+#      Python37Linux:
+#        imageName: 'ubuntu-18.04'
+#        python.version: '3.7'
+#        os: linux
+#      Python37Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.7'
+#        os: win
+#      Python37Mac:
+#        imageName: 'macos-10.15'
+#        python.version: '3.7'
+#        os: osx
+#      Python38Linux:
+#        imageName: 'ubuntu-18.04'
+#        python.version: '3.8'
+#        os: linux
+#      Python38Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.8'
+#        os: win
+#      Python38MacX86_64:
+#        imageName: 'macos-10.15'
+#        python.version: '3.8'
+#        os: osx
       Python38MacARM64:
         imageName: 'macos-11'
         python.version: '3.8'
         os: osx
         plat: "arm64"
-      Python39Linux:
-        imageName: 'ubuntu-18.04'
-        python.version: '3.9'
-        os: linux
-      Python39Windows:
-        imageName: 'windows-2019'
-        python.version: '3.9'
-        os: win
-      Python39MacX86_64:
-        imageName: 'macos-10.15'
-        python.version: '3.9'
-        os: osx
+#      Python39Linux:
+#        imageName: 'ubuntu-18.04'
+#        python.version: '3.9'
+#        os: linux
+#      Python39Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.9'
+#        os: win
+#      Python39MacX86_64:
+#        imageName: 'macos-10.15'
+#        python.version: '3.9'
+#        os: osx
       Python39MacARM64:
         imageName: 'macos-11'
         python.version: '3.9'
         os: osx
         plat: "arm64"
-      Python310Linux:
-        imageName: 'ubuntu-18.04'
-        python.version: '3.10'
-        os: linux
-      Python310Windows:
-        imageName: 'windows-2019'
-        python.version: '3.10'
-        os: win
-      Python310MacX86_64:
-        imageName: 'macos-10.15'
-        python.version: '3.10'
-        os: osx
+#      Python310Linux:
+#        imageName: 'ubuntu-18.04'
+#        python.version: '3.10'
+#        os: linux
+#      Python310Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.10'
+#        os: win
+#      Python310MacX86_64:
+#        imageName: 'macos-10.15'
+#        python.version: '3.10'
+#        os: osx
       Python310MacARM64:
         imageName: 'macos-11'
         python.version: '3.10'
