@@ -134,10 +134,6 @@ jobs:
   continueOnError: true
   strategy:
     matrix:
-      Python36MacX86_64:
-        imageName: 'macos-10.15'
-        python.version: '3.6'
-        os: osx
       Python37MacX86_64:
         imageName: 'macos-10.15'
         python.version: '3.7'
