@@ -108,7 +108,7 @@ steps:
       before_install
       clean_code $(checkout) $(commit)
       export MULTIBUILD_DIR=multibuild
-      [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="firestorm"
+      [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="generic"
       echo "BLIS_ARCH:" $BLIS_ARCH
       [ "$(os)" == "osx" ] && export BLIS_COMPILER="clang -arch $PLAT"
       echo "BLIS_COMPILER:" $BLIS_COMPILER
