@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/thinc-apple-ops.git", "package-name": "thinc_apple_ops", "commit": "v0.0.7", "options": {"llvm": false, "rust": false, "py35": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "thinc_apple_ops-v0.0.7"}}
