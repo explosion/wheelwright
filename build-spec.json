@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/shademe/cython-blis.git", "package-name": "blis", "commit": "26520f0e4cd12e882bf3b02c9c360226eba159a2", "options": {"llvm": true, "rust": false, "py35": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "blis-26520f0e4cd12e882bf3b02c9c360226eba159a2"}}
