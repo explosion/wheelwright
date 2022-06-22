@@ -270,6 +270,6 @@ the actual configuration is in the `azure-pipelines.yml` file.
 
 It's all under the MIT license, so feel free! It would be great to somehow
 convert this into a generic reusable piece of infrastructure, though it's not
-entirely clear how given how Rube-Goldergian the whole thing is – you can't just
-slap it up on PyPI. (Maybe a cookiecutter template that generates a repo like
-this?)
+entirely clear how given how Rube-Goldbergian the whole thing is – you can't
+just slap it up on PyPI. (Maybe a cookiecutter template that generates a repo
+like this?)
