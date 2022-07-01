@@ -291,7 +291,7 @@ jobs:
   - bash: |
       BUILD35=0; [ "$(py35)" == "True" ] && BUILD35=1
       echo "Build Python 3.5:" $BUILD35
-      IS35=0; [ "${{ parameters.python_version }}" == "3.5" ] && IS35=1
+      IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
       echo "Is Python 3.5:" $IS35
       ACTIVE=$(( IS35 && BUILD35 || ! IS35 ? 1 : 0 ))
       echo "Build active:" $ACTIVE
