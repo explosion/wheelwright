@@ -253,7 +253,8 @@ jobs:
   - script: |
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install boto3
-      python -c 'import boto3; ec2 = boto3.client("ec2", region_name="eu-west-1"); print(ec2.describe_instance_types(InstanceTypes=["m6g.large"]))'
+      #python -c 'import boto3; ec2 = boto3.client("ec2", region_name="eu-west-1"); print(ec2.describe_instance_types(InstanceTypes=["m6g.large"]))'
+      python -c 'import boto3; ec2 = boto3.client("ec2", region_name="eu-west-1"); print(ec2.describe_tags())'
     displayName: 'Test auth'
     env:
       AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
