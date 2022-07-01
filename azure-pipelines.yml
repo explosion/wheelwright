@@ -231,7 +231,7 @@ jobs:
 #      PLAT: '$(plat)'
 
 - job: 'ec2wheels'
-  dependsOn: 'sdist'
+  #dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
   strategy:
