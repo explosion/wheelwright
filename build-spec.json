@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/os-signpost.git", "package-name": "os_signpost", "commit": "v0.0.2", "options": {"llvm": false, "rust": false, "py35": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "os_signpost-v0.0.2"}}
