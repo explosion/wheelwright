@@ -285,6 +285,19 @@ jobs:
     name: set_variables
     displayName: 'Set variables'
 
+  # This could probably be done more elegantly. Comparison happens here so we
+  # can use the value of the py35 variable and assign a variable "active" that's
+  # available to all subsequent build steps in the pipeline 
+  - bash: |
+      BUILD35=0; [ "$(py35)" == "True" ] && BUILD35=1
+      echo "Build Python 3.5:" $BUILD35
+      IS35=0; [ "${{ parameters.python_version }}" == "3.5" ] && IS35=1
+      echo "Is Python 3.5:" $IS35
+      ACTIVE=$(( IS35 && BUILD35 || ! IS35 ? 1 : 0 ))
+      echo "Build active:" $ACTIVE
+      echo "##vso[task.setvariable variable=active]$ACTIVE"
+    displayName: 'Set status'
+
   - script: |
       git clone https://github.com/explosion/ec2buildwheel
       cd ec2buildwheel
@@ -301,7 +314,7 @@ jobs:
 
   - task: CopyFiles@2
     inputs:
-      contents: 'wheelhouse/**'
+      contents: 'ec2buildwheel/wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     displayName: 'Copy wheels'
