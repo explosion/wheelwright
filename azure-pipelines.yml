@@ -251,10 +251,38 @@ jobs:
       architecture: 'x64'
 
   - script: |
+      git clone https://github.com/explosion/ec2buildwheel
+      cd ec2buildwheel
       python -m pip install --upgrade pip setuptools wheel
-      python -m pip install boto3
-      #python -c 'import boto3; ec2 = boto3.client("ec2", region_name="eu-west-1"); print(ec2.describe_instance_types(InstanceTypes=["m6g.large"]))'
-      python -c 'import boto3; ec2 = boto3.client("ec2", region_name="eu-west-1"); print(ec2.describe_tags())'
-    displayName: 'Test auth'
+      python -m pip install -r requirements.txt
+      python go.py $(clone_url) $(commit) --package-name $(package_name)
+    displayName: 'Build wheels'
     env:
       AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+
+  - task: CopyFiles@2
+    inputs:
+      contents: 'ec2buildwheel/wheelhouse/**'
+      targetFolder: $(Build.ArtifactStagingDirectory)
+      flattenFolders: true
+    displayName: 'Copy wheels'
+
+  - task: PublishBuildArtifacts@1
+    inputs:
+      pathtoPublish: $(Build.ArtifactStagingDirectory)
+      artifactName: '$(ARTIFACT_NAME)'
+    condition: eq(variables['active'], 1)
+    displayName: 'Publish artifact'
+
+  - task: GitHubRelease@0
+    inputs:
+      gitHubConnection: '$(GH_CONNECTION)'
+      repositoryName: '$(Build.Repository.Name)'
+      action: 'edit'
+      tagSource: manual
+      tag: '$(release_tag)'
+      addChangeLog: false
+      assetUploadMode: replace
+      assets: '$(Build.ArtifactStagingDirectory)/*'
+    condition: and(not(eq(variables['GH_CONNECTION'], 'false')), eq(variables['active'], 1))
+    displayName: 'Upload to GitHub release'
