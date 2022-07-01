@@ -295,9 +295,13 @@ jobs:
     env:
       AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
 
+  - script: |
+      ls
+    displayName: 'Run ls'
+
   - task: CopyFiles@2
     inputs:
-      contents: 'ec2buildwheel/wheelhouse/**'
+      contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     displayName: 'Copy wheels'
