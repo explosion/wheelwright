@@ -255,3 +255,5 @@ jobs:
       python -m pip install boto3
       python -c 'import boto3; ec2 = boto3.client("ec2", region_name="eu-west-1"); print(ec2.describe_instance_types(InstanceTypes=["m6g.large"]))'
     displayName: 'Test auth'
+    env:
+      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
