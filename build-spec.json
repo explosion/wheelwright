@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/adrianeboyd/spacy.git", "package-name": "spacy", "commit": "4a7af2a40", "options": {"llvm": false, "rust": false, "py35": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy-4a7af2a40"}}
