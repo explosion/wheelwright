@@ -18,7 +18,7 @@ variables:
   HOMEBREW_NO_AUTO_UPDATE: 1
   MANYLINUX_VERSION: 2014
 
-jobs:
+#jobs:
 #- job: "sdist"
 #  pool:
 #    vmImage: 'ubuntu-20.04'
