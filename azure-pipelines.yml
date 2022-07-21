@@ -178,11 +178,11 @@ jobs:
         imageName: 'macos-11'
         python.version: '3.8'
         os: osx
-      # Python38MacARM64:
-      #   imageName: 'macos-11'
-      #   python.version: '3.8'
-      #   os: osx
-      #   plat: "arm64"
+      Python38MacARM64:
+        imageName: 'macos-11'
+        python.version: '3.8'
+        os: osx
+        plat: "arm64"
       Python39Linux:
         imageName: 'ubuntu-18.04'
         python.version: '3.9'
@@ -195,11 +195,11 @@ jobs:
         imageName: 'macos-11'
         python.version: '3.9'
         os: osx
-      # Python39MacARM64:
-      #   imageName: 'macos-11'
-      #   python.version: '3.9'
-      #   os: osx
-      #   plat: "arm64"
+      Python39MacARM64:
+        imageName: 'macos-11'
+        python.version: '3.9'
+        os: osx
+        plat: "arm64"
       Python310Linux:
         imageName: 'ubuntu-18.04'
         python.version: '3.10'
@@ -212,11 +212,11 @@ jobs:
         imageName: 'macos-11'
         python.version: '3.10'
         os: osx
-      # Python310MacARM64:
-      #   imageName: 'macos-11'
-      #   python.version: '3.10'
-      #   os: osx
-      #   plat: "arm64"
+      Python310MacARM64:
+        imageName: 'macos-11'
+        python.version: '3.10'
+        os: osx
+        plat: "arm64"
     maxParallel: 4
   pool:
     vmImage: $(imageName)
