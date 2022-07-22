@@ -334,3 +334,4 @@ jobs:
       assets: '$(Build.ArtifactStagingDirectory)/*'
     condition: and(not(eq(variables['GH_CONNECTION'], 'false')), eq(variables['active'], 1))
     displayName: 'Upload to GitHub release'
+
