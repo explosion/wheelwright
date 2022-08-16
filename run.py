@@ -181,10 +181,10 @@ def get_repo_id():
         cmd = ["git", "config", "--get", "remote.origin.url"]
         result = subprocess.check_output(cmd)
         git_url = result.decode("utf-8").strip()
-        git_ssh = re.match(r"git@github\.com:(.*/.*)(\.git)?$", git_url)
+        git_ssh = re.match(r"git@github\.com:(.*/.*?)(\.git)?$", git_url)
         if git_ssh:
             return git_ssh.groups()[0]
-        git_https = re.match(r"https://github\.com/(.*/.*)(\.git)?$", git_url)
+        git_https = re.match(r"https://github\.com/(.*/.*?)(\.git)?$", git_url)
         if git_https:
             return git_https.groups()[0]
     except subprocess.CalledProcessError:
