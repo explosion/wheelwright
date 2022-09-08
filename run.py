@@ -53,7 +53,6 @@ def build(
     repo: str,
     commit: str,
     package_name: str = Option(None, help="Package name (if different from repo)"),
-    py35: bool = Option(False, "--py35", help="Build wheels for Python 3.5"),
     llvm: bool = Option(False, "--llvm", help="Requires LLVM to be installed"),
     rust: bool = Option(False, "--rust", help="Requires Rust to be installed"),
     universal: bool = Option(False, "--universal", help="Build universal (pure Python) wheel and sdist"),
@@ -94,7 +93,6 @@ def build(
         "options": {
             "llvm": llvm,
             "rust": rust,
-            "py35": py35,
             "universal": universal,
             "skip_tests": skip_tests,
         },

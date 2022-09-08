@@ -134,14 +134,6 @@ jobs:
   continueOnError: true
   strategy:
     matrix:
-      Python35Linux:
-        imageName: 'ubuntu-20.04'
-        python.version: '3.5'
-        os: linux
-      Python35Windows:
-        imageName: 'windows-2019'
-        python.version: '3.5'
-        os: win
       Python36Linux:
         imageName: 'ubuntu-20.04'
         python.version: '3.6'
@@ -150,10 +142,6 @@ jobs:
         imageName: 'windows-2019'
         python.version: '3.6'
         os: win
-      Python36Mac:
-        imageName: 'macos-11'
-        python.version: '3.6'
-        os: osx
       Python37Linux:
         imageName: 'ubuntu-20.04'
         python.version: '3.7'
@@ -254,24 +242,17 @@ jobs:
   # This is messy, but the most convenient way to turn a JSON file into env
   # variables without requiring extra dependencies. The "##vso" stuff makes the
   # variables available to later steps.
-  #
-  # We're also setting py35 as an output variable to be used in the next
-  # step and its build matrix. This lets us avoid having to add complex
-  # conditions to each build step (as there seems to be no convenient way to
-  # just skip the whole rest of the pipeline).
   - bash: |
       eval $(python -c "
       import json; import sys
       with open('build-spec.json') as f: spec = json.load(f)
       release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
-      build_py35 = spec.get('options', {}).get('py35', '')
       skip_tests = spec.get('options', {}).get('skip_tests', '')
       universal = spec.get('options', {}).get('universal', '')
       sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
       sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
       sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
       sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
       sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
       sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
 
@@ -280,24 +261,10 @@ jobs:
       echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
       echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
       echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
-      echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
       echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
       echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
     name: set_variables
     displayName: 'Set variables'
-
-  # This could probably be done more elegantly. Comparison happens here so we
-  # can use the value of the py35 variable and assign a variable "active" that's
-  # available to all subsequent build steps in the pipeline 
-  - bash: |
-      BUILD35=0; [ "$(py35)" == "True" ] && BUILD35=1
-      echo "Build Python 3.5:" $BUILD35
-      IS35=0; [ "$(python.version)" == "3.5" ] && IS35=1
-      echo "Is Python 3.5:" $IS35
-      ACTIVE=$(( IS35 && BUILD35 || ! IS35 ? 1 : 0 ))
-      echo "Build active:" $ACTIVE
-      echo "##vso[task.setvariable variable=active]$ACTIVE"
-    displayName: 'Set status'
 
   - script: |
       git clone https://github.com/explosion/ec2buildwheel
@@ -320,7 +287,6 @@ jobs:
     inputs:
       pathtoPublish: $(Build.ArtifactStagingDirectory)
       artifactName: '$(ARTIFACT_NAME)'
-    condition: eq(variables['active'], 1)
     displayName: 'Publish artifact'
 
   - task: GitHubRelease@0
@@ -333,5 +299,5 @@ jobs:
       addChangeLog: false
       assetUploadMode: replace
       assets: '$(Build.ArtifactStagingDirectory)/*'
-    condition: and(not(eq(variables['GH_CONNECTION'], 'false')), eq(variables['active'], 1))
+    condition: not(eq(variables['GH_CONNECTION'], 'false'))
     displayName: 'Upload to GitHub release'
