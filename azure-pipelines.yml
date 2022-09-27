@@ -135,7 +135,7 @@ jobs:
   strategy:
     matrix:
       Python37MacX86_64:
-        imageName: 'macos-10.15'
+        imageName: 'macos-11'
         python.version: '3.7'
         os: osx
       Python38MacX86_64:
