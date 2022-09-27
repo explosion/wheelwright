@@ -21,7 +21,7 @@ variables:
 jobs:
 - job: "sdist"
   pool:
-    vmImage: "macos-10.15"
+    vmImage: "macos-11"
   variables:
     python.version: '3.8'
     CC: clang
@@ -135,11 +135,11 @@ jobs:
   strategy:
     matrix:
       Python37MacX86_64:
-        imageName: 'macos-10.15'
+        imageName: 'macos-11'
         python.version: '3.7'
         os: osx
       Python38MacX86_64:
-        imageName: 'macos-10.15'
+        imageName: 'macos-11'
         python.version: '3.8'
         os: osx
       Python38MacARM64:
@@ -148,7 +148,7 @@ jobs:
         os: osx
         plat: "arm64"
       Python39MacX86_64:
-        imageName: 'macos-10.15'
+        imageName: 'macos-11'
         python.version: '3.9'
         os: osx
       Python39MacARM64:
@@ -157,7 +157,7 @@ jobs:
         os: osx
         plat: "arm64"
       Python310MacX86_64:
-        imageName: 'macos-10.15'
+        imageName: 'macos-11'
         python.version: '3.10'
         os: osx
       Python310MacARM64:
