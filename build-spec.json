@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/cymem.git", "package-name": "cymem", "commit": "v2.0.7", "options": {"llvm": false, "rust": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "cymem-v2.0.7"}}
