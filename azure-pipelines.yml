@@ -207,19 +207,19 @@ jobs:
             #        plat: "arm64"
       Python311Linux:
         imageName: 'ubuntu-20.04'
-        python.version: '3.11.0-rc.2'
+        python.version: '3.11.0rc2'
         os: linux
       Python311Windows:
         imageName: 'windows-2019'
-        python.version: '3.11.0-rc.2'
+        python.version: '3.11.0rc2'
         os: win
       Python311MacX86_64:
         imageName: 'macos-11'
-        python.version: '3.11.0-rc.2'
+        python.version: '3.11.0rc2'
         os: osx
       Python311MacARM64:
         imageName: 'macos-11'
-        python.version: '3.11.0-rc.2'
+        python.version: '3.11.0rc2'
         os: osx
         plat: "arm64"
     maxParallel: 4
