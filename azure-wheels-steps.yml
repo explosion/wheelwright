@@ -100,7 +100,7 @@ steps:
       export PLAT=${{ parameters.PLAT }}
       echo "PLAT:" $PLAT
       export MB_ML_VER=$(MANYLINUX_VERSION)
-      #export MB_PYTHON_VERSION=${{ parameters.python_version }}
+      export MB_PYTHON_VERSION=`echo '${{ parameters.python_version }}' | cut -f 1-2 -d\.`
       export MB_PYTHON_VERSION="3.11"
       export TRAVIS_PYTHON_VERSION=${{ parameters.python_version }}
       export TRAVIS_OS_NAME=$(os)
