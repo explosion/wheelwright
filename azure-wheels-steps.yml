@@ -22,6 +22,7 @@ steps:
     inputs:
       versionSpec: '${{ parameters.python_version }}'
       architecture: '${{ parameters.architecture }}'
+      allowUnstable: true
     condition: eq(variables['active'], 1)
 
   - script: git submodule update --init --recursive
