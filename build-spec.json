@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/cutlery.git", "package-name": "cutlery", "commit": "v0.0.2", "options": {"llvm": false, "rust": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "cutlery-v0.0.2-5"}}
