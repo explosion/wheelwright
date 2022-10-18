@@ -92,6 +92,7 @@ steps:
   - bash: |
       cd $(checkout)
       git checkout $(commit)
+      git submodule update --init
       if [ -e "build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; fi
       cd ..
       echo "BUILD_DEPENDS:" $BUILD_DEPENDS
@@ -141,6 +142,7 @@ steps:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
+      git submodule update --init
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Check out and set up (Windows)'
 
