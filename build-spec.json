@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/sense2vec.git", "package-name": "sense2vec", "commit": "v2.0.1", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "sense2vec-v2.0.1"}}
