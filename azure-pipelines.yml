@@ -206,23 +206,23 @@ jobs:
         python.version: '3.10'
         os: osx
         plat: "arm64"
-      Python311Linux:
-        imageName: 'ubuntu-20.04'
-        python.version: '3.11'
-        os: linux
-      Python311Windows:
-        imageName: 'windows-2019'
-        python.version: '3.11'
-        os: win
-      Python311MacX86_64:
-        imageName: 'macos-11'
-        python.version: '3.11'
-        os: osx
-      Python311MacARM64:
-        imageName: 'macos-11'
-        python.version: '3.11'
-        os: osx
-        plat: "arm64"
+#      Python311Linux:
+#        imageName: 'ubuntu-20.04'
+#        python.version: '3.11'
+#        os: linux
+#      Python311Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.11'
+#        os: win
+#      Python311MacX86_64:
+#        imageName: 'macos-11'
+#        python.version: '3.11'
+#        os: osx
+#      Python311MacARM64:
+#        imageName: 'macos-11'
+#        python.version: '3.11'
+#        os: osx
+#        plat: "arm64"
     maxParallel: 4
   pool:
     vmImage: $(imageName)
@@ -287,6 +287,7 @@ jobs:
   - script: |
       git clone https://github.com/explosion/ec2buildwheel
       cd ec2buildwheel
+      git checkout skip-python-3.11
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install -r requirements.txt
       python go.py --non-interactive $(clone_url) $(commit) --package-name $(package_name)
