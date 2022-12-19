@@ -135,14 +135,6 @@ jobs:
   continueOnError: true
   strategy:
     matrix:
-      Python36Linux:
-        imageName: 'ubuntu-20.04'
-        python.version: '3.6'
-        os: linux
-      Python36Windows:
-        imageName: 'windows-2019'
-        python.version: '3.6'
-        os: win
       Python37Linux:
         imageName: 'ubuntu-20.04'
         python.version: '3.7'
