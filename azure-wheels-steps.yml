@@ -181,6 +181,7 @@ steps:
       WHEEL=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
       python -m pip install dist/$WHEEL
       rm -rf $(package_name)
+      python -m pip install -Ur requirements.txt
       python -m pytest --pyargs $(package_name)
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Test wheel (Windows)'
