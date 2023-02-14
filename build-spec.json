@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-experimental.git", "package-name": "spacy_experimental", "commit": "v0.6.2", "options": {"llvm": false, "rust": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_experimental-v0.6.2"}}
