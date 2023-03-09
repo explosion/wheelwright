@@ -42,7 +42,7 @@ function run_tests {
         python -m pip install -U mock
     fi
     if [ $(python -c 'import platform; print(platform.uname()[0])') == "Linux" ]; then
-        apt-get install git
+        apt-get install -y git
     fi
     python -m pytest --tb=native --pyargs "$PACKAGE_NAME"
 }
