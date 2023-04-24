@@ -78,9 +78,8 @@ jobs:
 
   - script: |
       cd $(checkout)
-      python -m pip install -U pip setuptools
-      python -m pip install -r requirements.txt
-      python setup.py sdist
+      python -m pip install -U build pip setuptools
+      python -m build --sdist
     displayName: 'Install and build sdist'
 
   - script: |
@@ -88,7 +87,7 @@ jobs:
       export CC=$(CC)
       export CXX=$(CXX)
       python -m pip install -U wheel
-      python setup.py bdist_wheel
+      python -m build --wheel
     displayName: 'Build universal wheel'
     condition: eq(variables['set_variables.universal'], 'True')
 
