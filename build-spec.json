@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacymoji.git", "package-name": "spacymoji", "commit": "v3.1.0", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacymoji-v3.1.0-2"}}
