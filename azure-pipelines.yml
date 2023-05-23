@@ -103,6 +103,12 @@ jobs:
     condition: ne(variables['set_variables.skip_tests'], 'True')
     displayName: 'Install from sdist & run tests'
 
+  - bash: |
+      cd $(Build.SourcesDirectory)/$(checkout)
+      python -m pip freeze > dist/pip-freeze-sdist.txt
+    condition: ne(variables['set_variables.skip_tests'], 'True')
+    displayName: 'Save pip freeze from test env'
+
   - task: CopyFiles@2
     inputs:
       contents: '$(checkout)/dist/**'
