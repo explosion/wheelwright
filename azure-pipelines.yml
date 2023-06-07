@@ -241,7 +241,7 @@ jobs:
       architecture: 'x64'
       PLAT: '$(plat)'
 
-- job: 'ec2wheels aarch64'
+- job: 'ec2wheels_aarch64'
   dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
@@ -325,7 +325,7 @@ jobs:
     condition: not(eq(variables['GH_CONNECTION'], 'false'))
     displayName: 'Upload to GitHub release'
 
-- job: 'ec2wheels x86_64'
+- job: 'ec2wheels_x86_64'
   dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
