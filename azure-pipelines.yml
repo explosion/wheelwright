@@ -122,7 +122,7 @@ jobs:
       artifactName: '$(ARTIFACT_NAME)'
     displayName: 'Publish sdist to artifacts'
 
-  - task: GitHubRelease@0
+  - task: GitHubRelease@1
     inputs:
       gitHubConnection: '$(GH_CONNECTION)'
       repositoryName: '$(Build.Repository.Name)'
@@ -313,7 +313,7 @@ jobs:
       artifactName: '$(ARTIFACT_NAME)'
     displayName: 'Publish artifact'
 
-  - task: GitHubRelease@0
+  - task: GitHubRelease@1
     inputs:
       gitHubConnection: '$(GH_CONNECTION)'
       repositoryName: '$(Build.Repository.Name)'
@@ -398,7 +398,7 @@ jobs:
       artifactName: '$(ARTIFACT_NAME)'
     displayName: 'Publish artifact'
 
-  - task: GitHubRelease@0
+  - task: GitHubRelease@1
     inputs:
       gitHubConnection: '$(GH_CONNECTION)'
       repositoryName: '$(Build.Repository.Name)'
