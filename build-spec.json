@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-llm.git", "package-name": "spacy_llm", "commit": "v0.4.3", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_llm-v0.4.3"}}
