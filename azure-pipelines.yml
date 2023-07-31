@@ -292,7 +292,6 @@ jobs:
   - script: |
       git clone https://github.com/explosion/ec2buildwheel
       cd ec2buildwheel
-      git checkout torch-hacks
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install -r requirements.txt
       python go.py --non-interactive $(clone_url) $(commit) --package-name $(package_name)
@@ -377,7 +376,6 @@ jobs:
   - script: |
       git clone https://github.com/explosion/ec2buildwheel
       cd ec2buildwheel
-      git checkout torch-hacks
       python -m pip install --upgrade pip setuptools wheel
       python -m pip install -r requirements.txt
       python go.py --instance-type m6a.2xlarge --non-interactive $(clone_url) $(commit) --package-name $(package_name)
