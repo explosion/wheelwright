@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/wheelwright.git", "package-name": "wheelwright", "commit": "v0.3.0", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "wheelwright-v0.3.0"}}
