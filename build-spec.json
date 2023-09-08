@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/confection.git", "package-name": "confection", "commit": "v0.1.3", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "confection-v0.1.3"}}
