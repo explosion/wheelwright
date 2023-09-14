@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/curated-tokenizers.git", "package-name": "curated_tokenizers", "commit": "v0.9.1", "options": {"llvm": false, "rust": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "curated_tokenizers-v0.9.1"}}
