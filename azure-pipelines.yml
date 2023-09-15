@@ -11,8 +11,8 @@ variables:
   REPO_DIR: checkout
   ARTIFACT_NAME: artifacts
   LINUX_TARGET: /io
-  BUILD_DEPENDS: "-Ur checkout/requirements.txt"
-  TEST_DEPENDS: "-Ur checkout/requirements.txt"
+  BUILD_DEPENDS: "-Ur checkout/requirements.txt setuptools"
+  TEST_DEPENDS: "-Ur checkout/requirements.txt setuptools"
   PLAT: x86_64
   UNICODE_WIDTH: 32
   HOMEBREW_NO_AUTO_UPDATE: 1
