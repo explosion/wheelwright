@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/adrianeboyd/cymem.git", "package-name": "cymem", "commit": "ad4ddf7eb", "options": {"llvm": false, "rust": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "cymem-ad4ddf7eb"}}
