@@ -33,6 +33,7 @@ steps:
   - script: |
       brew install gettext
       brew link --force gettext
+      python -m pip install setuptools
     condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
     displayName: 'Before install (Mac)'
 
