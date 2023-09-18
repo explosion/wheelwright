@@ -19,219 +19,219 @@ variables:
   MANYLINUX_VERSION: 2014
 
 jobs:
-- job: "sdist"
-  pool:
-    vmImage: 'ubuntu-20.04'
-  variables:
-    python.version: '3.8'
-    CC: gcc-9
-    CXX: g++-9
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
-
-  # This is messy, but the most convenient way to turn a JSON file into env
-  # variables without requiring extra dependencies. The "##vso" stuff makes the
-  # variables available to later steps.
-  #
-  # We're also setting py35 as an output variable to be used in the next
-  # step and its build matrix. This lets us avoid having to add complex
-  # conditions to each build step (as there seems to be no convenient way to
-  # just skip the whole rest of the pipeline).
-  - bash: |
-      eval $(python -c "
-      import json; import sys
-      with open('build-spec.json') as f: spec = json.load(f)
-      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
-      build_py35 = spec.get('options', {}).get('py35', '')
-      skip_tests = spec.get('options', {}).get('skip_tests', '')
-      universal = spec.get('options', {}).get('universal', '')
-      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
-      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
-      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
-      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
-      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
-      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
-
-      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
-      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
-      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
-      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
-      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
-      echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
-      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
-      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
-    name: set_variables
-    displayName: 'Set variables'
-
-  - script: |
-      export CC=$(CC)
-      export CXX=$(CXX)
-      git clone $(clone_url) $(checkout)
-      cd $(checkout)
-      git checkout $(commit)
-      git submodule update --init
-    displayName: 'Checkout commit'
-
-  - script: |
-      cd $(checkout)
-      python -m pip install -U build pip setuptools
-      python -m build --sdist
-    displayName: 'Install and build sdist'
-
-  - script: |
-      cd $(checkout)
-      export CC=$(CC)
-      export CXX=$(CXX)
-      python -m pip install -U wheel
-      python -m build --wheel
-    displayName: 'Build universal wheel'
-    condition: eq(variables['set_variables.universal'], 'True')
-
-  - bash: |
-      cd $(Build.SourcesDirectory)/$(checkout)
-      SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
-      rm -rf $(package_name)
-      python -m pip freeze > installed.txt
-      python -m pip uninstall -y -r installed.txt
-      python -m pip install dist/$SDIST
-      pip install -r requirements.txt
-      python -m pytest --pyargs $(package_name)
-    condition: ne(variables['set_variables.skip_tests'], 'True')
-    displayName: 'Install from sdist & run tests'
-
+#- job: "sdist"
+#  pool:
+#    vmImage: 'ubuntu-20.04'
+#  variables:
+#    python.version: '3.8'
+#    CC: gcc-9
+#    CXX: g++-9
+#  steps:
+#  - task: UsePythonVersion@0
+#    inputs:
+#      versionSpec: '$(python.version)'
+#      architecture: 'x64'
+#
+#  # This is messy, but the most convenient way to turn a JSON file into env
+#  # variables without requiring extra dependencies. The "##vso" stuff makes the
+#  # variables available to later steps.
+#  #
+#  # We're also setting py35 as an output variable to be used in the next
+#  # step and its build matrix. This lets us avoid having to add complex
+#  # conditions to each build step (as there seems to be no convenient way to
+#  # just skip the whole rest of the pipeline).
+#  - bash: |
+#      eval $(python -c "
+#      import json; import sys
+#      with open('build-spec.json') as f: spec = json.load(f)
+#      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
+#      build_py35 = spec.get('options', {}).get('py35', '')
+#      skip_tests = spec.get('options', {}).get('skip_tests', '')
+#      universal = spec.get('options', {}).get('universal', '')
+#      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+#      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
+#      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+#      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
+#      sys.stdout.write('BUILD_SPEC_PY35={}\n'.format(build_py35))
+#      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
+#      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+#
+#      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
+#      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
+#      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
+#      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+#      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
+#      echo "##vso[task.setvariable variable=py35;isOutput=true]$BUILD_SPEC_PY35"
+#      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
+#      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
+#    name: set_variables
+#    displayName: 'Set variables'
+#
+#  - script: |
+#      export CC=$(CC)
+#      export CXX=$(CXX)
+#      git clone $(clone_url) $(checkout)
+#      cd $(checkout)
+#      git checkout $(commit)
+#      git submodule update --init
+#    displayName: 'Checkout commit'
+#
+#  - script: |
+#      cd $(checkout)
+#      python -m pip install -U build pip setuptools
+#      python -m build --sdist
+#    displayName: 'Install and build sdist'
+#
+#  - script: |
+#      cd $(checkout)
+#      export CC=$(CC)
+#      export CXX=$(CXX)
+#      python -m pip install -U wheel
+#      python -m build --wheel
+#    displayName: 'Build universal wheel'
+#    condition: eq(variables['set_variables.universal'], 'True')
+#
 #  - bash: |
 #      cd $(Build.SourcesDirectory)/$(checkout)
-#      python -m pip freeze > dist/pip-freeze-sdist.txt
+#      SDIST=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
+#      rm -rf $(package_name)
+#      python -m pip freeze > installed.txt
+#      python -m pip uninstall -y -r installed.txt
+#      python -m pip install dist/$SDIST
+#      pip install -r requirements.txt
+#      python -m pytest --pyargs $(package_name)
 #    condition: ne(variables['set_variables.skip_tests'], 'True')
-#    displayName: 'Save pip freeze from test env'
-
-  - task: CopyFiles@2
-    inputs:
-      contents: '$(checkout)/dist/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    displayName: 'Copy sdist'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: '$(ARTIFACT_NAME)'
-    displayName: 'Publish sdist to artifacts'
-
-  - task: GitHubRelease@1
-    inputs:
-      gitHubConnection: '$(GH_CONNECTION)'
-      repositoryName: '$(Build.Repository.Name)'
-      action: 'edit'
-      tagSource: manual
-      tag: '$(release_tag)'
-      addChangeLog: false
-      assetUploadMode: replace
-      assets: '$(Build.ArtifactStagingDirectory)/*'
-    displayName: 'Upload to GitHub release'
+#    displayName: 'Install from sdist & run tests'
+#
+##  - bash: |
+##      cd $(Build.SourcesDirectory)/$(checkout)
+##      python -m pip freeze > dist/pip-freeze-sdist.txt
+##    condition: ne(variables['set_variables.skip_tests'], 'True')
+##    displayName: 'Save pip freeze from test env'
+#
+#  - task: CopyFiles@2
+#    inputs:
+#      contents: '$(checkout)/dist/**'
+#      targetFolder: $(Build.ArtifactStagingDirectory)
+#      flattenFolders: true
+#    displayName: 'Copy sdist'
+#
+#  - task: PublishBuildArtifacts@1
+#    inputs:
+#      pathtoPublish: $(Build.ArtifactStagingDirectory)
+#      artifactName: '$(ARTIFACT_NAME)'
+#    displayName: 'Publish sdist to artifacts'
+#
+#  - task: GitHubRelease@1
+#    inputs:
+#      gitHubConnection: '$(GH_CONNECTION)'
+#      repositoryName: '$(Build.Repository.Name)'
+#      action: 'edit'
+#      tagSource: manual
+#      tag: '$(release_tag)'
+#      addChangeLog: false
+#      assetUploadMode: replace
+#      assets: '$(Build.ArtifactStagingDirectory)/*'
+#    displayName: 'Upload to GitHub release'
 
 - job: 'wheels'
-  dependsOn: 'sdist'
+#  dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
   strategy:
     matrix:
-        #      Python36Linux:
-        #        imageName: 'ubuntu-20.04'
-        #        python.version: '3.6'
-        #        os: linux
-      Python36Windows:
-        imageName: 'windows-2019'
-        python.version: '3.6'
-        os: win
-        #      Python37Linux:
-        #        imageName: 'ubuntu-20.04'
-        #        python.version: '3.7'
-        #        os: linux
-      Python37Windows:
-        imageName: 'windows-2019'
-        python.version: '3.7'
-        os: win
-      Python37Mac:
-        imageName: 'macos-11'
-        python.version: '3.7'
-        os: osx
-        #      Python38Linux:
-        #        imageName: 'ubuntu-20.04'
-        #        python.version: '3.8'
-        #        os: linux
-      Python38Windows:
-        imageName: 'windows-2019'
-        python.version: '3.8'
-        os: win
-      Python38MacX86_64:
-        imageName: 'macos-11'
-        python.version: '3.8'
-        os: osx
-      Python38MacARM64:
-        imageName: 'macos-11'
-        python.version: '3.8'
-        os: osx
-        plat: "arm64"
-        #      Python39Linux:
-        #        imageName: 'ubuntu-20.04'
-        #        python.version: '3.9'
-        #        os: linux
-      Python39Windows:
-        imageName: 'windows-2019'
-        python.version: '3.9'
-        os: win
-      Python39MacX86_64:
-        imageName: 'macos-11'
-        python.version: '3.9'
-        os: osx
-      Python39MacARM64:
-        imageName: 'macos-11'
-        python.version: '3.9'
-        os: osx
-        plat: "arm64"
-        #      Python310Linux:
-        #        imageName: 'ubuntu-20.04'
-        #        python.version: '3.10'
-        #        os: linux
-      Python310Windows:
-        imageName: 'windows-2019'
-        python.version: '3.10'
-        os: win
-      Python310MacX86_64:
-        imageName: 'macos-11'
-        python.version: '3.10'
-        os: osx
-      Python310MacARM64:
-        imageName: 'macos-11'
-        python.version: '3.10'
-        os: osx
-        plat: "arm64"
-        #      Python311Linux:
-        #        imageName: 'ubuntu-20.04'
-        #        python.version: '3.11'
-        #        os: linux
-      Python311Windows:
-        imageName: 'windows-2019'
-        python.version: '3.11'
-        os: win
-      Python311MacX86_64:
-        imageName: 'macos-11'
-        python.version: '3.11'
-        os: osx
-      Python311MacARM64:
-        imageName: 'macos-11'
-        python.version: '3.11'
-        os: osx
-        plat: "arm64"
-      Python312Windows:
-        imageName: 'windows-2019'
-        python.version: '3.12.0-rc.2'
-        os: win
+#        #      Python36Linux:
+#        #        imageName: 'ubuntu-20.04'
+#        #        python.version: '3.6'
+#        #        os: linux
+#      Python36Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.6'
+#        os: win
+#        #      Python37Linux:
+#        #        imageName: 'ubuntu-20.04'
+#        #        python.version: '3.7'
+#        #        os: linux
+#      Python37Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.7'
+#        os: win
+#      Python37Mac:
+#        imageName: 'macos-11'
+#        python.version: '3.7'
+#        os: osx
+#        #      Python38Linux:
+#        #        imageName: 'ubuntu-20.04'
+#        #        python.version: '3.8'
+#        #        os: linux
+#      Python38Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.8'
+#        os: win
+#      Python38MacX86_64:
+#        imageName: 'macos-11'
+#        python.version: '3.8'
+#        os: osx
+#      Python38MacARM64:
+#        imageName: 'macos-11'
+#        python.version: '3.8'
+#        os: osx
+#        plat: "arm64"
+#        #      Python39Linux:
+#        #        imageName: 'ubuntu-20.04'
+#        #        python.version: '3.9'
+#        #        os: linux
+#      Python39Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.9'
+#        os: win
+#      Python39MacX86_64:
+#        imageName: 'macos-11'
+#        python.version: '3.9'
+#        os: osx
+#      Python39MacARM64:
+#        imageName: 'macos-11'
+#        python.version: '3.9'
+#        os: osx
+#        plat: "arm64"
+#        #      Python310Linux:
+#        #        imageName: 'ubuntu-20.04'
+#        #        python.version: '3.10'
+#        #        os: linux
+#      Python310Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.10'
+#        os: win
+#      Python310MacX86_64:
+#        imageName: 'macos-11'
+#        python.version: '3.10'
+#        os: osx
+#      Python310MacARM64:
+#        imageName: 'macos-11'
+#        python.version: '3.10'
+#        os: osx
+#        plat: "arm64"
+#        #      Python311Linux:
+#        #        imageName: 'ubuntu-20.04'
+#        #        python.version: '3.11'
+#        #        os: linux
+#      Python311Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.11'
+#        os: win
+#      Python311MacX86_64:
+#        imageName: 'macos-11'
+#        python.version: '3.11'
+#        os: osx
+#      Python311MacARM64:
+#        imageName: 'macos-11'
+#        python.version: '3.11'
+#        os: osx
+#        plat: "arm64"
+#      Python312Windows:
+#        imageName: 'windows-2019'
+#        python.version: '3.12.0-rc.2'
+#        os: win
       Python312MacX86_64:
         imageName: 'macos-11'
         python.version: '3.12.0-rc.2'
@@ -254,170 +254,170 @@ jobs:
       architecture: 'x64'
       PLAT: '$(plat)'
 
-- job: 'ec2wheels_aarch64'
-  dependsOn: 'sdist'
-  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
-  continueOnError: true
-  timeoutInMinutes: 120
-  strategy:
-    matrix:
-      Python310Linux:
-        imageName: 'ubuntu-20.04'
-        python.version: '3.10'
-        os: linux
-    maxParallel: 4
-  pool:
-    vmImage: $(imageName)
-
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
-
-  # This is messy, but the most convenient way to turn a JSON file into env
-  # variables without requiring extra dependencies. The "##vso" stuff makes the
-  # variables available to later steps.
-  - bash: |
-      eval $(python -c "
-      import json; import sys
-      with open('build-spec.json') as f: spec = json.load(f)
-      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
-      skip_tests = spec.get('options', {}).get('skip_tests', '')
-      universal = spec.get('options', {}).get('universal', '')
-      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
-      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
-      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
-      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
-      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
-
-      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
-      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
-      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
-      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
-      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
-      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
-      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
-    name: set_variables
-    displayName: 'Set variables'
-
-  - script: |
-      git clone https://github.com/explosion/ec2buildwheel
-      cd ec2buildwheel
-      python -m pip install --upgrade pip setuptools wheel
-      python -m pip install -r requirements.txt
-      python go.py --non-interactive $(clone_url) $(commit) --package-name $(package_name)
-    displayName: 'Build wheels'
-    env:
-      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-
-  - task: CopyFiles@2
-    inputs:
-      contents: 'ec2buildwheel/wheelhouse/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    displayName: 'Copy wheels'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: '$(ARTIFACT_NAME)'
-    displayName: 'Publish artifact'
-
-  - task: GitHubRelease@1
-    inputs:
-      gitHubConnection: '$(GH_CONNECTION)'
-      repositoryName: '$(Build.Repository.Name)'
-      action: 'edit'
-      tagSource: manual
-      tag: '$(release_tag)'
-      addChangeLog: false
-      assetUploadMode: replace
-      assets: '$(Build.ArtifactStagingDirectory)/*'
-    condition: not(eq(variables['GH_CONNECTION'], 'false'))
-    displayName: 'Upload to GitHub release'
-
-- job: 'ec2wheels_x86_64'
-  dependsOn: 'sdist'
-  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
-  continueOnError: true
-  timeoutInMinutes: 120
-  strategy:
-    matrix:
-      Python310Linux:
-        imageName: 'ubuntu-20.04'
-        python.version: '3.10'
-        os: linux
-    maxParallel: 4
-  pool:
-    vmImage: $(imageName)
-
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-      architecture: 'x64'
-
-  # This is messy, but the most convenient way to turn a JSON file into env
-  # variables without requiring extra dependencies. The "##vso" stuff makes the
-  # variables available to later steps.
-  - bash: |
-      eval $(python -c "
-      import json; import sys
-      with open('build-spec.json') as f: spec = json.load(f)
-      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
-      skip_tests = spec.get('options', {}).get('skip_tests', '')
-      universal = spec.get('options', {}).get('universal', '')
-      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
-      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
-      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
-      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
-      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
-
-      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
-      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
-      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
-      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
-      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
-      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
-      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
-    name: set_variables
-    displayName: 'Set variables'
-
-  - script: |
-      git clone https://github.com/explosion/ec2buildwheel
-      cd ec2buildwheel
-      python -m pip install --upgrade pip setuptools wheel
-      python -m pip install -r requirements.txt
-      python go.py --instance-type m6a.2xlarge --non-interactive $(clone_url) $(commit) --package-name $(package_name)
-    displayName: 'Build wheels'
-    env:
-      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-
-  - task: CopyFiles@2
-    inputs:
-      contents: 'ec2buildwheel/wheelhouse/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    displayName: 'Copy wheels'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: '$(ARTIFACT_NAME)'
-    displayName: 'Publish artifact'
-
-  - task: GitHubRelease@1
-    inputs:
-      gitHubConnection: '$(GH_CONNECTION)'
-      repositoryName: '$(Build.Repository.Name)'
-      action: 'edit'
-      tagSource: manual
-      tag: '$(release_tag)'
-      addChangeLog: false
-      assetUploadMode: replace
-      assets: '$(Build.ArtifactStagingDirectory)/*'
-    condition: not(eq(variables['GH_CONNECTION'], 'false'))
-    displayName: 'Upload to GitHub release'
+#- job: 'ec2wheels_aarch64'
+#  dependsOn: 'sdist'
+#  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
+#  continueOnError: true
+#  timeoutInMinutes: 120
+#  strategy:
+#    matrix:
+#      Python310Linux:
+#        imageName: 'ubuntu-20.04'
+#        python.version: '3.10'
+#        os: linux
+#    maxParallel: 4
+#  pool:
+#    vmImage: $(imageName)
+#
+#  steps:
+#  - task: UsePythonVersion@0
+#    inputs:
+#      versionSpec: '$(python.version)'
+#      architecture: 'x64'
+#
+#  # This is messy, but the most convenient way to turn a JSON file into env
+#  # variables without requiring extra dependencies. The "##vso" stuff makes the
+#  # variables available to later steps.
+#  - bash: |
+#      eval $(python -c "
+#      import json; import sys
+#      with open('build-spec.json') as f: spec = json.load(f)
+#      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
+#      skip_tests = spec.get('options', {}).get('skip_tests', '')
+#      universal = spec.get('options', {}).get('universal', '')
+#      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+#      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
+#      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+#      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
+#      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
+#      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+#
+#      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
+#      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
+#      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
+#      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+#      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
+#      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
+#      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
+#    name: set_variables
+#    displayName: 'Set variables'
+#
+#  - script: |
+#      git clone https://github.com/explosion/ec2buildwheel
+#      cd ec2buildwheel
+#      python -m pip install --upgrade pip setuptools wheel
+#      python -m pip install -r requirements.txt
+#      python go.py --non-interactive $(clone_url) $(commit) --package-name $(package_name)
+#    displayName: 'Build wheels'
+#    env:
+#      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+#
+#  - task: CopyFiles@2
+#    inputs:
+#      contents: 'ec2buildwheel/wheelhouse/**'
+#      targetFolder: $(Build.ArtifactStagingDirectory)
+#      flattenFolders: true
+#    displayName: 'Copy wheels'
+#
+#  - task: PublishBuildArtifacts@1
+#    inputs:
+#      pathtoPublish: $(Build.ArtifactStagingDirectory)
+#      artifactName: '$(ARTIFACT_NAME)'
+#    displayName: 'Publish artifact'
+#
+#  - task: GitHubRelease@1
+#    inputs:
+#      gitHubConnection: '$(GH_CONNECTION)'
+#      repositoryName: '$(Build.Repository.Name)'
+#      action: 'edit'
+#      tagSource: manual
+#      tag: '$(release_tag)'
+#      addChangeLog: false
+#      assetUploadMode: replace
+#      assets: '$(Build.ArtifactStagingDirectory)/*'
+#    condition: not(eq(variables['GH_CONNECTION'], 'false'))
+#    displayName: 'Upload to GitHub release'
+#
+#- job: 'ec2wheels_x86_64'
+#  dependsOn: 'sdist'
+#  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
+#  continueOnError: true
+#  timeoutInMinutes: 120
+#  strategy:
+#    matrix:
+#      Python310Linux:
+#        imageName: 'ubuntu-20.04'
+#        python.version: '3.10'
+#        os: linux
+#    maxParallel: 4
+#  pool:
+#    vmImage: $(imageName)
+#
+#  steps:
+#  - task: UsePythonVersion@0
+#    inputs:
+#      versionSpec: '$(python.version)'
+#      architecture: 'x64'
+#
+#  # This is messy, but the most convenient way to turn a JSON file into env
+#  # variables without requiring extra dependencies. The "##vso" stuff makes the
+#  # variables available to later steps.
+#  - bash: |
+#      eval $(python -c "
+#      import json; import sys
+#      with open('build-spec.json') as f: spec = json.load(f)
+#      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
+#      skip_tests = spec.get('options', {}).get('skip_tests', '')
+#      universal = spec.get('options', {}).get('universal', '')
+#      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+#      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
+#      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+#      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
+#      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
+#      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+#
+#      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
+#      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
+#      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
+#      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+#      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
+#      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
+#      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
+#    name: set_variables
+#    displayName: 'Set variables'
+#
+#  - script: |
+#      git clone https://github.com/explosion/ec2buildwheel
+#      cd ec2buildwheel
+#      python -m pip install --upgrade pip setuptools wheel
+#      python -m pip install -r requirements.txt
+#      python go.py --instance-type m6a.2xlarge --non-interactive $(clone_url) $(commit) --package-name $(package_name)
+#    displayName: 'Build wheels'
+#    env:
+#      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+#
+#  - task: CopyFiles@2
+#    inputs:
+#      contents: 'ec2buildwheel/wheelhouse/**'
+#      targetFolder: $(Build.ArtifactStagingDirectory)
+#      flattenFolders: true
+#    displayName: 'Copy wheels'
+#
+#  - task: PublishBuildArtifacts@1
+#    inputs:
+#      pathtoPublish: $(Build.ArtifactStagingDirectory)
+#      artifactName: '$(ARTIFACT_NAME)'
+#    displayName: 'Publish artifact'
+#
+#  - task: GitHubRelease@1
+#    inputs:
+#      gitHubConnection: '$(GH_CONNECTION)'
+#      repositoryName: '$(Build.Repository.Name)'
+#      action: 'edit'
+#      tagSource: manual
+#      tag: '$(release_tag)'
+#      addChangeLog: false
+#      assetUploadMode: replace
+#      assets: '$(Build.ArtifactStagingDirectory)/*'
+#    condition: not(eq(variables['GH_CONNECTION'], 'false'))
+#    displayName: 'Upload to GitHub release'

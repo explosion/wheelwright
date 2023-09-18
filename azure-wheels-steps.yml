@@ -91,6 +91,9 @@ steps:
     displayName: 'Copy multibuild files (Linux)'
 
   - bash: |
+      python --version
+      which python
+      whereis python
       cd $(checkout)
       git checkout $(commit)
       git submodule update --init
