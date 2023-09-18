@@ -219,10 +219,10 @@ jobs:
 #        imageName: 'windows-2019'
 #        python.version: '3.11'
 #        os: win
-#      Python311MacX86_64:
-#        imageName: 'macos-11'
-#        python.version: '3.11'
-#        os: osx
+      Python311MacX86_64:
+        imageName: 'macos-11'
+        python.version: '3.11'
+        os: osx
 #      Python311MacARM64:
 #        imageName: 'macos-11'
 #        python.version: '3.11'
@@ -232,15 +232,15 @@ jobs:
 #        imageName: 'windows-2019'
 #        python.version: '3.12.0-rc.2'
 #        os: win
-      Python312MacX86_64:
-        imageName: 'macos-11'
-        python.version: '3.12.0-rc.2'
-        os: osx
-      Python312MacARM64:
-        imageName: 'macos-11'
-        python.version: '3.12.0-rc.2'
-        os: osx
-        plat: "arm64"
+#      Python312MacX86_64:
+#        imageName: 'macos-11'
+#        python.version: '3.12.0-rc.2'
+#        os: osx
+#      Python312MacARM64:
+#        imageName: 'macos-11'
+#        python.version: '3.12.0-rc.2'
+#        os: osx
+#        plat: "arm64"
     maxParallel: 4
   pool:
     vmImage: $(imageName)
