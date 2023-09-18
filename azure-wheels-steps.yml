@@ -111,6 +111,7 @@ steps:
       export CIBW_SKIP="pp* *-musllinux* *i686*"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
       cibuildwheel --platform macos --output-dir ~/wheelhouse
       ls ~/wheelhouse
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
