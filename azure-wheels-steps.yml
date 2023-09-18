@@ -108,13 +108,13 @@ steps:
       export CIBW_BUILD_FRONTEND=pip
       export CIBW_ARCHS_MACOS="x86_64 arm64"
       export CIBW_TEST_SKIP="*-macosx_arm64"
-      export CIBW_SKIP="pp* *-musllinux* *i686*"
+      export CIBW_SKIP="pp* *-musllinux* *i686* *cp312*"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
-      [ "$(os)" == "osx" ] && cibuildwheel --platform macos --output-dir ~/wheelhouse
-      [ "$(os)" == "linux" ] && cibuildwheel --platform linux --output-dir ~/wheelhouse
-      ls ~/wheelhouse
+      [ "$(os)" == "osx" ] && cibuildwheel --platform macos --output-dir wheelhouse
+      [ "$(os)" == "linux" ] && cibuildwheel --platform linux --output-dir wheelhouse
+      ls wheelhouse
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Build wheel (Mac / Linux)'
 
@@ -191,8 +191,7 @@ steps:
 
   - task: CopyFiles@2
     inputs:
-      contents: '**'
-      sourceFolder: 'wheelhouse'
+      contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
