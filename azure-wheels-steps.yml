@@ -33,7 +33,7 @@ steps:
   - script: |
       brew install gettext
       brew link --force gettext
-      python -m pip install setuptools git+https://github.com/adrianeboyd/cibuildwheel.git
+      python -m pip install setuptools git+https://github.com/pypa/cibuildwheel.git@update-dependencies-pr
     condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
     displayName: 'Before install (Mac)'
 
