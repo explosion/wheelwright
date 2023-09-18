@@ -225,7 +225,8 @@ steps:
 
   - task: CopyFiles@2
     inputs:
-      contents: '/Users/runner/wheelhouse/**'
+      contents: '**'
+      sourceFolder: '/Users/runner/wheelhouse'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
