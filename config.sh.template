@@ -64,3 +64,4 @@ function pip_wheel_cmd {
 
 export MACOSX_DEPLOYMENT_TARGET="10.9"
 export MULTIBUILD_DIR="multibuild"
+export MACPYTHON_PY_PREFIX="/Users/runner/hostedtoolcache/Python"
