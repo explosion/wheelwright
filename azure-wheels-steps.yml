@@ -142,7 +142,7 @@ steps:
       export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=8'
       export CIBW_BUILD_VERBOSITY=1
       export CIBW_BUILD_FRONTEND=pip
-      export CIBW_SKIP="pp* *-musllinux* *i686* *universal2*"
+      export CIBW_SKIP="pp* *-musllinux* *i686* *universal2* *cp312*"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
       cibuildwheel --platform macos --output-dir ~/wheelhouse
