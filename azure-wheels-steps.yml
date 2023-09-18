@@ -33,6 +33,7 @@ steps:
   - script: |
       brew install gettext
       brew link --force gettext
+      # TODO: use stable release after 3.12.0rc2+ update
       python -m pip install setuptools git+https://github.com/pypa/cibuildwheel.git@update-dependencies-pr
     condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
     displayName: 'Before install (Mac)'
@@ -90,43 +91,6 @@ steps:
     condition: and(eq(variables['os'], 'linux'), eq(variables['active'], 1))
     displayName: 'Copy multibuild files (Linux)'
 
-#  - bash: |
-#      python --version
-#      which python
-#      whereis python
-#      cd $(checkout)
-#      git checkout $(commit)
-#      git submodule update --init
-#      if [ -e "build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; fi
-#      cd ..
-#      echo "BUILD_DEPENDS:" $BUILD_DEPENDS
-#      [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
-#      echo "CONFIG_PATH:" $CONFIG_PATH
-#      export PLAT=${{ parameters.PLAT }}
-#      echo "PLAT:" $PLAT
-#      export MB_ML_VER=$(MANYLINUX_VERSION)
-#      # TODO: undo when back to standard python versions
-#      #export MB_PYTHON_VERSION=${{ parameters.python_version }}
-#      export MB_PYTHON_VERSION=`echo '${{ parameters.python_version }}' | cut -f 1-2 -d\.`
-#      export TRAVIS_PYTHON_VERSION=${{ parameters.python_version }}
-#      export TRAVIS_OS_NAME=$(os)
-#      export BUILD_COMMIT=$(commit)
-#      source $(Build.SourcesDirectory)/multibuild/common_utils.sh
-#      source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
-#      before_install
-#      clean_code $(checkout) $(commit)
-#      export MULTIBUILD_DIR=multibuild
-#      # TODO: use firestorm for for blis v0.9
-#      [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="generic"
-#      echo "BLIS_ARCH:" $BLIS_ARCH
-#      [ "$(os)" == "osx" ] && export BLIS_COMPILER="clang -arch $PLAT"
-#      echo "BLIS_COMPILER:" $BLIS_COMPILER
-#      build_wheel $(checkout) $PLAT
-#      export PYTHON_PLAT=`python -c "import platform; print(platform.machine())"`
-#      if [ $PLAT == $PYTHON_PLAT ]; then install_run $PLAT; fi
-#    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-#    displayName: 'Build wheel (Mac / Linux)'
-
   - bash: |
       # TODO: use firestorm for for blis v0.9
       [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="generic"
@@ -149,8 +113,8 @@ steps:
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
       cibuildwheel --platform macos --output-dir ~/wheelhouse
       ls ~/wheelhouse
-    condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
-    displayName: 'Build wheel (Mac)'
+    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
+    displayName: 'Build wheel (Mac / Linux)'
 
   - script: choco install llvm
     condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 1))
@@ -226,11 +190,11 @@ steps:
   - task: CopyFiles@2
     inputs:
       contents: '**'
-      sourceFolder: '/Users/runner/wheelhouse'
+      sourceFolder: 'wheelhouse'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-    displayName: 'Copy wheel (Mac)'
+    displayName: 'Copy wheel (Mac / Linux)'
 
   - task: PublishBuildArtifacts@1
     inputs:
