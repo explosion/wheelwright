@@ -102,6 +102,7 @@ steps:
       cd $(checkout)
       git checkout $(commit)
       git submodule update --init
+      python -m pip install -U build pip setuptools wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Check out and set up (Windows)'
 
@@ -114,7 +115,7 @@ steps:
   # The env variables are needed to compile things like Blis
   - script: |
       cd $(checkout)
-      python setup.py bdist_wheel
+      python -m build --wheel
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
     displayName: 'Build wheel (Windows)'
 
