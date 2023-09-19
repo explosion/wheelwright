@@ -203,7 +203,7 @@ it's just to make sure we don't get mixed up between the two builds.
 
 For linux/macos, we build with `cibuildwheel` and we use
 [`ec2buildwheel`](https://github.com/explosion/ec2buildwheel) to run
-`cibuildwheel` on an EC2 instead for native `aarch64` builds.
+`cibuildwheel` on an EC2 instance for native `aarch64` builds.
 
 For windows, essentially we run:
 
