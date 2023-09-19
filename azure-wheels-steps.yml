@@ -61,7 +61,6 @@ steps:
     displayName: 'Install (Mac / Linux)'
 
   - bash: |
-      # TODO: use firestorm for for blis v0.9
       cd $(checkout)
       git checkout $(commit)
       git submodule update --init
@@ -70,7 +69,33 @@ steps:
       export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'
       export CIBW_BUILD_VERBOSITY=1
       export CIBW_BUILD_FRONTEND=pip
-      export CIBW_ARCHS_MACOS="x86_64 arm64"
+      export CIBW_ARCHS_MACOS="x86_64"
+      export CIBW_SKIP="pp* *-musllinux* *i686*"
+      export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
+      export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
+      export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
+      if [ "$(os)" == "osx" ]; then export $CIBUILDWHEEL_PLATFORM="macos"
+      if [ "$(os)" == "linux" ]; then export $CIBUILDWHEEL_PLATFORM="linux"
+      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse
+    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
+    displayName: 'Build wheel x86_64 (Mac / Linux)'
+
+  - bash: |
+      # TODO: use firestorm for for blis v0.9
+      export BLIS_ARCH="generic"
+      echo "BLIS_ARCH:" $BLIS_ARCH
+      export BLIS_COMPILER="clang -arch $PLAT"
+      echo "BLIS_COMPILER:" $BLIS_COMPILER
+      cd $(checkout)
+      git checkout $(commit)
+      git submodule update --init
+      if [ -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
+      export CIBW_BEFORE_ALL="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable"
+      export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'
+      export CIBW_BUILD_VERBOSITY=1
+      export CIBW_BUILD_FRONTEND=pip
+      export CIBW_ARCHS_MACOS="arm64"
       export CIBW_TEST_SKIP="*-macosx_arm64"
       export CIBW_SKIP="pp* *-musllinux* *i686*"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
@@ -79,9 +104,9 @@ steps:
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
       if [ "$(os)" == "osx" ]; then export $CIBUILDWHEEL_PLATFORM="macos"
       if [ "$(os)" == "linux" ]; then export $CIBUILDWHEEL_PLATFORM="linux"
-      cibuildwheel --platform macos --output-dir $(Build.SourcesDirectory)/wheelhouse
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-    displayName: 'Build wheel (Mac / Linux)'
+      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse
+    condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
+    displayName: 'Build wheel arm64 (Mac)'
 
   - script: choco install llvm
     condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 1))
