@@ -165,10 +165,10 @@ jobs:
         imageName: 'windows-2019'
         python.version: '3.11'
         os: win
-     Python312Windows:
-       imageName: 'windows-2019'
-       python.version: '3.12.0-rc.2'
-       os: win
+      Python312Windows:
+        imageName: 'windows-2019'
+        python.version: '3.12.0-rc.2'
+        os: win
     maxParallel: 4
   pool:
     vmImage: $(imageName)
