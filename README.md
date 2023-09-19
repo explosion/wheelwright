@@ -9,14 +9,15 @@ available as GitHub repositories. We're currently using it to build wheels for
 with
 [Azure Pipelines](https://azure.microsoft.com/de-de/services/devops/pipelines/)
 and builds the artifacts for **macOS**, **Linux** and **Windows** on **Python
-3.5+**. All wheels are available in the
+3.6+**. All wheels are available in the
 [releases](https://github.com/explosion/wheelwright/releases).
 
 🙏 **Special thanks** to [Nathaniel J. Smith](https://github.com/njsmith/) for
 helping us out with this, to [Matthew Brett](https://github.com/matthew-brett)
 for [`multibuild`](https://github.com/matthew-brett/multibuild), and of course
-to the [PyPA](https://www.pypa.io/en/latest/) team for their hard work on Python
-packaging.
+to the [PyPA](https://www.pypa.io/en/latest/) team for
+[`cibuildwheel`](https://github.com/pypa/cibuildwheel) and their hard work on
+Python packaging.
 
 > ⚠️ This repo has been updated to use Azure Pipelines instead of Travis and
 > Appveyor (see the [`v1`](https://github.com/explosion/wheelwright/tree/v1)
@@ -57,8 +58,9 @@ building and their repos:
   building and testing.
 - The project uses `pytest` for testing and tests are shipped inside the main
   package so they can be run from an installed wheel.
-- The `setup.py` takes care of the whole setup and no other steps are required:
-  `setup.py sdist` builds the sdist and `setup.py bdist_wheel` builds the wheel.
+- The package setup takes care of the whole setup and no other steps are
+  required: `build --sdist` builds the sdist and `build --wheel` builds the
+  wheel.
 
 ### Setup and Installation
 
@@ -136,13 +138,15 @@ Build wheels for a given repo and commit / tag.
 python run.py build explosion/cymem v1.32.1
 ```
 
-| Argument         | Type       | Description                                                                                                                        |
-| ---------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------- |
-| `repo`           | positional | The repository to build, in `user/repo` format.                                                                                    |
-| `commit`         | positional | The commit to build.                                                                                                               |
-| `--package-name` | option     | Optional alternative Python package name, if different from repo name.                                                             |
-| `--universal`    | flag       | Build sdist and universal wheels (pure Python with no compiled extensions). If enabled, no platform-specific wheels will be built. |
-| `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger additional step in Windows build pipeline.                                 |
+| Argument         | Type       | Description                                                                                                                                               |
+| ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `repo`           | positional | The repository to build, in `user/repo` format.                                                                                                           |
+| `commit`         | positional | The commit to build.                                                                                                                                      |
+| `--package-name` | option     | Optional alternative Python package name, if different from repo name.                                                                                    |
+| `--universal`    | flag       | Build sdist and universal wheels (pure Python with no compiled extensions). If enabled, no platform-specific wheels will be built.                        |
+| `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger an additional step in Windows build pipeline.                                                     |
+| `--rust`         | flag       | Build request Rust to be installed, which will trigger an additional step in Windows build pipeline. (Rust is install by default in all other pipelines.) |
+| `--skip-tests`   | flag       | Don't run tests (e.g. if package doesn't have any)                                                                                                        |
 
 ### <kbd>command</kbd> `run.py download`
 
@@ -197,7 +201,11 @@ it's just to make sure we don't get mixed up between the two builds.
 
 ### As a package maintainer, what do I need to know about the build process?
 
-Essentially we run:
+For linux/macos, we build with `cibuildwheel` and we use
+[`ec2buildwheel`](https://github.com/explosion/ec2buildwheel) to run
+`cibuildwheel` on an EC2 instead for native `aarch64` builds.
+
+For windows, essentially we run:
 
 ```console
 # Setup
@@ -207,8 +215,7 @@ git checkout REVISION
 
 # Build
 cd checkout
-pip install -Ur requirements.txt
-python setup.py bdist_wheel
+python -m build --wheel
 
 # Test
 cd empty-directory
@@ -240,35 +247,12 @@ same as the Python import name (in the `pytest` command). You can override this
 on a case-by-case basis passing `--package ...` to the `build` command, but of
 course doing this every time is going to be annoying.
 
-Aside from modifying `setup.py`, there isn't currently any way for a specific
-project to further customize the build, e.g. if they need to build some
+Aside from modifying the package setup, there isn't currently any way for a
+specific project to further customize the build, e.g. if they need to build some
 dependency like libblis that's not available on PyPI.
-
-### What do I need to know to maintain this repo itself?
-
-Internally, this builds on
-[Matthew Brett's multibuild project](https://github.com/matthew-brett/multibuild).
-A snapshot of multibuild is included as a git submodule, in the `multibuild/`
-directory. You might want to update that submodule occasionally to pull in new
-multibuild fixes:
-
-```bash
-cd multibuild
-git pull
-cd ..
-git commit -am "Updated multibuild snapshot"
-```
-
-Multibuild was originally designed to do Linux and macOS builds, and with the
-idea that you'd create a separate repo for each project with custom
-configuration. We kluge it into working for us by reading configuration out of
-the `build-spec.json` file and using it to configure various settings. Most of
-the actual configuration is in the `azure-pipelines.yml` file.
 
 ### I'm not Explosion, but I want to use this too!
 
-It's all under the MIT license, so feel free! It would be great to somehow
-convert this into a generic reusable piece of infrastructure, though it's not
-entirely clear how given how Rube-Goldergian the whole thing is – you can't just
-slap it up on PyPI. (Maybe a cookiecutter template that generates a repo like
-this?)
+Currently we'd recommend using `cibuildwheel` instead for most use cases, but
+wheelwright is under the MIT license, so feel free if it makes sense for your
+project!
