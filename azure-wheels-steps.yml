@@ -85,7 +85,7 @@ steps:
       # TODO: use firestorm for for blis v0.9
       export BLIS_ARCH="generic"
       echo "BLIS_ARCH:" $BLIS_ARCH
-      export BLIS_COMPILER="clang -arch $PLAT"
+      export BLIS_COMPILER="clang -arch arm64"
       echo "BLIS_COMPILER:" $BLIS_COMPILER
       cd $(checkout)
       git checkout $(commit)
