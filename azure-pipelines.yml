@@ -137,7 +137,6 @@ jobs:
   dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
-  timeoutInMinutes: 120
   strategy:
     matrix:
       Python36Windows:
