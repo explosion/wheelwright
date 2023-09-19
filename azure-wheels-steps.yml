@@ -85,7 +85,7 @@ steps:
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
       if [ "$(os)" == "osx" ]; then export CIBUILDWHEEL_PLATFORM="macos"; fi
       if [ "$(os)" == "linux" ]; then export CIBUILDWHEEL_PLATFORM="linux"; fi
-      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse; fi
+      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Build wheel (Mac / Linux)'
 
