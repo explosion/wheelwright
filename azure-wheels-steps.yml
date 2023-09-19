@@ -18,7 +18,6 @@ steps:
   - task: UsePythonVersion@0
     inputs:
       versionSpec: '${{ parameters.python_version }}'
-      architecture: '${{ parameters.architecture }}'
       allowUnstable: true
     condition: eq(variables['active'], 1)
 
