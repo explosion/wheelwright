@@ -75,10 +75,10 @@ steps:
       export CIBW_SKIP="pp* *-musllinux* *i686* *cp312*"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
-      [ "$(package_name)" == "spacy_transformers" ] && export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
+      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
-      [ "$(os)" == "osx" ] && cibuildwheel --platform macos --output-dir $(Build.SourcesDirectory)/wheelhouse
-      [ "$(os)" == "linux" ] && cibuildwheel --platform linux --output-dir $(Build.SourcesDirectory)/wheelhouse
+      if [ "$(os)" == "osx" ]; then cibuildwheel --platform macos --output-dir $(Build.SourcesDirectory)/wheelhouse; fi
+      if [ "$(os)" == "linux" ]; then cibuildwheel --platform linux --output-dir $(Build.SourcesDirectory)/wheelhouse; fi
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Build wheel (Mac / Linux)'
 
