@@ -1,8 +1,5 @@
 parameters:
   python_version: ''
-  architecture: ''
-  PLAT: ''
-  prefix: ''
 
 steps:
   # This could probably be done more elegantly. Comparison happens here so we
@@ -24,18 +21,6 @@ steps:
       architecture: '${{ parameters.architecture }}'
       allowUnstable: true
     condition: eq(variables['active'], 1)
-
-  - script: git submodule update --init --recursive
-    condition: eq(variables['active'], 1)
-    displayName: 'Set up multibuild'
-
-  # This is gettext needed for envsubst on osx =/
-  - script: |
-      brew install gettext
-      brew link --force gettext
-      python -m pip install setuptools
-    condition: and(eq(variables['os'], 'osx'), eq(variables['active'], 1))
-    displayName: 'Before install (Mac)'
 
   - script: |
       SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
@@ -71,56 +56,29 @@ steps:
     displayName: 'Set variables'
 
   - script: |
-      python -m pip install -U pip setuptools wheel virtualenv
+      python -m pip install -U pip setuptools cibuildwheel
       git clone $(clone_url) $(checkout)
-      export BUILD_COMMIT=$(commit)
-      export PACKAGE_NAME=$(package_name)
-      export INSTALL_RUST=""
-      [ "$(rust)" == "True" ] && export INSTALL_RUST=1
-      echo "INSTALL_RUST:" $INSTALL_RUST
-      cat config.sh.template | envsubst \$PACKAGE_NAME,\$INSTALL_RUST > config.sh
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Install (Mac / Linux)'
 
-  # This is hard-coded in the Docker scripts for Linux
-  - task: CopyFiles@2
-    inputs:
-      contents: '/**'
-      targetFolder: $LINUX_TARGET
-    condition: and(eq(variables['os'], 'linux'), eq(variables['active'], 1))
-    displayName: 'Copy multibuild files (Linux)'
-
   - bash: |
+      # TODO: use firestorm for for blis v0.9
       cd $(checkout)
       git checkout $(commit)
       git submodule update --init
-      if [ -e "build-constraints.txt" ]; then export BUILD_DEPENDS="$BUILD_DEPENDS -c checkout/build-constraints.txt"; fi
-      cd ..
-      echo "BUILD_DEPENDS:" $BUILD_DEPENDS
-      [ "$(os)" == "linux" ] && export CONFIG_PATH=$LINUX_TARGET/config.sh
-      echo "CONFIG_PATH:" $CONFIG_PATH
-      export PLAT=${{ parameters.PLAT }}
-      echo "PLAT:" $PLAT
-      export MB_ML_VER=$(MANYLINUX_VERSION)
-      # TODO: undo when back to standard python versions
-      #export MB_PYTHON_VERSION=${{ parameters.python_version }}
-      export MB_PYTHON_VERSION=`echo '${{ parameters.python_version }}' | cut -f 1-2 -d\.`
-      export TRAVIS_PYTHON_VERSION=${{ parameters.python_version }}
-      export TRAVIS_OS_NAME=$(os)
-      export BUILD_COMMIT=$(commit)
-      source $(Build.SourcesDirectory)/multibuild/common_utils.sh
-      source $(Build.SourcesDirectory)/multibuild/travis_steps.sh
-      before_install
-      clean_code $(checkout) $(commit)
-      export MULTIBUILD_DIR=multibuild
-      # TODO: use firestorm for for blis v0.9
-      [ "$(os)" == "osx" ] && [ $PLAT == "arm64" ] && export BLIS_ARCH="generic"
-      echo "BLIS_ARCH:" $BLIS_ARCH
-      [ "$(os)" == "osx" ] && export BLIS_COMPILER="clang -arch $PLAT"
-      echo "BLIS_COMPILER:" $BLIS_COMPILER
-      build_wheel $(checkout) $PLAT
-      export PYTHON_PLAT=`python -c "import platform; print(platform.machine())"`
-      if [ $PLAT == $PYTHON_PLAT ]; then install_run $PLAT; fi
+      if [ -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
+      export CIBW_BEFORE_ALL="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable"
+      export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'
+      export CIBW_BUILD_VERBOSITY=1
+      export CIBW_BUILD_FRONTEND=pip
+      export CIBW_ARCHS_MACOS="x86_64 arm64"
+      export CIBW_TEST_SKIP="*-macosx_arm64"
+      export CIBW_SKIP="pp* *-musllinux* *i686*"
+      export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
+      export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
+      [ "$(os)" == "osx" ] && cibuildwheel --platform macos --output-dir $(Build.SourcesDirectory)/wheelhouse
+      [ "$(os)" == "linux" ] && cibuildwheel --platform linux --output-dir $(Build.SourcesDirectory)/wheelhouse
     condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
     displayName: 'Build wheel (Mac / Linux)'
 
