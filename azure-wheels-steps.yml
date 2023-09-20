@@ -70,7 +70,7 @@ steps:
   - bash: |
       # TODO: use firestorm for for blis v0.9
       cd $(checkout)
-      if [ "(rust)" == "True" ]; then export CIBW_BEFORE_ALL="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable"; fi
+      if [ "(rust)" == "True" ]; then export CIBW_BEFORE_ALL="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && rustup target add aarch64-apple-darwin"; fi
       # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
       # overrides from pyproject.toml
       if [ "$(package_name)" != "blis" ]; then export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'; fi
