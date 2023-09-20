@@ -75,7 +75,6 @@ steps:
       # overrides from pyproject.toml
       if [ "$(package_name)" != "blis" ]; then export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'; fi
       if [ "$(package_name)" != "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
-      export CIBW_BUILD="cp39-*"
       export CIBW_BUILD_VERBOSITY=1
       export CIBW_BUILD_FRONTEND=pip
       export CIBW_ARCHS_MACOS="x86_64 arm64"
