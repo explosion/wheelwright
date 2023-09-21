@@ -114,6 +114,7 @@ steps:
       if [ "$(package_name)" == "blis" ]; then unset CIBW_ENVIRONMENT; fi
       echo "CIBW_ENVIRONMENT" $CIBW_ENVIRONMENT
       cat pyproject.toml
+
       cibuildwheel --output-dir wheelhouse .
     condition: eq(variables['active'], 1)
     displayName: 'Build wheels'
