@@ -98,6 +98,7 @@ steps:
       # overrides from pyproject.toml, which are needed for cross-compiling
       # the macos arm64 wheels
       if [ "$(package_name)" != "blis" ]; then export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'; fi
+      if [ "$(package_name)" != "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
       # ... but for whatever reason the overrides with pip constraints don't
       # seem to be working in windows, so ...
       if [ "$(package_name)" == "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT_WINDOWS="PIP_CONSTRAINT=build-constraints.txt"; fi
