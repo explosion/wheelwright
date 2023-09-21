@@ -97,7 +97,7 @@ steps:
           export CIBW_BEFORE_ALL_MACOS="$CIBW_BEFORE_ALL_LINUX && rustup target add aarch64-apple-darwin"
       fi
       export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'
-      if [ -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
+      if [ -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
       export CIBW_BUILD_VERBOSITY=1
       export CIBW_BUILD_FRONTEND=pip
       export CIBW_ARCHS_MACOS="x86_64 arm64"
