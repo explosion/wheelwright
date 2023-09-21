@@ -29,6 +29,14 @@ jobs:
         imageName: 'windows-2019'
         python.version: '3.11'
         os: win
+      Python311Linux:
+        imageName: 'ubuntu-20.04'
+        python.version: '3.11'
+        os: linux
+      Python311Mac:
+        imageName: 'macos-11'
+        python.version: '3.11'
+        os: osx
     maxParallel: 4
   pool:
     vmImage: $(imageName)

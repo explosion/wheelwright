@@ -92,6 +92,7 @@ steps:
 
   - bash: |
       cd $(checkout)
+      export CIBW_BUILD="cp38*"
       if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL_LINUX="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable"; fi
       if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL_MACOS="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && rustup target add aarch64-apple-darwin"; fi
       # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
