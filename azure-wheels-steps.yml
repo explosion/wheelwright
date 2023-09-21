@@ -95,14 +95,8 @@ steps:
       export CIBW_BUILD="cp38*"
       if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL_LINUX="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable"; fi
       if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL_MACOS="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && rustup target add aarch64-apple-darwin"; fi
-      # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
-      # overrides from pyproject.toml, which are needed for cross-compiling
-      # the macos arm64 wheels
-      if [ "$(package_name)" != "blis" ]; then export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'; fi
-      if [ "$(package_name)" != "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
-      # ... but for whatever reason the overrides with pip constraints don't
-      # seem to be working in windows, so ...
-      if [ "$(package_name)" == "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT_WINDOWS="PIP_CONSTRAINT=build-constraints.txt"; fi
+      export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'
+      if [ -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
       export CIBW_BUILD_VERBOSITY=1
       export CIBW_BUILD_FRONTEND=pip
       export CIBW_ARCHS_MACOS="x86_64 arm64"
@@ -114,6 +108,10 @@ steps:
       if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
       if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
+      # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
+      # overrides from pyproject.toml, which are needed for cross-compiling
+      # the macos arm64 wheels
+      if [ "$(package_name)" == "blis" ]; then unset CIBW_ENVIRONMENT; fi
       cibuildwheel --output-dir wheelhouse .
     condition: eq(variables['active'], 1)
     displayName: 'Build wheels'
