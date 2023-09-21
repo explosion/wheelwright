@@ -112,6 +112,7 @@ steps:
       # overrides from pyproject.toml, which are needed for cross-compiling
       # the macos arm64 wheels
       if [ "$(package_name)" == "blis" ]; then unset CIBW_ENVIRONMENT; fi
+      echo "CIBW_ENVIRONMENT" $CIBW_ENVIRONMENT
       cibuildwheel --output-dir wheelhouse .
     condition: eq(variables['active'], 1)
     displayName: 'Build wheels'
