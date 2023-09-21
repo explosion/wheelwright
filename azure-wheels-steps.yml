@@ -105,9 +105,9 @@ steps:
       export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64 *cp312*"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
-      export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
-      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
-      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
+      export PYTEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $PYTEST_COMMAND"; fi
+      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $PYTEST_COMMAND"; fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
       cibuildwheel --output-dir wheelhouse .
     condition: eq(variables['active'], 1)
