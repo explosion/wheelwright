@@ -110,24 +110,18 @@ steps:
       if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
       if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
-      cibuildwheel --output-dir $(Build.SourcesDirectory)/wheelhouse
+      cibuildwheel --output-dir wheelhouse .
     condition: eq(variables['active'], 1)
     displayName: 'Build wheels'
 
   - bash: |
-      ls $(Build.SourcesDirectory)
-      echo "======="
-      ls $(Build.SourcesDirectory)/wheelhouse
-      echo "======="
-      cd $(checkout)
-      ls $(Build.SourcesDirectory)/wheelhouse
+      ls $(checkout)/wheelhouse
     condition: eq(variables['active'], 1)
     displayName: 'Check files'
 
   - task: CopyFiles@2
     inputs:
-      contents: 'wheelhouse/**'
-      sourceFolder: $(Build.SourcesDirectory)
+      contents: '$(checkout)/wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     condition: eq(variables['active'], 1)
