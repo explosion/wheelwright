@@ -102,7 +102,7 @@ steps:
       export CIBW_BUILD_FRONTEND=pip
       export CIBW_ARCHS_MACOS="x86_64 arm64"
       export CIBW_TEST_SKIP="*-macosx_arm64"
-      export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64 *cp312*"
+      export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
