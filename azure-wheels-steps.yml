@@ -118,12 +118,16 @@ steps:
       ls $(Build.SourcesDirectory)
       echo "======="
       ls $(Build.SourcesDirectory)/wheelhouse
+      echo "======="
+      cd $(checkout)
+      ls $(Build.SourcesDirectory)/wheelhouse
     condition: eq(variables['active'], 1)
     displayName: 'Check files'
 
   - task: CopyFiles@2
     inputs:
       contents: 'wheelhouse/**'
+      sourceFolder: $(Build.SourcesDirectory)
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     condition: eq(variables['active'], 1)
