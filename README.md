@@ -59,8 +59,8 @@ building and their repos:
 - The project uses `pytest` for testing and tests are shipped inside the main
   package so they can be run from an installed wheel.
 - The package setup takes care of the whole setup and no other steps are
-  required: `build --sdist` builds the sdist and `build --wheel` builds the
-  wheel.
+  required. `build --sdist` builds the sdist and `cibuildwheel` builds the
+  wheels.
 
 ### Setup and Installation
 
@@ -146,7 +146,7 @@ python run.py build explosion/cymem v1.32.1
 | `--universal`    | flag       | Build sdist and universal wheels (pure Python with no compiled extensions). If enabled, no platform-specific wheels will be built.                        |
 | `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger an additional step in Windows build pipeline.                                                     |
 | `--rust`         | flag       | Build request Rust to be installed, which will trigger an additional step in Windows build pipeline. (Rust is install by default in all other pipelines.) |
-| `--skip-tests`   | flag       | Don't run tests (e.g. if package doesn't have any)                                                                                                        |
+| `--skip-tests`   | flag       | Don't run tests (e.g. if package doesn't have any). Only supported for `--universal` builds.                                                              |
 
 ### <kbd>command</kbd> `run.py download`
 
@@ -201,42 +201,14 @@ it's just to make sure we don't get mixed up between the two builds.
 
 ### As a package maintainer, what do I need to know about the build process?
 
-For linux/macos, we build with `cibuildwheel` and we use
+Wheels are built using `cibuildwheel`. For native linux `aarch64` builds, we use
 [`ec2buildwheel`](https://github.com/explosion/ec2buildwheel) to run
-`cibuildwheel` on an EC2 instance for native `aarch64` builds.
+`cibuildwheel` on an EC2 instance.
 
-For windows, essentially we run:
-
-```console
-# Setup
-git clone https://github.com/USER-NAME/PROJECT-NAME.git checkout
-cd checkout
-git checkout REVISION
-
-# Build
-cd checkout
-python -m build --wheel
-
-# Test
-cd empty-directory
-pip install -Ur ../checkout/requirements.txt
-pip install THE-BUILT-WHEEL
-pytest --pyargs PROJECT-NAME
-```
-
-Some things to note:
-
-The build/test phases currently have varying levels of isolation from each
-other:
-
-- On Windows and macOS / OSX, they use the same Python environment.
-- On Linux, they run in different docker containers, which are running different
-  Linux distros, to make sure the binaries really are portable.
-
-We use the same `requirements.txt` for both building and testing. You could
-imagine splitting those into two separate files, in order to make sure that
-dependency resolution is working, that we don't have any run-time dependency on
-Cython, etc., but currently we don't.
+Our projects use a single `requirements.txt` that includes both the build and
+test requirements. You could imagine splitting those into two separate files, in
+order to make sure that dependency resolution is working, that we don't have any
+run-time dependency on Cython, etc., but currently we don't.
 
 We assume that projects use pytest for testing, and that they ship their tests
 inside their main package, so that you can run the tests directly from an
