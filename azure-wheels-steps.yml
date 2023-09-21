@@ -21,11 +21,10 @@ steps:
       allowUnstable: true
     condition: eq(variables['active'], 1)
 
-  - script: |
-      SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
-      python -m pip install -U build pip setuptools wheel virtualenv
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Before install (Windows)'
+#  - script: |
+#      SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
+#    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
+#    displayName: 'Before install (Windows)'
 
   # This is messy, but the most convenient way to turn a JSON file into env
   # variables without requiring extra dependencies. The "##vso" stuff makes the
@@ -55,44 +54,22 @@ steps:
     displayName: 'Set variables'
 
   - script: |
-      python -m pip install -U pip setuptools cibuildwheel
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-    displayName: 'Install (Mac / Linux)'
+      python -m pip install -U cibuildwheel pip setuptools
+    condition: eq(variables['active'], 1)
+    displayName: 'Install cibuildwheel'
 
   - script: |
       git clone $(clone_url) $(checkout)
       cd $(checkout)
-      git submodule update --init
       git checkout $(commit)
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-    displayName: 'Clone package repo (Mac / Linux)'
+    condition: eq(variables['active'], 1)
+    displayName: 'Clone package repo'
 
-  - bash: |
-      # TODO: use firestorm for for blis v0.9
+  - script: |
       cd $(checkout)
-      if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && rustup target add aarch64-apple-darwin"; fi
-      # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
-      # overrides from pyproject.toml
-      if [ "$(package_name)" != "blis" ]; then export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'; fi
-      if [ "$(package_name)" != "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
-      export CIBW_BUILD_VERBOSITY=1
-      export CIBW_BUILD_FRONTEND=pip
-      export CIBW_ARCHS_MACOS="x86_64 arm64"
-      export CIBW_TEST_SKIP="*-macosx_arm64"
-      export CIBW_SKIP="pp* *-musllinux* *i686*"
-      export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
-      export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
-      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
-      export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
-      if [ "$(os)" == "osx" ]; then export CIBUILDWHEEL_PLATFORM="macos"; fi
-      if [ "$(os)" == "linux" ]; then export CIBUILDWHEEL_PLATFORM="linux"; fi
-      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-    displayName: 'Build wheel (Mac / Linux)'
-
-  - script: choco install llvm
-    condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 1))
-    displayName: 'Install LLVM if needed (Windows)'
+      git submodule update --init
+    condition: eq(variables['active'], 1)
+    displayName: 'Update submodules'
 
   - script: |
       curl -sSf -o rustup-init.exe https://win.rustup.rs
@@ -102,72 +79,48 @@ steps:
     condition: and(eq(variables['os'], 'win'), eq(variables['rust'], 'true'), eq(variables['active'], 1))
     displayName: 'Install Rust if needed (Windows)'
 
+  - script: choco install llvm
+    condition: and(eq(variables['os'], 'win'), eq(variables['llvm'], 'true'), eq(variables['active'], 1))
+    displayName: 'Install LLVM if needed (Windows)'
+
   # The env variables are needed to compile things like Blis
   - script: |
       set "PATH=C:\Program Files\LLVM\bin;%PATH%"
       set "INCLUDE=%$VC_INCLUDEPATH%"
-      git clone $(clone_url) $(checkout)
-      cd $(checkout)
-      git checkout $(commit)
-      git submodule update --init
     condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Check out and set up (Windows)'
+    displayName: 'Set up env (Windows)'
 
   - bash: |
       cd $(checkout)
-      if [ -e "build-constraints.txt" ]; then python -m pip install -Ur requirements.txt -c build-constraints.txt; else python -m pip install -Ur requirements.txt; fi
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Install dependencies (Windows)'
-
-  # The env variables are needed to compile things like Blis
-  - script: |
-      cd $(checkout)
-      python -m build --wheel
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Build wheel (Windows)'
-
-  # Temporary workaround, see: https://github.com/pypa/pip/issues/6951
-  - task: PythonScript@0
-    inputs:
-      scriptSource: inline
-      script: |
-        import os
-        wheel_file = os.listdir('./dist')[0]
-        wheel_path = os.path.join('./dist', wheel_file)
-        mod_wheel_path = wheel_path.replace("cp38m-win", "cp38-win")
-        mod_wheel_path = mod_wheel_path.replace("cp39m-win", "cp39-win")
-        os.rename(wheel_path, mod_wheel_path)
-        print(os.listdir('./dist'))
-      failOnStderr: true
-      workingDirectory: '$(Build.SourcesDirectory)/$(checkout)'
-    condition: and(eq(variables['os'], 'win'), or(eq(variables['python_version'], '3.8'), eq(variables['python_version'], '3.9')), eq(variables['active'], 1))
-    displayName: Fix wheel name (Windows, Python 3.8)
-
-  - bash: |
-      cd $(checkout)
-      WHEEL=$(python -c "import os;print(os.listdir('./dist')[0])" 2>&1)
-      python -m pip install dist/$WHEEL
-      rm -rf $(package_name)
-      python -m pip install -Ur requirements.txt
-      python -m pytest --pyargs $(package_name)
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Test wheel (Windows)'
-
-  - task: CopyFiles@2
-    inputs:
-      contents: 'checkout/dist/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-    displayName: 'Copy wheel (Windows)'
+      if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL_LINUX="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable"; fi
+      if [ "$(rust)" == "True" ]; then export CIBW_BEFORE_ALL_MACOS="curl https://sh.rustup.rs -sSf | sh -s -- -y --profile minimal --default-toolchain stable && rustup target add aarch64-apple-darwin"; fi
+      # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
+      # overrides from pyproject.toml
+      if [ "$(package_name)" != "blis" ]; then export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'; fi
+      if [ "$(package_name)" != "blis" -a -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
+      export CIBW_BUILD_VERBOSITY=1
+      export CIBW_BUILD_FRONTEND=pip
+      export CIBW_ARCHS_MACOS="x86_64 arm64"
+      export CIBW_TEST_SKIP="*-macosx_arm64"
+      export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64"
+      export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
+      export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
+      export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
+      if [ "$(os)" == "osx" ]; then export CIBUILDWHEEL_PLATFORM="macos"; fi
+      if [ "$(os)" == "linux" ]; then export CIBUILDWHEEL_PLATFORM="linux"; fi
+      if [ "$(os)" == "win" ]; then export CIBUILDWHEEL_PLATFORM="windows"; fi
+      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse
+    condition: eq(variables['active'], 1)
+    displayName: 'Build wheels'
 
   - task: CopyFiles@2
     inputs:
       contents: 'wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
-    condition: and(or(eq(variables['os'], 'osx'), eq(variables['os'], 'linux')), eq(variables['active'], 1))
-    displayName: 'Copy wheel (Mac / Linux)'
+    condition: eq(variables['active'], 1)
+    displayName: 'Copy wheels'
 
   - task: PublishBuildArtifacts@1
     inputs:

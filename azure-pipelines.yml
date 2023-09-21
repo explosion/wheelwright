@@ -133,66 +133,25 @@ jobs:
       assets: '$(Build.ArtifactStagingDirectory)/*'
     displayName: 'Upload to GitHub release'
 
-- job: 'wheels_windows'
-  dependsOn: 'sdist'
-  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
-  continueOnError: true
-  strategy:
-    matrix:
-      Python36Windows:
-        imageName: 'windows-2019'
-        python.version: '3.6'
-        os: win
-      Python37Windows:
-        imageName: 'windows-2019'
-        python.version: '3.7'
-        os: win
-      Python38Windows:
-        imageName: 'windows-2019'
-        python.version: '3.8'
-        os: win
-      Python39Windows:
-        imageName: 'windows-2019'
-        python.version: '3.9'
-        os: win
-      Python310Windows:
-        imageName: 'windows-2019'
-        python.version: '3.10'
-        os: win
-      Python311Windows:
-        imageName: 'windows-2019'
-        python.version: '3.11'
-        os: win
-      Python312Windows:
-        imageName: 'windows-2019'
-        python.version: '3.12.0-rc.2'
-        os: win
-    maxParallel: 4
-  pool:
-    vmImage: $(imageName)
-  variables:
-    py35: $[ dependencies.sdist.outputs['set_variables.py35'] ]
-
-  steps:
-  - template: azure-wheels-steps.yml
-    parameters:
-      python_version: '$(python.version)'
-
-- job: 'wheels_cibuildwheel'
+- job: 'wheels'
   dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
   timeoutInMinutes: 240
   strategy:
     matrix:
-     Python311Linux:
-       imageName: 'ubuntu-20.04'
-       python.version: '3.11'
-       os: linux
-     Python311Mac:
-       imageName: 'macos-11'
-       python.version: '3.11'
-       os: osx
+      Python311Windows:
+        imageName: 'windows-2019'
+        python.version: '3.11'
+        os: win
+      Python311Linux:
+        imageName: 'ubuntu-20.04'
+        python.version: '3.11'
+        os: linux
+      Python311Mac:
+        imageName: 'macos-11'
+        python.version: '3.11'
+        os: osx
     maxParallel: 4
   pool:
     vmImage: $(imageName)
