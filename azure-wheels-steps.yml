@@ -104,19 +104,18 @@ steps:
       export CIBW_TEST_SKIP="*-macosx_arm64"
       export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
+      export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
       if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
+      if [ "$(package_name)" == "spacy_transformers" ]; then export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"; fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
-      if [ "$(os)" == "osx" ]; then export CIBUILDWHEEL_PLATFORM="macos"; fi
-      if [ "$(os)" == "linux" ]; then export CIBUILDWHEEL_PLATFORM="linux"; fi
-      if [ "$(os)" == "win" ]; then export CIBUILDWHEEL_PLATFORM="windows"; fi
-      cibuildwheel --platform $CIBUILDWHEEL_PLATFORM --output-dir $(Build.SourcesDirectory)/wheelhouse
+      cibuildwheel --output-dir wheelhouse .
     condition: eq(variables['active'], 1)
     displayName: 'Build wheels'
 
   - task: CopyFiles@2
     inputs:
-      contents: 'wheelhouse/**'
+      contents: '$(checkout)/wheelhouse/**'
       targetFolder: $(Build.ArtifactStagingDirectory)
       flattenFolders: true
     condition: eq(variables['active'], 1)
