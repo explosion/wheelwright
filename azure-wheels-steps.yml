@@ -21,11 +21,6 @@ steps:
       allowUnstable: true
     condition: eq(variables['active'], 1)
 
-#  - script: |
-#      SET PATH=%PYTHON%;%PYTHON%\Scripts;%PATH%
-#    condition: and(eq(variables['os'], 'win'), eq(variables['active'], 1))
-#    displayName: 'Before install (Windows)'
-
   # This is messy, but the most convenient way to turn a JSON file into env
   # variables without requiring extra dependencies. The "##vso" stuff makes the
   # variables available to later steps.
