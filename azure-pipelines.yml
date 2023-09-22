@@ -72,8 +72,12 @@ jobs:
       git clone $(clone_url) $(checkout)
       cd $(checkout)
       git checkout $(commit)
-      git submodule update --init
     displayName: 'Checkout commit'
+
+  - script: |
+      cd $(checkout)
+      git submodule update --init
+    displayName: 'Update submodules'
 
   - script: |
       cd $(checkout)
