@@ -138,15 +138,15 @@ Build wheels for a given repo and commit / tag.
 python run.py build explosion/cymem v1.32.1
 ```
 
-| Argument         | Type       | Description                                                                                                                                               |
-| ---------------- | ---------- | --------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `repo`           | positional | The repository to build, in `user/repo` format.                                                                                                           |
-| `commit`         | positional | The commit to build.                                                                                                                                      |
-| `--package-name` | option     | Optional alternative Python package name, if different from repo name.                                                                                    |
-| `--universal`    | flag       | Build sdist and universal wheels (pure Python with no compiled extensions). If enabled, no platform-specific wheels will be built.                        |
-| `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger an additional step in Windows build pipeline.                                                     |
-| `--rust`         | flag       | Build request Rust to be installed, which will trigger an additional step in Windows build pipeline. (Rust is install by default in all other pipelines.) |
-| `--skip-tests`   | flag       | Don't run tests (e.g. if package doesn't have any). Only supported for `--universal` builds.                                                              |
+| Argument         | Type       | Description                                                                                                                                                 |
+| ---------------- | ---------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `repo`           | positional | The repository to build, in `user/repo` format.                                                                                                             |
+| `commit`         | positional | The commit to build.                                                                                                                                        |
+| `--package-name` | option     | Optional alternative Python package name, if different from repo name.                                                                                      |
+| `--universal`    | flag       | Build sdist and universal wheels (pure Python with no compiled extensions). If enabled, no platform-specific wheels will be built.                          |
+| `--llvm`         | flag       | Build requires LLVM to be installed, which will trigger an additional step in Windows build pipeline.                                                       |
+| `--rust`         | flag       | Build request Rust to be installed, which will trigger an additional step in Windows build pipeline. (Rust is installed by default in all other pipelines.) |
+| `--skip-tests`   | flag       | Don't run tests (e.g. if package doesn't have any). Only supported for `--universal` builds.                                                                |
 
 ### <kbd>command</kbd> `run.py download`
 
