@@ -105,7 +105,7 @@ steps:
       export CIBW_BEFORE_BUILD="pip install -r requirements.txt && python setup.py clean"
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
-      export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      export CIBW_TEST_COMMAND="pip install urllib3<2 && pytest --tb=native --pyargs $(package_name)"
       if [ "$(package_name)" == "spacy_transformers" ]; then
           export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
           export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
