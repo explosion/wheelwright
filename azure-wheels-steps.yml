@@ -103,13 +103,15 @@ steps:
       # clean cython-generated files between builds to handle profiling
       # settings, since the builds aren't isolated
       export CIBW_BEFORE_BUILD="pip install -r requirements.txt && python setup.py clean"
-      export CIBW_BEFORE_TEST_LINUX="unset PIP_CONSTRAINT && pip install -U -r requirements.txt 'urllib3<2'"
-      export CIBW_BEFORE_TEST_MACOS="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
+      export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
+      export CIBW_BUILD="cp37*"
+      export CIBW_TEST_COMMAND_LINUX="unset PIP_CONSTRAINT && pip install 'urllib<2' && $CIBW_TEST_COMMAND"
       if [ "$(package_name)" == "spacy_transformers" ]; then
           export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
-          export CIBW_TEST_COMMAND="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
+          export CIBW_TEST_COMMAND_MACOS="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
+          export CIBW_TEST_COMMAND_LINUX="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND_LINUX"
       fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
       # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
