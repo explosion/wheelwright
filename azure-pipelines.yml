@@ -148,10 +148,10 @@ jobs:
         imageName: 'windows-2019'
         python.version: '3.11'
         os: win
-      #Python311Linux:
-      #  imageName: 'ubuntu-20.04'
-      #  python.version: '3.11'
-      #  os: linux
+      Python311Linux:
+        imageName: 'ubuntu-20.04'
+        python.version: '3.11'
+        os: linux
       Python311Mac:
         imageName: 'macos-11'
         python.version: '3.11'
@@ -251,86 +251,86 @@ jobs:
     condition: not(eq(variables['GH_CONNECTION'], 'false'))
     displayName: 'Upload to GitHub release'
 
-- job: 'ec2wheels_x86_64'
-  dependsOn: 'sdist'
-  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
-  continueOnError: true
-  timeoutInMinutes: 120
-  strategy:
-    matrix:
-      Python310Linux:
-        imageName: 'ubuntu-20.04'
-        python.version: '3.10'
-        os: linux
-    maxParallel: 4
-  pool:
-    vmImage: $(imageName)
-
-  steps:
-  - task: UsePythonVersion@0
-    inputs:
-      versionSpec: '$(python.version)'
-
-  # This is messy, but the most convenient way to turn a JSON file into env
-  # variables without requiring extra dependencies. The "##vso" stuff makes the
-  # variables available to later steps.
-  - bash: |
-      eval $(python -c "
-      import json; import sys
-      with open('build-spec.json') as f: spec = json.load(f)
-      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
-      skip_tests = spec.get('options', {}).get('skip_tests', '')
-      universal = spec.get('options', {}).get('universal', '')
-      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
-      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
-      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
-      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
-      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
-      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
-
-      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
-      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
-      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
-      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
-      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
-      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
-      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
-    name: set_variables
-    displayName: 'Set variables'
-
-  - script: |
-      git clone https://github.com/explosion/ec2buildwheel
-      cd ec2buildwheel
-      git checkout torch-hacks
-      python -m pip install --upgrade pip setuptools wheel
-      python -m pip install -r requirements.txt
-      python go.py --instance-type m6a.2xlarge --non-interactive $(clone_url) $(commit) --package-name $(package_name)
-    displayName: 'Build wheels'
-    env:
-      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
-
-  - task: CopyFiles@2
-    inputs:
-      contents: 'ec2buildwheel/wheelhouse/**'
-      targetFolder: $(Build.ArtifactStagingDirectory)
-      flattenFolders: true
-    displayName: 'Copy wheels'
-
-  - task: PublishBuildArtifacts@1
-    inputs:
-      pathtoPublish: $(Build.ArtifactStagingDirectory)
-      artifactName: '$(ARTIFACT_NAME)'
-    displayName: 'Publish artifact'
-
-  - task: GitHubRelease@1
-    inputs:
-      gitHubConnection: '$(GH_CONNECTION)'
-      repositoryName: '$(Build.Repository.Name)'
-      action: 'edit'
-      tagSource: manual
-      tag: '$(release_tag)'
-      addChangeLog: false
-      assetUploadMode: replace
-      assets: '$(Build.ArtifactStagingDirectory)/*'
-    condition: not(eq(variables['GH_CONNECTION'], 'false'))
-    displayName: 'Upload to GitHub release'
+#- job: 'ec2wheels_x86_64'
+#  dependsOn: 'sdist'
+#  condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
+#  continueOnError: true
+#  timeoutInMinutes: 120
+#  strategy:
+#    matrix:
+#      Python310Linux:
+#        imageName: 'ubuntu-20.04'
+#        python.version: '3.10'
+#        os: linux
+#    maxParallel: 4
+#  pool:
+#    vmImage: $(imageName)
+#
+#  steps:
+#  - task: UsePythonVersion@0
+#    inputs:
+#      versionSpec: '$(python.version)'
+#
+#  # This is messy, but the most convenient way to turn a JSON file into env
+#  # variables without requiring extra dependencies. The "##vso" stuff makes the
+#  # variables available to later steps.
+#  - bash: |
+#      eval $(python -c "
+#      import json; import sys
+#      with open('build-spec.json') as f: spec = json.load(f)
+#      release_id = spec.get('upload-to', {}).get('release-id', '').replace('/', '-')
+#      skip_tests = spec.get('options', {}).get('skip_tests', '')
+#      universal = spec.get('options', {}).get('universal', '')
+#      sys.stdout.write('BUILD_SPEC_CLONE_URL={}\n'.format(spec.get('clone-url')))
+#      sys.stdout.write('BUILD_SPEC_COMMIT={}\n'.format(spec.get('commit')))
+#      sys.stdout.write('BUILD_SPEC_PACKAGE_NAME={}\n'.format(spec.get('package-name')))
+#      sys.stdout.write('BUILD_SPEC_RELEASE_ID={}\n'.format(release_id))
+#      sys.stdout.write('BUILD_SPEC_SKIP_TESTS={}\n'.format(skip_tests))
+#      sys.stdout.write('BUILD_SPEC_UNIVERSAL={}\n'.format(universal))")
+#
+#      echo "##vso[task.setvariable variable=clone_url]$BUILD_SPEC_CLONE_URL"
+#      echo "##vso[task.setvariable variable=commit]$BUILD_SPEC_COMMIT"
+#      echo "##vso[task.setvariable variable=package_name]$BUILD_SPEC_PACKAGE_NAME"
+#      echo "##vso[task.setvariable variable=checkout]$REPO_DIR"
+#      echo "##vso[task.setvariable variable=release_tag]$BUILD_SPEC_RELEASE_ID"
+#      echo "##vso[task.setvariable variable=skip_tests;isOutput=true]$BUILD_SPEC_SKIP_TESTS"
+#      echo "##vso[task.setvariable variable=universal;isOutput=true]$BUILD_SPEC_UNIVERSAL"
+#    name: set_variables
+#    displayName: 'Set variables'
+#
+#  - script: |
+#      git clone https://github.com/explosion/ec2buildwheel
+#      cd ec2buildwheel
+#      git checkout torch-hacks
+#      python -m pip install --upgrade pip setuptools wheel
+#      python -m pip install -r requirements.txt
+#      python go.py --instance-type m6a.2xlarge --non-interactive $(clone_url) $(commit) --package-name $(package_name)
+#    displayName: 'Build wheels'
+#    env:
+#      AWS_SECRET_ACCESS_KEY: $(AWS_SECRET_ACCESS_KEY)
+#
+#  - task: CopyFiles@2
+#    inputs:
+#      contents: 'ec2buildwheel/wheelhouse/**'
+#      targetFolder: $(Build.ArtifactStagingDirectory)
+#      flattenFolders: true
+#    displayName: 'Copy wheels'
+#
+#  - task: PublishBuildArtifacts@1
+#    inputs:
+#      pathtoPublish: $(Build.ArtifactStagingDirectory)
+#      artifactName: '$(ARTIFACT_NAME)'
+#    displayName: 'Publish artifact'
+#
+#  - task: GitHubRelease@1
+#    inputs:
+#      gitHubConnection: '$(GH_CONNECTION)'
+#      repositoryName: '$(Build.Repository.Name)'
+#      action: 'edit'
+#      tagSource: manual
+#      tag: '$(release_tag)'
+#      addChangeLog: false
+#      assetUploadMode: replace
+#      assets: '$(Build.ArtifactStagingDirectory)/*'
+#    condition: not(eq(variables['GH_CONNECTION'], 'false'))
+#    displayName: 'Upload to GitHub release'

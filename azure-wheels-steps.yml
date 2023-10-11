@@ -48,6 +48,12 @@ steps:
     condition: eq(variables['active'], 1)
     displayName: 'Set variables'
 
+  # suggestion from https://github.com/pypa/cibuildwheel/issues/1586
+  - script: |
+      docker system prune -a -f
+    condition: and(eq(variables['os'], 'linux'), eq(variables['active'], 1))
+    displayName: 'Clean docker images'
+
   - script: |
       python -m pip install -U cibuildwheel pip setuptools
     condition: eq(variables['active'], 1)
