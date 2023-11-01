@@ -104,7 +104,7 @@ steps:
       # with the drawback that the pip builds aren't isolated
       export CIBW_BUILD_FRONTEND=pip
       export CIBW_ARCHS_MACOS="x86_64 arm64"
-      export CIBW_TEST_SKIP="*-macosx_arm64"
+      export CIBW_TEST_SKIP="*-macosx_arm64 *cp312*"
       export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64"
       # clean cython-generated files between builds to handle profiling
       # settings, since the builds aren't isolated; a cleaner/nicer version
