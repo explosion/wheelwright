@@ -109,11 +109,13 @@ steps:
       # clean cython-generated files between builds to handle profiling
       # settings, since the builds aren't isolated; a cleaner/nicer version
       # would install the build requirements from pyproject.toml instead, but
-      # it's a hassle to parse, so for now just numpy and cython since this
-      # should hopefully cover our packages (installing all requirements for
-      # packages that have large requirements like torch in linux fills up the
-      # local disk)
-      export CIBW_BEFORE_BUILD="pip install numpy 'cython<3' && python setup.py clean"
+      # it's a hassle to parse, so for now just numpy and cython for everything
+      # except spacy-experimental (installing all requirements for packages that      # have large requirements like torch in linux fills up the local disk)
+      if [ "$(package_name)" == "spacy_transformers" ]; then
+          export CIBW_BEFORE_BUILD="pip install numpy cython && python setup.py clean"
+      else
+          export CIBW_BEFORE_BUILD="pip install -r requirements.txt && python setup.py clean"
+      fi
       export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
       export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
