@@ -119,7 +119,7 @@ steps:
       export CIBW_TEST_COMMAND_LINUX="unset PIP_CONSTRAINT && pip install 'urllib3<2' && $CIBW_TEST_COMMAND"
       if [ "$(package_name)" == "spacy_transformers" ]; then
           export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} --only-binary tokenizers && $CIBW_TEST_COMMAND"
-          export CIBW_TEST_COMMAND_MACOS="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
+          export CIBW_TEST_COMMAND_MACOS="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} --only-binary tokenizers && $CIBW_TEST_COMMAND"
           export CIBW_TEST_COMMAND_LINUX="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND_LINUX"
       fi
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
