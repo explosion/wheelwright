@@ -168,7 +168,7 @@ jobs:
       python_version: '$(python.version)'
 
 - job: 'ec2wheels_aarch64'
-  dependsOn: 'sdist'
+  #dependsOn: 'sdist'
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
   timeoutInMinutes: 120
