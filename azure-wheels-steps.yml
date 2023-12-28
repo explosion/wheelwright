@@ -98,11 +98,8 @@ steps:
           export CIBW_BEFORE_ALL_MACOS="$CIBW_BEFORE_ALL_LINUX && rustup target add aarch64-apple-darwin"
       fi
       export CIBW_ENVIRONMENT='PATH="$PATH:$HOME/.cargo/bin" SPACY_NUM_BUILD_JOBS=2'
-      if [ -e "build-constraints.txt" ]; then export CIBW_ENVIRONMENT="$CIBW_ENVIRONMENT PIP_CONSTRAINT=build-constraints.txt"; fi
       export CIBW_BUILD_VERBOSITY=1
-      # build constraints through PIP_CONSTRAINT only work with pip frontend,
-      # with the drawback that the pip builds aren't isolated
-      export CIBW_BUILD_FRONTEND=pip
+      export CIBW_BUILD_FRONTEND=build
       export CIBW_ARCHS_MACOS="x86_64 arm64"
       export CIBW_TEST_SKIP="*-macosx_arm64"
       export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64"
@@ -113,15 +110,9 @@ steps:
       if [ "$(package_name)" == "spacy" ]; then
           export CIBW_BEFORE_BUILD="pip install -r requirements.txt && python setup.py clean"
       fi
-      export CIBW_BEFORE_TEST="unset PIP_CONSTRAINT && pip install -U -r requirements.txt"
-      export CIBW_BEFORE_TEST_WINDOWS="set PIP_CONSTRAINT= && pip install -U -r requirements.txt"
+      export CIBW_BEFORE_TEST="pip install -U -r requirements.txt"
       export CIBW_TEST_COMMAND="pytest --tb=native --pyargs $(package_name)"
-      export CIBW_TEST_COMMAND_LINUX="unset PIP_CONSTRAINT && pip install 'urllib3<2' && $CIBW_TEST_COMMAND"
-      if [ "$(package_name)" == "spacy_transformers" ]; then
-          export CIBW_TEST_COMMAND_WINDOWS="set PIP_CONSTRAINT= && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
-          export CIBW_TEST_COMMAND_MACOS="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND"
-          export CIBW_TEST_COMMAND_LINUX="unset PIP_CONSTRAINT && pip install -U numpy tokenizers transformers {wheel} && $CIBW_TEST_COMMAND_LINUX"
-      fi
+      export CIBW_TEST_COMMAND_LINUX="pip install 'urllib3<2' && $CIBW_TEST_COMMAND"
       export CIBW_REPAIR_WHEEL_COMMAND_LINUX="auditwheel repair --strip -w {dest_dir} {wheel}"
       # CIBW_ENVIRONMENT needs to remain unset for blis in order to use the
       # overrides from pyproject.toml, which are needed for cross-compiling
