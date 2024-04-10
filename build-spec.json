@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-curated-transformers.git", "package-name": "spacy_curated_transformers", "commit": "v2.0.0.dev0", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_curated_transformers-v2.0.0.dev0"}}
