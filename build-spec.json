@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/curated-transformers.git", "package-name": "curated_transformers", "commit": "v2.0.1", "options": {"llvm": false, "rust": false, "universal": true, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "curated_transformers-v2.0.1"}}
