@@ -1,0 +1,1 @@
+{"clone-url": "https://github.com/explosion/spacy-biaffine-parser.git", "package-name": "spacy_biaffine_parser", "commit": "v0.1.0", "options": {"llvm": false, "rust": false, "universal": false, "skip_tests": false}, "upload-to": {"type": "github-release", "repo-id": "explosion/wheelwright", "release-id": "spacy_biaffine_parser-v0.1.0-3"}}
