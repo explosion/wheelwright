@@ -106,7 +106,22 @@ steps:
       export CIBW_ARCHS_MACOS="x86_64 arm64"
       export CIBW_TEST_SKIP="*-macosx_arm64"
       export CIBW_SKIP="pp* *-musllinux* *i686* *-win32 *-win_arm64 cp36-* cp37-* cp38-*"
-      export CIBW_BUILD="cp39-* cp310-* cp311-* cp312-*"
+      if [ "$(package_name)" == "spacy" ]; then
+          export CIBW_BEFORE_BUILD="pip install -r requirements.txt && python setup.py clean"
+      fi
+ 
+      if [ "$(python_version)" == "3.9" ]; then
+        export CIBW_BUILD="cp39-*"
+      fi
+      if [ "$(python_version)" == "3.10" ]; then
+        export CIBW_BUILD="cp310-*"
+      fi
+      if [ "$(python_version)" == "3.11" ]; then
+        export CIBW_BUILD="cp311-*"
+      fi
+      if [ "$(python_version)" == "3.12" ]; then
+        export CIBW_BUILD="cp312-*"
+      fi
       # for spacy: clean cython-generated files between builds to handle
       # profiling settings, since the builds aren't isolated; a cleaner/nicer
       # version would install the build requirements from pyproject.toml
