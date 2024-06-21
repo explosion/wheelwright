@@ -142,6 +142,9 @@ jobs:
   condition: not(eq(dependencies.sdist.outputs['set_variables.universal'], 'True'))
   continueOnError: true
   timeoutInMinutes: 240
+  # Don't be confused by the Python version here -- it's just the outer layer.
+  # We actually do the wheel building inside the docker container, and each of
+  # these steps will build wheels for multiple pythons.
   strategy:
     matrix:
       Python311Windows:
