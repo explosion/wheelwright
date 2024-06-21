@@ -156,7 +156,7 @@ jobs:
         python.version: '3.11'
         os: linux
       Python311Mac:
-        imageName: 'macos-13'
+        imageName: 'macos-14'
         python.version: '3.11'
         os: osx
     maxParallel: 4
